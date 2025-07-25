@@ -1,4 +1,8 @@
-import { DeleteOutlined, QuestionCircleOutlined, SaveOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  QuestionCircleOutlined,
+  SaveOutlined,
+} from "@ant-design/icons";
 import {
   Button,
   Divider,
@@ -9,36 +13,112 @@ import {
   Popconfirm,
   Image,
   Card,
+  message,
 } from "antd";
 import DisplayInfo from "./DisplayInfo";
 import { Plus } from "lucide-react";
 import { api } from "../services/axios";
+import { allTableDataType} from "./MakeFormTable";
+import { useForm } from "antd/es/form/Form";
+import { useState } from "react";
 import { toBase64 } from "../services/DisplayFunctions";
 
-const EditModal = (handleCancel, editModal, modal, images, setModal, messageApi, onFinishEdit, setFile, setDescription, addImage) => {
+interface editModalParam {
+  handleCancel: () => void;
+  editModal: boolean;
+  modal: allTableDataType;
+  setModal: React.Dispatch<React.SetStateAction<allTableDataType>>
+  editModalOff: () => void;
+  triggerRender:()=>void;
+}
+
+interface egami {
+  description: string;
+  file: string;
+  url: string;
+}
+
+const EditModal = (editModalParam: editModalParam) => {
+  const [images, setImage] = useState<egami[]>([]);
+  const addImage = () => {
+    setImage([...images, { file: "", description: "", url: "" }]);
+  };
+  const removeImage = (index: number) => {
+    if (images) {
+      setImage(images.filter((img) => images[index] !== img));
+    }
+  };
+
+  const setDescription = (index: number, description: string) => {
+    setImage(
+      images.map((img, i) => (i === index ? { ...img, description } : img))
+    );
+  };
+
+  const setFile = (index: number, file: string, url: string) => {
+    setImage(
+      images.map((img, i) => (i === index ? { ...img, file, url } : img))
+    );
+  };
+
+  const clearImage = () => {
+    setImage([]);
+  };
+  const [form] = useForm();
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const onFinishEdit = async (makeId: number) => {
+    console.log(images[0]);
+    try {
+      //   console.log(image);
+      await api.post(
+        `/image/create-Images/${makeId}`,
+        images.map((image) => ({
+          file: image.file,
+          description: image.description,
+        }))
+      );
+      messageApi.open({
+        type: "success",
+        content: "Images created Successfully",
+      });
+      clearImage();
+      editModalParam.editModalOff();
+      editModalParam.triggerRender();
+    } catch (e: unknown) {
+      //   console.log("Error on edit" + e);
+      clearImage();
+      messageApi.open({
+        type: "error",
+        content: (e instanceof Error ? e.message : String(e)),
+      });
+    }
+  };
+
   return (
     <>
+    {contextHolder}
       <Modal
         title="Edit Request"
-        onCancel={handleCancel}
+        onCancel={editModalParam.handleCancel}
         okButtonProps={{ style: { display: "none" } }}
         cancelButtonProps={{ style: { display: "none" } }}
         closable={{ "aria-label": "Custom Close Button" }}
-        open={editModal}
+        open={editModalParam.editModal}
         width={1000}
       >
-        {modal === undefined ? (
+        {editModalParam.modal === undefined ? (
           <>Nothing to display</>
         ) : (
           <>
-            <DisplayInfo {...modal} />
+            <DisplayInfo {...editModalParam.modal} />
             <Flex vertical align="center" gap={"middle"} wrap>
               <p>
                 <strong>Images</strong>
               </p>
-              <Flex gap={"large"}>
-                {modal.images ? (
-                  modal.images.map((image) => {
+              <Flex gap={"large"} wrap>
+                {editModalParam.modal.images ? (
+                  editModalParam.modal.images.map((image) => {
                     return (
                       <Flex
                         vertical
@@ -51,13 +131,12 @@ const EditModal = (handleCancel, editModal, modal, images, setModal, messageApi,
                         <Input
                           value={image.description}
                           onChange={(e) => {
-                            setModal({
-                              ...modal,
+                            editModalParam.setModal({
+                              ...editModalParam.modal,
                               images: [
-                                ...modal.images.filter(
-                                  (img) => img.id !== image.id
+                                ...editModalParam.modal.images.map(
+                                  (img) => (img.id === image.id?{ ...image, description: e.target.value }:img)
                                 ),
-                                { ...image, description: e.target.value },
                               ],
                             });
                           }}
@@ -77,10 +156,10 @@ const EditModal = (handleCancel, editModal, modal, images, setModal, messageApi,
                                     type: "success",
                                     content: "Description edited successfully",
                                   });
-                                  setModal({
-                                    ...modal,
+                                  editModalParam.setModal({
+                                    ...editModalParam.modal,
                                     images: [
-                                      ...modal.images.filter(
+                                      ...editModalParam.modal.images.filter(
                                         (img) => img.id !== image.id
                                       ),
                                       {
@@ -89,11 +168,11 @@ const EditModal = (handleCancel, editModal, modal, images, setModal, messageApi,
                                       },
                                     ],
                                   });
-                                } catch (e: any) {
+                                } catch (e: unknown) {
                                   //   console.log("Error on edit" + e);
                                   messageApi.open({
                                     type: "error",
-                                    content: e.toString(),
+                                    content: (e instanceof Error? e.message: String(e)),
                                   });
                                 }
                               }}
@@ -123,16 +202,16 @@ const EditModal = (handleCancel, editModal, modal, images, setModal, messageApi,
                               await api.patch(
                                 `/image/disassociate/${image.id}`
                               );
-                              setModal({
-                                ...modal,
-                                images: modal.images.filter(
-                                  (img) => img.id == image.id
-                                ),
-                              });
-                            } catch (e: any) {
+                              editModalParam.setModal({
+                                    ...editModalParam.modal,
+                                    images: editModalParam.modal.images.filter(
+                                      (img) => (img.id !== image.id)
+                                    ),
+                                  });
+                            } catch (e: unknown) {
                               messageApi.open({
-                                type: "success",
-                                content: e.toString(),
+                                type: "error",
+                                content: e instanceof Error? e.message: String(e),
                               });
                             }
                           }}
@@ -166,7 +245,7 @@ const EditModal = (handleCancel, editModal, modal, images, setModal, messageApi,
               form={form}
               onFinish={() => {
                 // setDescription(value);
-                onFinishEdit(modal.makeId);
+                onFinishEdit(editModalParam.modal.makeId);
                 form.resetFields();
               }}
             >
