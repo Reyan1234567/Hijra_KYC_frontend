@@ -1,25 +1,13 @@
 import { useEffect, useState } from "react";
-import {
-  Button,
-  Dropdown,
-  Flex,
-  message,
-  Spin,
-  Table,
-  Tag,
-} from "antd";
+import { Flex, message, Spin, Table } from "antd";
 import type { MenuProps, TableColumnsType } from "antd";
 import { api } from "../services/axios";
-import {
-  DownOutlined,
-  EditOutlined,
-  EyeOutlined,
-  SendOutlined,
-} from "@ant-design/icons";
+import { EditOutlined, EyeOutlined, SendOutlined } from "@ant-design/icons";
 
-import { ExtractDate } from "../services/DisplayFunctions";
 import EditModal from "./EditModal";
 import ViewModal from "./viewModal";
+import DropDown from "./DropDown";
+import RequestTables from "./RequestTables";
 
 interface imageReturn {
   id: number;
@@ -45,10 +33,7 @@ export interface allTableDataType {
   customerPhone: string;
   images: imageReturn[];
   status: number;
-}
-interface dropDownInterface {
-  menu: MenuProps["items"];
-  onChange: () => void;
+  backReason:string;
 }
 
 export interface egami {
@@ -147,50 +132,10 @@ const MakeFormTable = () => {
     customerPhone: "",
     images: [],
     status: 0,
+    backReason:""
   });
+
   const columns: TableColumnsType<allTableDataType> = [
-    { title: "Cif", dataIndex: "cif" },
-    { title: "Customer Account", dataIndex: "customerAccount" },
-    { title: "Customer Name", dataIndex: "customerName" },
-    { title: "Customer Phone", dataIndex: "customerPhone" },
-    {
-      title: "Made At",
-      dataIndex: "madeAt",
-      render: (madeAt) => <Flex justify="center">{ExtractDate(madeAt)}</Flex>,
-    },
-    {
-      title: "Checked At",
-      dataIndex: "checkedAt",
-      render: (checkedAt) => (
-        <Flex justify="center">{ExtractDate(checkedAt)}</Flex>
-      ),
-    },
-    {
-      title: "Checker Name",
-      dataIndex: "hoName",
-      render: (hoName) =>
-        hoName === null || hoName === " " ? (
-          <Flex justify="center" align="center">
-            ---------
-          </Flex>
-        ) : (
-          hoName
-        ),
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      render: (status: number) =>
-        status === 0 ? (
-          <Tag color="yellow">In Drafts</Tag>
-        ) : status === 1 ? (
-          <Tag color="blue">Pending</Tag>
-        ) : status === 2 ? (
-          <Tag color="green">Accepted</Tag>
-        ) : (
-          <Tag color="red">Rejected</Tag>
-        ),
-    },
     {
       title: "Actions",
       dataIndex: "status",
@@ -198,34 +143,19 @@ const MakeFormTable = () => {
         if (status === 0) {
           return (
             <Flex justify="center" align="center">
-              <DropDown
-                menu={draft}
-                onChange={() => {
-                  setModal(row);
-                }}
-              />
+              <DropDown menu={draft} onChange={() => setModal(row)} />
             </Flex>
           );
         } else if (status === 3) {
           return (
             <Flex justify="center" align="center">
-              <DropDown
-                menu={edit}
-                onChange={() => {
-                  setModal(row);
-                }}
-              />
+              <DropDown menu={edit} onChange={() => setModal(row)} />
             </Flex>
           );
         } else {
           return (
             <Flex justify="center" align="center">
-              <DropDown
-                menu={view}
-                onChange={() => {
-                  setModal(row);
-                }}
-              />
+              <DropDown menu={view} onChange={() => setModal(row)} />
             </Flex>
           );
         }
@@ -233,33 +163,21 @@ const MakeFormTable = () => {
     },
   ];
 
-  const DropDown = (drop: dropDownInterface) => (
-    <Dropdown
-      menu={{ items: drop.menu }}
-      trigger={["click"]}
-      onOpenChange={drop.onChange}
-    >
-      <Button>
-        Actions
-        <DownOutlined />
-      </Button>
-    </Dropdown>
-  );
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [state, setState] = useState<"empty" | "loading" | "success" | "error">(
     "loading"
   );
-  const [makeForms, setMakeForms] = useState<allTableDataType[]>();
+  const [makeForms, setMakeForms] = useState<allTableDataType[]>([]);
   useEffect(() => {
     const fetchAccepted = async () => {
       try {
-        const form = await api.get("/makeForm", { params: { makerId: 10 } });
+        console.log("in the useEffect");
+        const form = await api.get("/makeForm", { params: { makerId: 2 } });
         if (!form || form.data.length === 0) {
           setState("empty");
         } else {
           setState("success");
-          console.log("form.data" + form.data);
+          console.log(form.data[5]);
           setMakeForms(form.data);
         }
       } catch (error) {
@@ -277,21 +195,16 @@ const MakeFormTable = () => {
 
   return (
     <>
-      {state === "empty" && <Table<allTableDataType> columns={columns} />}
+      {state === "empty" && (
+        <Table<allTableDataType> columns={columns} dataSource={[]} />
+      )}
       {state === "loading" && <Spin size="large" />}
       {state === "error" && <p>Something wrong happened</p>}
       {state === "success" && (
         <>
           {contextHolder}
           <Flex gap="middle" vertical>
-            <Table<allTableDataType>
-              columns={columns}
-              dataSource={makeForms}
-              pagination={{
-                showSizeChanger: true,
-                pageSizeOptions: ["5", "10", "20", "50", "100", "200"],
-              }}
-            />
+            <RequestTables data={makeForms} colums={columns} />
           </Flex>
           <ViewModal
             handleCancel={handleCancel}
@@ -306,7 +219,10 @@ const MakeFormTable = () => {
             editModalOff={() => {
               setEditModal(false);
             }}
-            triggerRender={() => setComponentReload((prev) => prev + 1)}
+            triggerRender={() => {
+              console.log("re-rendered");
+              setComponentReload((prev) => prev + 1);
+            }}
           />
         </>
       )}

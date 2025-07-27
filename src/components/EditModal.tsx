@@ -15,21 +15,21 @@ import {
   Card,
   message,
 } from "antd";
-import DisplayInfo from "./DisplayInfo";
 import { Plus } from "lucide-react";
 import { api } from "../services/axios";
-import { allTableDataType} from "./MakeFormTable";
+import { allTableDataType } from "./MakeFormTable";
 import { useForm } from "antd/es/form/Form";
 import { useState } from "react";
 import { toBase64 } from "../services/DisplayFunctions";
+import MakeInfo from "./MakeInfo";
 
 interface editModalParam {
   handleCancel: () => void;
   editModal: boolean;
   modal: allTableDataType;
-  setModal: React.Dispatch<React.SetStateAction<allTableDataType>>
+  setModal: React.Dispatch<React.SetStateAction<allTableDataType>>;
   editModalOff: () => void;
-  triggerRender:()=>void;
+  triggerRender: () => void;
 }
 
 interface egami {
@@ -78,26 +78,27 @@ const EditModal = (editModalParam: editModalParam) => {
           description: image.description,
         }))
       );
+
+      editModalParam.triggerRender();
+      editModalParam.editModalOff();
+      clearImage();
       messageApi.open({
         type: "success",
         content: "Images created Successfully",
       });
-      clearImage();
-      editModalParam.editModalOff();
-      editModalParam.triggerRender();
     } catch (e: unknown) {
       //   console.log("Error on edit" + e);
       clearImage();
       messageApi.open({
         type: "error",
-        content: (e instanceof Error ? e.message : String(e)),
+        content: e instanceof Error ? e.message : String(e),
       });
     }
   };
 
   return (
     <>
-    {contextHolder}
+      {contextHolder}
       <Modal
         title="Edit Request"
         onCancel={editModalParam.handleCancel}
@@ -111,12 +112,12 @@ const EditModal = (editModalParam: editModalParam) => {
           <>Nothing to display</>
         ) : (
           <>
-            <DisplayInfo {...editModalParam.modal} />
+            <MakeInfo {...editModalParam.modal} />
             <Flex vertical align="center" gap={"middle"} wrap>
               <p>
                 <strong>Images</strong>
               </p>
-              <Flex gap={"large"} wrap>
+              <Flex gap={"large"} wrap justify="center" align="center">
                 {editModalParam.modal.images ? (
                   editModalParam.modal.images.map((image) => {
                     return (
@@ -134,8 +135,10 @@ const EditModal = (editModalParam: editModalParam) => {
                             editModalParam.setModal({
                               ...editModalParam.modal,
                               images: [
-                                ...editModalParam.modal.images.map(
-                                  (img) => (img.id === image.id?{ ...image, description: e.target.value }:img)
+                                ...editModalParam.modal.images.map((img) =>
+                                  img.id === image.id
+                                    ? { ...image, description: e.target.value }
+                                    : img
                                 ),
                               ],
                             });
@@ -168,11 +171,15 @@ const EditModal = (editModalParam: editModalParam) => {
                                       },
                                     ],
                                   });
+                                  editModalParam.triggerRender();
                                 } catch (e: unknown) {
                                   //   console.log("Error on edit" + e);
                                   messageApi.open({
                                     type: "error",
-                                    content: (e instanceof Error? e.message: String(e)),
+                                    content:
+                                      e instanceof Error
+                                        ? e.message
+                                        : String(e),
                                   });
                                 }
                               }}
@@ -202,16 +209,22 @@ const EditModal = (editModalParam: editModalParam) => {
                               await api.patch(
                                 `/image/disassociate/${image.id}`
                               );
+                              messageApi.open({
+                                type: "success",
+                                content: "Image deleted successfully",
+                              });
                               editModalParam.setModal({
-                                    ...editModalParam.modal,
-                                    images: editModalParam.modal.images.filter(
-                                      (img) => (img.id !== image.id)
-                                    ),
-                                  });
+                                ...editModalParam.modal,
+                                images: editModalParam.modal.images.filter(
+                                  (img) => img.id !== image.id
+                                ),
+                              });
+                              editModalParam.triggerRender();
                             } catch (e: unknown) {
                               messageApi.open({
                                 type: "error",
-                                content: e instanceof Error? e.message: String(e),
+                                content:
+                                  e instanceof Error ? e.message : String(e),
                               });
                             }
                           }}

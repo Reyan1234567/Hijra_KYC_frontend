@@ -26,7 +26,7 @@ const MessagesView = () => {
   const [state, setState] = useState<"loading" | "success" | "error" | "empty">(
     "loading"
   );
-  const [messages, setMessages] = useState<message[]>();
+  const [messages, setMessages] = useState<message[]>([]);
 
   useEffect(() => {
     const scroll = () => {
@@ -44,9 +44,13 @@ const MessagesView = () => {
             user2: sender.id,
           },
         });
-        console.log(sender.id)
-        const seen=await api.patch("/message/updateSeen",{},{params:{senderId:sender.id, recieverId:3}})
-        console.log(seen)
+        console.log(sender.id);
+        const seen = await api.patch(
+          "/message/updateSeen",
+          {},
+          { params: { senderId: sender.id, recieverId: 3 } }
+        );
+        console.log(seen);
         if (messageList.data.length == 0) {
           setState("empty");
         } else {
@@ -71,22 +75,20 @@ const MessagesView = () => {
 
   const sendMessage = async (message: string) => {
     try {
+      console.log(message, sender.id);
       const res = await api.post("/message", {
         sender: 3,
         message: message,
         receiver: sender.id,
       });
       if (res) {
-        setMessageBox("");
-        if (message === undefined||state=='empty') {
-          setMessages(res.data);
-        } else {
-          setMessages([...messages, res.data]);
-        }
+        setMessages([...messages, res.data]);
       }
     } catch (e) {
       error();
       console.log(e);
+    } finally {
+      setMessageBox("");
     }
   };
   return (
@@ -101,13 +103,15 @@ const MessagesView = () => {
         {searchParams.get("profilePhoto") ? (
           <Avatar shape={"square"} size={48} src={sender.profile} />
         ) : (
-          <Avatar shape={"square"} size={40} icon={<UserOutlined/>} />
+          <Avatar shape={"square"} size={40} icon={<UserOutlined />} />
         )}
-        <p style={{fontSize:"20px", fontWeight:"bold", marginLeft:"10px"}}>{sender.name}</p>
+        <p style={{ fontSize: "20px", fontWeight: "bold", marginLeft: "10px" }}>
+          {sender.name}
+        </p>
       </Flex>
       <Flex
         vertical
-        style={{ maxWidth: "40vh", height:"80vh", overflowY: "auto"}}
+        style={{ maxWidth: "40vh", height: "80vh", overflowY: "auto" }}
       >
         {state === "empty" && <p>No messages</p>}
         {state === "error" && <p>Something went wrong</p>}
@@ -116,7 +120,7 @@ const MessagesView = () => {
             message.recieverId === 3 ? (
               <Flex justify="start" style={{ width: "100%" }}>
                 <Card
-                  styles={{body:{padding:"0px 3px"}}}
+                  styles={{ body: { padding: "0px 3px" } }}
                   style={{
                     width: "fit-content",
                     height: "fit-content",
@@ -144,10 +148,9 @@ const MessagesView = () => {
                   <p style={{ textAlign: "start" }}>{message.messageBody}</p>
                 </Card>
               </Flex>
-
             )
           )}
-          <div ref={bottomRef}/>
+        <div ref={bottomRef} />
       </Flex>
       <Input
         onPressEnter={() => {
