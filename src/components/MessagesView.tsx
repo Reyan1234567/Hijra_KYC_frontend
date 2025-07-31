@@ -83,6 +83,7 @@ const MessagesView = () => {
       });
       if (res) {
         setMessages([...messages, res.data]);
+        setState('success')
       }
     } catch (e) {
       error();

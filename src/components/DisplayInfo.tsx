@@ -1,17 +1,18 @@
 import { Divider, Flex, Input, Image } from "antd";
 import { allTableDataType } from "./MakeFormTable";
 import MakeInfo from "./MakeInfo";
+import BackReason from "./BackReason";
 
 const DisplayInfo = (modal: allTableDataType) => (
   <Flex vertical gap={"middle"}>
-    <MakeInfo {...modal}/>
+    <MakeInfo {...modal} />
     <Divider />
     <Flex vertical align="center" gap={"middle"}>
       <p>
         <strong>Images</strong>
       </p>
       <Flex gap={"large"} wrap justify="center" align="center">
-        {modal.images ? (
+        {modal.images.length!==0 ? (
           modal.images.map((image) => {
             return (
               <Flex
@@ -35,17 +36,7 @@ const DisplayInfo = (modal: allTableDataType) => (
         ) : (
           <p>No images are found</p>
         )}
-        {modal.backReason && (
-          <>
-            <Divider />
-            <Flex vertical justify="center" align="center">
-              <p>
-                <strong>Rejection Reason</strong>
-              </p>
-              <p>{modal.backReason}</p>
-            </Flex>
-          </>
-        )}
+        <BackReason {...modal} />
       </Flex>
     </Flex>
   </Flex>

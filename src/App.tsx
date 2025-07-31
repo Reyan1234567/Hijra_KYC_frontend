@@ -7,6 +7,9 @@ import MakeFormTable from "./components/MakeFormTable";
 import CheckerTable from "./components/CheckerTable";
 import Search from "./components/Search";
 import Distribute from "./components/Distribute";
+import Dashboard from "./components/Dashboard";
+import Profile from "./components/Profile";
+import KycManagerTable from "./components/kycManagerTable";
 
 function App() {
   return (
@@ -18,6 +21,9 @@ function App() {
       <Route path="/checkForm" element={<CheckerTable />}></Route>
       <Route path="/search" element={<Search />}></Route>
       <Route path="/distribute" element={<Distribute />}></Route>
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/kycManager" element={<KycManagerTable />} />
     </Routes>
   );
 }

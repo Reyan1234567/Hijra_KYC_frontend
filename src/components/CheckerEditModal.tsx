@@ -3,6 +3,7 @@ import DisplayInfo from "./DisplayInfo";
 import { api } from "../services/axios";
 import { useState } from "react";
 import { allTableDataType } from "./MakeFormTable";
+import BackReason from "./BackReason";
 
 export interface checkerViewModal {
   modal: allTableDataType;
@@ -26,9 +27,10 @@ const CheckerEditModal = (checkerEditModal: checkerViewModal) => {
         onCancel={checkerEditModal.onCancel}
       >
         <DisplayInfo {...checkerEditModal.modal} />
+        <BackReason {...checkerEditModal.modal} />
         {InputBox ? (
           <>
-            <Flex vertical gap={"middle"} style={{marginTop:"10px"}}>
+            <Flex vertical gap={"middle"} style={{ marginTop: "10px" }}>
               <p>Write reason of rejection</p>
               <Input
                 value={InputBoxValue}
@@ -75,7 +77,7 @@ const CheckerEditModal = (checkerEditModal: checkerViewModal) => {
             </Flex>
           </>
         ) : (
-          <Flex justify="center" gap="middle" style={{marginTop:"10px"}}>
+          <Flex justify="center" gap="middle" style={{ marginTop: "10px" }}>
             <Button
               onClick={async () => {
                 try {

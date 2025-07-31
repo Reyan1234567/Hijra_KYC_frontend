@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import { api } from "../services/axios";
 import { allTableDataType } from "./MakeFormTable";
 import DropDown from "./DropDown";
-import { EditOutlined, EyeOutlined } from "@ant-design/icons";
-import CheckerEditModal from "./CheckerEditModal";
-import ViewModal from "./viewModal";
+import { BookOutlined, EyeOutlined } from "@ant-design/icons";
+import ManagerEdit from "./ManagerEdit";
+import ManagerView from "./ManagerView";
 
-const CheckerTable = () => {
+const KycManagerTable = () => {
   const [trigger, setTrigger] = useState(0);
   const [viewModal, setViewModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
@@ -38,9 +38,7 @@ const CheckerTable = () => {
   useEffect(() => {
     const getRequestsAssignedToMe = async () => {
       try {
-        const makes = await api.get("/makeForm/getHo", {
-          params: { hoUserId: 1 },
-        });
+        const makes = await api.get("/makeForm/manager");
         console.log(makes.data[0]);
         setMakeRequests(makes.data);
         if (makes.data.length === 0) {
@@ -68,7 +66,7 @@ const CheckerTable = () => {
     },
   ];
 
-  const edit: MenuProps["items"] = [
+  const assign: MenuProps["items"] = [
     {
       label: "view",
       key: "1",
@@ -78,15 +76,19 @@ const CheckerTable = () => {
       },
     },
     {
-      label: "Edit",
+      label: "Edit HO Assignment",
       key: "2",
-      icon: <EditOutlined />,
+      icon: <BookOutlined />,
       onClick: () => {
         setEditModal(true);
       },
     },
   ];
   const columns: TableColumnsType<allTableDataType> = [
+    {
+      title: "Maker",
+      dataIndex: "makerName",
+    },
     {
       title: "Action",
       dataIndex: "status",
@@ -106,7 +108,7 @@ const CheckerTable = () => {
           return (
             <Flex justify="center">
               <DropDown
-                menu={edit}
+                menu={assign}
                 onChange={() => {
                   setModal(row);
                 }}
@@ -122,7 +124,12 @@ const CheckerTable = () => {
     {
       key: "1",
       label: "All Requests",
-      children: <RequestTables data={makeRequests.filter((req)=>req.status!==0)} colums={columns} />,
+      children: (
+        <RequestTables
+          data={makeRequests.filter((req) => req.status !== 0)}
+          colums={columns}
+        />
+      ),
     },
     {
       key: "3",
@@ -162,22 +169,18 @@ const CheckerTable = () => {
       {state === "error" && <p>Something wrong happened</p>}
       {state === "success" && (
         <>
-            <Tabs type="card" defaultActiveKey="1" items={items} />
-          <CheckerEditModal
+          <Tabs type="card" defaultActiveKey="1" items={items} />
+          <ManagerEdit
             modal={modal}
             open={editModal}
             onCancel={() => setEditModal(false)}
             triggerRender={() => setTrigger((prev) => prev + 1)}
           />
-          <ViewModal
-            modal={modal}
-            isModalOpen={viewModal}
-            handleCancel={() => setViewModal(false)}
-          />
+          <ManagerView modal={modal} open={viewModal} onCancel={()=>setViewModal(false)} />
         </>
       )}
     </>
   );
 };
 
-export default CheckerTable;
+export default KycManagerTable;

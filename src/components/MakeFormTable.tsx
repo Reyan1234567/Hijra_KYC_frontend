@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
-import { Flex, message, Spin, Table } from "antd";
-import type { MenuProps, TableColumnsType } from "antd";
+import { Flex, message, Spin, Table, Tabs } from "antd";
+import type { MenuProps, TableColumnsType, TabsProps } from "antd";
 import { api } from "../services/axios";
-import { EditOutlined, EyeOutlined, SendOutlined } from "@ant-design/icons";
+import {
+  EditOutlined,
+  EyeOutlined,
+  FileTextOutlined,
+  SendOutlined,
+} from "@ant-design/icons";
 
 import EditModal from "./EditModal";
 import ViewModal from "./viewModal";
@@ -33,7 +38,7 @@ export interface allTableDataType {
   customerPhone: string;
   images: imageReturn[];
   status: number;
-  backReason:string;
+  backReason: string;
 }
 
 export interface egami {
@@ -46,25 +51,6 @@ const MakeFormTable = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [editModal, setEditModal] = useState(false);
   const [componentReload, setComponentReload] = useState(0);
-  const edit: MenuProps["items"] = [
-    {
-      label: "Edit",
-      key: "1",
-      icon: <EditOutlined />,
-      onClick: () => {
-        setEditModal(true);
-      },
-    },
-    {
-      label: "View",
-      key: "2",
-      icon: <EyeOutlined />,
-      onClick: async () => {
-        await api.patch(`makeForm/sendToHo/${modal.id}`);
-      },
-    },
-  ];
-
   const view: MenuProps["items"] = [
     {
       label: "View",
@@ -116,6 +102,38 @@ const MakeFormTable = () => {
     },
   ];
 
+  const rejected: MenuProps["items"] = [
+    {
+      label: "View",
+      key: "1",
+      icon: <EyeOutlined />,
+      onClick: () => {
+        setIsModalOpen(true);
+      },
+    },
+    {
+      label: "Add to drafts",
+      key: "2",
+      icon: <FileTextOutlined />,
+      onClick: async () => {
+        try {
+          await api.patch(`/makeForm/toDrafts/${modal.id}`);
+          messageApi.open({
+            type: "success",
+            content: "successfully added to drafts",
+          });
+          setComponentReload((prev) => prev + 1);
+        } catch (e) {
+          console.log(e);
+          messageApi.open({
+            type: "error",
+            content: e instanceof Error ? e.message : String(e),
+          });
+        }
+      },
+    },
+  ];
+
   const [modal, setModal] = useState<allTableDataType>({
     id: 0,
     makerId: 0,
@@ -132,7 +150,7 @@ const MakeFormTable = () => {
     customerPhone: "",
     images: [],
     status: 0,
-    backReason:""
+    backReason: "",
   });
 
   const columns: TableColumnsType<allTableDataType> = [
@@ -149,7 +167,7 @@ const MakeFormTable = () => {
         } else if (status === 3) {
           return (
             <Flex justify="center" align="center">
-              <DropDown menu={edit} onChange={() => setModal(row)} />
+              <DropDown menu={rejected} onChange={() => setModal(row)} />
             </Flex>
           );
         } else {
@@ -193,6 +211,54 @@ const MakeFormTable = () => {
     setEditModal(false);
   };
 
+  const items: TabsProps["items"] = [
+    {
+      key: "1",
+      label: "All Requests",
+      children: <RequestTables data={makeForms} colums={columns} />,
+    },
+    {
+      key: "2",
+      label: "Drafts",
+      children: (
+        <RequestTables
+          data={makeForms.filter((request) => request.status === 0)}
+          colums={columns}
+        />
+      ),
+    },
+    {
+      key: "3",
+      label: "Pending",
+      children: (
+        <RequestTables
+          data={makeForms.filter((request) => request.status === 1)}
+          colums={columns}
+        />
+      ),
+    },
+    {
+      key: "4",
+      label: "Approved",
+      children: (
+        <RequestTables
+          data={makeForms.filter((request) => request.status === 2)}
+          colums={columns}
+        />
+      ),
+    },
+    {
+      key: "5",
+      label: "Rejected",
+      children: (
+        <RequestTables
+          data={makeForms.filter((request) => request.status === 3)}
+          colums={columns}
+        />
+      ),
+    },
+  ];
+
   return (
     <>
       {state === "empty" && (
@@ -204,7 +270,8 @@ const MakeFormTable = () => {
         <>
           {contextHolder}
           <Flex gap="middle" vertical>
-            <RequestTables data={makeForms} colums={columns} />
+            
+            <Tabs type="card" defaultActiveKey="1" items={items} />
           </Flex>
           <ViewModal
             handleCancel={handleCancel}

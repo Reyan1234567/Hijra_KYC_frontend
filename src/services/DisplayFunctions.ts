@@ -9,6 +9,7 @@
   export const toBase64 = (image: File | undefined | null) => {
     console.log("in the base64");
     if (image === null || undefined) {
+      console.log("consoled out because image was either null or undefined")
       return;
     }
     const reader = new FileReader();

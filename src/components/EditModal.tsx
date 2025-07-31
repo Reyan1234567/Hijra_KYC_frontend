@@ -22,6 +22,7 @@ import { useForm } from "antd/es/form/Form";
 import { useState } from "react";
 import { toBase64 } from "../services/DisplayFunctions";
 import MakeInfo from "./MakeInfo";
+import BackReason from "./BackReason";
 
 interface editModalParam {
   handleCancel: () => void;
@@ -43,6 +44,7 @@ const EditModal = (editModalParam: editModalParam) => {
   const addImage = () => {
     setImage([...images, { file: "", description: "", url: "" }]);
   };
+
   const removeImage = (index: number) => {
     if (images) {
       setImage(images.filter((img) => images[index] !== img));
@@ -64,6 +66,7 @@ const EditModal = (editModalParam: editModalParam) => {
   const clearImage = () => {
     setImage([]);
   };
+
   const [form] = useForm();
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -114,11 +117,12 @@ const EditModal = (editModalParam: editModalParam) => {
           <>
             <MakeInfo {...editModalParam.modal} />
             <Flex vertical align="center" gap={"middle"} wrap>
+              <Divider />
               <p>
                 <strong>Images</strong>
               </p>
               <Flex gap={"large"} wrap justify="center" align="center">
-                {editModalParam.modal.images ? (
+                {editModalParam.modal.images.length !== 0 ? (
                   editModalParam.modal.images.map((image) => {
                     return (
                       <Flex
@@ -162,13 +166,16 @@ const EditModal = (editModalParam: editModalParam) => {
                                   editModalParam.setModal({
                                     ...editModalParam.modal,
                                     images: [
-                                      ...editModalParam.modal.images.filter(
-                                        (img) => img.id !== image.id
+                                      ...editModalParam.modal.images.map(
+                                        (img) =>
+                                          img.id !== image.id
+                                            ? img
+                                            : {
+                                                ...image,
+                                                descriptionCopy:
+                                                  image.description,
+                                              }
                                       ),
-                                      {
-                                        ...image,
-                                        descriptionCopy: image.description,
-                                      },
                                     ],
                                   });
                                   editModalParam.triggerRender();
@@ -248,12 +255,14 @@ const EditModal = (editModalParam: editModalParam) => {
                     );
                   })
                 ) : (
-                  <p>No images are found</p>
+                  <>
+                    <p>No images are found</p>
+                  </>
                 )}
               </Flex>
-              <Divider />
+              <BackReason {...editModalParam.modal} />
             </Flex>
-
+            <Divider />
             <Form
               form={form}
               onFinish={() => {

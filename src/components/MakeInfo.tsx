@@ -1,5 +1,4 @@
 import { Divider, Flex } from 'antd'
-import React from 'react'
 import { allTableDataType } from './MakeFormTable'
 import { ExtractDate } from '../services/DisplayFunctions'
 
