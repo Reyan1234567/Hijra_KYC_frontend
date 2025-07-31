@@ -10,7 +10,7 @@ import {
 } from "@ant-design/icons";
 
 import EditModal from "./EditModal";
-import ViewModal from "./viewModal";
+import ViewModal from "./ViewModal";
 import DropDown from "./DropDown";
 import RequestTables from "./RequestTables";
 
@@ -264,7 +264,7 @@ const MakeFormTable = () => {
       {state === "empty" && (
         <Table<allTableDataType> columns={columns} dataSource={[]} />
       )}
-      {state === "loading" && <Spin size="large" />}
+      {state === "loading" && <Spin style={{position:"absolute", left:"50%", top:"50%"}} size="large" />}
       {state === "error" && <p>Something wrong happened</p>}
       {state === "success" && (
         <>

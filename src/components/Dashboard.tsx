@@ -5,30 +5,19 @@ import { useState } from "react";
 
 const Dashboard = () => {
   const [date, setDate] = useState(new Date());
+  console.log(date)
   return (
     <Flex vertical gap={10}>
-      <DateDropDown date={date} setDate={setDate} />
-      <Flex wrap gap={10} justify="center" align="center">
-        <DashboardCard
-          title={`Amount of request made the past days`}
-          amount={10}
-        />
-        <DashboardCard
-          title={`Amount of request checked the past days`}
-          amount={10}
-        />
-        <DashboardCard
-          title={`Amount of request unassigned the past days`}
-          amount={10}
-        />
-        <DashboardCard
-          title={`Amount of request assigned the past days`}
-          amount={10}
-        />
-        <DashboardCard
-          title={`Amount of request left on read the past days`}
-          amount={10}
-        />
+      <Flex justify="space-around" align="center">
+        <h1>Dashboard</h1>
+        <DateDropDown date={date} setDate={setDate} />
+      </Flex>
+
+      <Flex wrap gap={20} justify="center" align="center">
+        <DashboardCard title={`Make Requests`} amount={10} />
+        <DashboardCard title={`Request checked`} amount={10} />
+        <DashboardCard title={`Request unassigned`} amount={10} />
+        <DashboardCard title={`Request assigned`} amount={10} />
       </Flex>
     </Flex>
   );

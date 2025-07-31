@@ -1,13 +1,17 @@
 import { Input, Spin, Typography } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
 import Message from "../components/Message";
 import { userInfo } from "../types/MessageTypes";
 import { useEffect, useState } from "react";
 import { api } from "../services/axios";
-import { useNavigate } from "react-router-dom";
+import { messages } from "../components/MessagesView";
 
-const MessagesPage = () => {
-  const navigate = useNavigate();
+interface drawerInterface{
+  open:boolean
+  setOpen:React.Dispatch<React.SetStateAction<boolean>>
+  setChatInfo:React.Dispatch<React.SetStateAction<messages>>
+}
+
+const MessagesPage = (drawer:drawerInterface) => {
   const [user, setUser] = useState<userInfo[] | null>(null);
   const [filteredUsers, setFilteredUsers] = useState<userInfo[]>();
   const [state, setState] = useState<"loading" | "success" | "error" | "empty">(
@@ -60,7 +64,6 @@ const MessagesPage = () => {
   console.log(state);
   return (
     <>
-      <p style={{fontSize:"25px", fontWeight:"bold"}}>Messages</p>
       <Input.Search
         placeholder="Search"
         variant="outlined"
@@ -71,7 +74,7 @@ const MessagesPage = () => {
         style={{marginBottom:"10px"}}
       />
       {state === "empty" && <p>No Messages</p>}
-      {state === "loading" && <Spin indicator={<LoadingOutlined spin />} />}
+      {state === "loading" && <Spin style={{position:"absolute", left:"50%", top:"50%"}} size="large" />}
       {state === "error" && <Typography.Text>{error}</Typography.Text>}
       {state === "success" &&
         (filteredUsers === undefined || filteredUsers === null ? (
@@ -81,7 +84,8 @@ const MessagesPage = () => {
             <div
             style={{cursor:"pointer"}}
               onClick={() => {
-                navigate(`/messageChat?sender=${userInfo.id}&senderName=${userInfo.fullName}&senderProfile=${userInfo.profilePhoto}`);
+                drawer.setOpen(true)
+                drawer.setChatInfo({id:userInfo.id, senderName:userInfo.fullName, senderProfile:userInfo.profilePhoto})
               }}
             >
               {/* in the real thing, when incorporating auth receiver will be imported using useContext */}

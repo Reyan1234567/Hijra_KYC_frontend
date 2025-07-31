@@ -3,7 +3,7 @@ import { ChevronLeft } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { api } from "../services/axios";
 import { SendOutlined, UserOutlined } from "@ant-design/icons";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 interface message {
   senderId: number;
@@ -12,17 +12,23 @@ interface message {
   recieverStatus: number;
 }
 
-const MessagesView = () => {
+export interface messages {
+  id: number;
+  senderName: string;
+  senderProfile: string;
+}
+
+interface yme {
+  messageInfo: messages;
+  setInOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const MessagesView = (messageDetail: yme) => {
   const [messageApi] = message.useMessage();
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const [messageBox, setMessageBox] = useState("");
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const sender = {
-    id: searchParams.get("sender"),
-    name: searchParams.get("senderName"),
-    profile: searchParams.get("senderProfile"),
-  };
+
   const [state, setState] = useState<"loading" | "success" | "error" | "empty">(
     "loading"
   );
@@ -41,14 +47,14 @@ const MessagesView = () => {
         const messageList = await api.get("/message/getConvo", {
           params: {
             user1: 3,
-            user2: sender.id,
+            user2: messageDetail.messageInfo.id,
           },
         });
-        console.log(sender.id);
+        console.log(messageDetail.messageInfo.id);
         const seen = await api.patch(
           "/message/updateSeen",
           {},
-          { params: { senderId: sender.id, recieverId: 3 } }
+          { params: { senderId: messageDetail.messageInfo.id, recieverId: 3 } }
         );
         console.log(seen);
         if (messageList.data.length == 0) {
@@ -64,7 +70,7 @@ const MessagesView = () => {
     };
 
     getMessages();
-  }, [sender.id]);
+  }, [messageDetail.messageInfo.id]);
 
   const error = () => {
     messageApi.open({
@@ -75,15 +81,15 @@ const MessagesView = () => {
 
   const sendMessage = async (message: string) => {
     try {
-      console.log(message, sender.id);
+      console.log(message, messageDetail.messageInfo.id);
       const res = await api.post("/message", {
         sender: 3,
         message: message,
-        receiver: sender.id,
+        receiver: messageDetail.messageInfo.id,
       });
       if (res) {
         setMessages([...messages, res.data]);
-        setState('success')
+        setState("success");
       }
     } catch (e) {
       error();
@@ -96,23 +102,28 @@ const MessagesView = () => {
     <Flex vertical>
       <Flex align="center">
         <ChevronLeft
+          size={34}
           onClick={() => {
-            navigate("/message");
+            messageDetail.setInOpen(false);
           }}
           style={{ cursor: "pointer" }}
         />
         {searchParams.get("profilePhoto") ? (
-          <Avatar shape={"square"} size={48} src={sender.profile} />
+          <Avatar
+            shape={"square"}
+            size={48}
+            src={messageDetail.messageInfo.senderProfile}
+          />
         ) : (
           <Avatar shape={"square"} size={40} icon={<UserOutlined />} />
         )}
         <p style={{ fontSize: "20px", fontWeight: "bold", marginLeft: "10px" }}>
-          {sender.name}
+          {messageDetail.messageInfo.senderName}
         </p>
       </Flex>
       <Flex
         vertical
-        style={{ maxWidth: "40vh", height: "80vh", overflowY: "auto" }}
+        style={{ maxWidth: "100%", height: "80vh", overflowY: "auto" }}
       >
         {state === "empty" && <p>No messages</p>}
         {state === "error" && <p>Something went wrong</p>}

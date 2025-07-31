@@ -164,7 +164,7 @@ const KycManagerTable = () => {
   ];
   return (
     <>
-      {state === "loading" && <Spin />}
+      {state === "loading" && <Spin style={{position:"absolute", left:"50%", top:"50%"}} size="large" />}
       {state === "empty" && <RequestTables data={[]} colums={columns} />}
       {state === "error" && <p>Something wrong happened</p>}
       {state === "success" && (

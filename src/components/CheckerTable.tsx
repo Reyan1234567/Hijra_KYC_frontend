@@ -6,7 +6,7 @@ import { allTableDataType } from "./MakeFormTable";
 import DropDown from "./DropDown";
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 import CheckerEditModal from "./CheckerEditModal";
-import ViewModal from "./viewModal";
+import ViewModal from "./ViewModal";
 
 const CheckerTable = () => {
   const [trigger, setTrigger] = useState(0);
@@ -157,7 +157,7 @@ const CheckerTable = () => {
   ];
   return (
     <>
-      {state === "loading" && <Spin />}
+      {state === "loading" && <Spin style={{position:"absolute", left:"50%", top:"50%"}} size="large" />}
       {state === "empty" && <RequestTables data={[]} colums={columns} />}
       {state === "error" && <p>Something wrong happened</p>}
       {state === "success" && (

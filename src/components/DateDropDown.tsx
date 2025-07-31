@@ -16,11 +16,11 @@ const DateDropDown = (state: state) => {
     state.setDate(thisMonth);
   };
 
-  const June = new Date(today.getFullYear(), 6, 1);
+  const June = new Date(today.getFullYear() + 1, 6, 1);
   const July = new Date(today.getFullYear(), 7, 1);
   const August = new Date(today.getFullYear(), 8, 1);
   const December = new Date(today.getFullYear(), 12, 1);
-  const February = new Date(today.getFullYear(), 2, 1);
+  const February = new Date(today.getFullYear() + 1, 2, 1);
 
   const aroundJuly: MenuProps["items"] = [
     {
@@ -153,14 +153,15 @@ const DateDropDown = (state: state) => {
   ];
   return (
     <>
-      {today > June && <DropDown menu={aroundJune} onChange={() => {}} />}
-      {today > July && <DropDown menu={aroundJuly} onChange={() => {}} />}
-      {today > August && <DropDown menu={aroundAugust} onChange={() => {}} />}
-      {today > December && (
+      {August >= today && <DropDown menu={aroundJuly} onChange={() => {}} />}
+      {December >= today && today >= August && (
+        <DropDown menu={aroundAugust} onChange={() => {}} />
+      )}
+      {February >= today && today >= December && (
         <DropDown menu={aroundDecember} onChange={() => {}} />
       )}
       {today > February && (
-        <DropDown menu={aroundFebruary} onChange={() => {}} />
+        <DropDown menu={aroundJune} onChange={() => {}} />
       )}
     </>
   );
