@@ -1,5 +1,5 @@
 import { Button, Card, Flex, message, Typography } from "antd";
-import { api } from "../services/axios";
+import { api } from "../../services/axios";
 
 const Distribute = () => {
   const { Title } = Typography;

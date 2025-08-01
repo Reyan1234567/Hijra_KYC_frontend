@@ -10,14 +10,14 @@ import {
   theme,
 } from "antd";
 import { MessageOutlined, UserOutlined } from "@ant-design/icons";
-import logo from "../assets/logo.png";
+import logo from "../../assets/logo.png";
 import { Route, Routes } from "react-router-dom";
 
 import routes from "./Routes.tsx";
-import MessagesPage from "../pages/MessagesPage.tsx";
+import MessagesPage from "../Message/MessagesPage.tsx";
 import SidebarMenu from "./SidebarMenu.tsx";
 import { useNavigate } from "react-router-dom";
-import MessagesView, { messages } from "./MessagesView.tsx";
+import MessagesView, { messages } from "../Message/MessagesView.tsx";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -64,7 +64,7 @@ const FullLayout = () => {
   ];
 
   return (
-    <Layout style={{ height: "100vh", overflowX:"hidden"}}>
+    <Layout style={{ height: "100vh", overflowX: "hidden" }}>
       <Sider
         style={{ backgroundColor: "white" }}
         theme="light"
@@ -151,9 +151,9 @@ const FullLayout = () => {
           style={{
             margin: "24px 16px 0",
             maxHeight: "100%",
-            maxWidth:"100%",
+            maxWidth: "100%",
             overflowY: "auto",
-            overflowX:"auto"
+            overflowX: "auto",
           }}
         >
           <div
@@ -208,7 +208,7 @@ const FullLayout = () => {
         <MessagesPage open={inOpen} setOpen={setInOpen} setChatInfo={setChat} />
       </Drawer>
       <Drawer onClose={() => setInOpen(false)} open={inOpen} closable={false}>
-        <MessagesView messageInfo={chat} setInOpen={setInOpen}/>
+        <MessagesView messageInfo={chat} setInOpen={setInOpen} />
       </Drawer>
     </Layout>
   );

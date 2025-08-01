@@ -16,13 +16,13 @@ import {
   message,
 } from "antd";
 import { Plus } from "lucide-react";
-import { api } from "../services/axios";
+import { api } from "../../services/axios";
 import { allTableDataType } from "./MakeFormTable";
 import { useForm } from "antd/es/form/Form";
 import { useState } from "react";
-import { toBase64 } from "../services/DisplayFunctions";
-import MakeInfo from "./MakeInfo";
-import BackReason from "./BackReason";
+import { toBase64 } from "../../services/DisplayFunctions";
+import MakeInfo from "../Helper/RequestModals/MakeInfo";
+import BackReason from "../Helper/RequestModals/BackReason";
 
 interface editModalParam {
   handleCancel: () => void;

@@ -1,5 +1,5 @@
 import { Divider, Flex } from "antd";
-import { allTableDataType } from "./MakeFormTable";
+import { allTableDataType } from "../../MakeForm/MakeFormTable";
 
 const BackReason = (modal: allTableDataType) => {
   return (

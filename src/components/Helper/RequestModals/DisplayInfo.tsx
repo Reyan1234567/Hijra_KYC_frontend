@@ -1,5 +1,5 @@
 import { Divider, Flex, Input, Image } from "antd";
-import { allTableDataType } from "./MakeFormTable";
+import { allTableDataType } from "../../MakeForm/MakeFormTable";
 import MakeInfo from "./MakeInfo";
 import BackReason from "./BackReason";
 
@@ -12,7 +12,7 @@ const DisplayInfo = (modal: allTableDataType) => (
         <strong>Images</strong>
       </p>
       <Flex gap={"large"} wrap justify="center" align="center">
-        {modal.images.length!==0 ? (
+        {modal.images.length !== 0 ? (
           modal.images.map((image) => {
             return (
               <Flex

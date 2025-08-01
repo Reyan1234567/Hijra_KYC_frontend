@@ -1,17 +1,32 @@
-import { Flex, MenuProps, Spin, TableColumnsType, Tabs, TabsProps } from "antd";
-import RequestTables from "./RequestTables";
+import {
+  Flex,
+  MenuProps,
+  message,
+  Spin,
+  Table,
+  TableColumnsType,
+  Tabs,
+  TabsProps,
+} from "antd";
+import RequestTables from "../Helper/Table/RequestTables";
 import { useEffect, useState } from "react";
-import { api } from "../services/axios";
-import { allTableDataType } from "./MakeFormTable";
-import DropDown from "./DropDown";
-import { BookOutlined, EyeOutlined } from "@ant-design/icons";
-import ManagerEdit from "./ManagerEdit";
-import ManagerView from "./ManagerView";
+import { api } from "../../services/axios";
+import DateDropDown from "../Helper/DateDropdown/DateDropDown";
+import { allTableDataType } from "../MakeForm/MakeFormTable";
+import DropDown from "../Helper/DateDropdown/DropDown";
+import { EditOutlined, EyeOutlined } from "@ant-design/icons";
+import CheckerEditModal from "./CheckerEditModal";
+import ViewModal from "../Helper/RequestModals/ViewModal";
 
-const KycManagerTable = () => {
+const CheckerTable = () => {
+  const [/*messageApi*/, contextHolder] = message.useMessage();
+  const today = new Date();
   const [trigger, setTrigger] = useState(0);
   const [viewModal, setViewModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
+  const [date, setDate] = useState(
+    new Date(today.setMonth(today.getMonth(), 1))
+  );
   const [modal, setModal] = useState<allTableDataType>({
     id: 0,
     makerId: 0,
@@ -38,7 +53,9 @@ const KycManagerTable = () => {
   useEffect(() => {
     const getRequestsAssignedToMe = async () => {
       try {
-        const makes = await api.get("/makeForm/manager");
+        const makes = await api.get("/makeForm/getHo", {
+          params: { hoUserId: 1, date: date },
+        });
         console.log(makes.data[0]);
         setMakeRequests(makes.data);
         if (makes.data.length === 0) {
@@ -53,7 +70,7 @@ const KycManagerTable = () => {
     };
 
     getRequestsAssignedToMe();
-  }, [trigger]);
+  }, [trigger, date]);
 
   const view: MenuProps["items"] = [
     {
@@ -66,7 +83,7 @@ const KycManagerTable = () => {
     },
   ];
 
-  const assign: MenuProps["items"] = [
+  const edit: MenuProps["items"] = [
     {
       label: "view",
       key: "1",
@@ -76,19 +93,15 @@ const KycManagerTable = () => {
       },
     },
     {
-      label: "Edit HO Assignment",
+      label: "Edit",
       key: "2",
-      icon: <BookOutlined />,
+      icon: <EditOutlined />,
       onClick: () => {
         setEditModal(true);
       },
     },
   ];
   const columns: TableColumnsType<allTableDataType> = [
-    {
-      title: "Maker",
-      dataIndex: "makerName",
-    },
     {
       title: "Action",
       dataIndex: "status",
@@ -108,7 +121,7 @@ const KycManagerTable = () => {
           return (
             <Flex justify="center">
               <DropDown
-                menu={assign}
+                menu={edit}
                 onChange={() => {
                   setModal(row);
                 }}
@@ -164,23 +177,57 @@ const KycManagerTable = () => {
   ];
   return (
     <>
-      {state === "loading" && <Spin style={{position:"absolute", left:"50%", top:"50%"}} size="large" />}
-      {state === "empty" && <RequestTables data={[]} colums={columns} />}
+      {state === "loading" && (
+        <Spin
+          style={{ position: "absolute", left: "50%", top: "50%" }}
+          size="large"
+        />
+      )}
+      {state === "empty" && (
+        <>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <h1>Check Table</h1>
+            <DateDropDown date={date} setDate={setDate} />
+          </div>
+          <Table />
+        </>
+      )}
       {state === "error" && <p>Something wrong happened</p>}
       {state === "success" && (
         <>
+          {contextHolder}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <h1>Check Table</h1>
+            <DateDropDown date={date} setDate={setDate} />
+          </div>
           <Tabs type="card" defaultActiveKey="1" items={items} />
-          <ManagerEdit
+          <CheckerEditModal
             modal={modal}
             open={editModal}
             onCancel={() => setEditModal(false)}
             triggerRender={() => setTrigger((prev) => prev + 1)}
           />
-          <ManagerView modal={modal} open={viewModal} onCancel={()=>setViewModal(false)} />
+          <ViewModal
+            modal={modal}
+            isModalOpen={viewModal}
+            handleCancel={() => setViewModal(false)}
+          />
         </>
       )}
     </>
   );
 };
 
-export default KycManagerTable;
+export default CheckerTable;

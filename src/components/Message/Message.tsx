@@ -1,23 +1,22 @@
 import { Badge, Card, Flex, Avatar, Typography } from "antd";
 // import vite from "../../public/vite.svg";
-import { userInfo } from "../types/MessageTypes";
+import { userInfo } from "../../types/MessageTypes";
 import { UserOutlined } from "@ant-design/icons";
 // import { useEffect, useState } from "react";
 // import { api } from "../services/axios";
 
 const Message = (userInfo: userInfo) => {
-  const avatar = () => { 
-     return (userInfo.profilePhoto ? (
+  const avatar = () => {
+    return userInfo.profilePhoto ? (
       <Avatar shape={"square"} size={48} src={userInfo.profilePhoto} />
     ) : (
       <Avatar shape={"square"} size={48} icon={<UserOutlined />} />
-    ))
+    );
   };
   return (
-    
     <Card
       variant="borderless"
-      style={{ width: 400, marginBottom:"5px"}}
+      style={{ width: 400, marginBottom: "5px" }}
       styles={{ body: { padding: "15px" } }}
     >
       <Flex justify="space-between" align="center">
@@ -26,7 +25,9 @@ const Message = (userInfo: userInfo) => {
             <Badge dot status="success">
               {avatar()}
             </Badge>
-          ) : avatar()}
+          ) : (
+            avatar()
+          )}
           <Flex vertical align="start">
             <Typography.Text strong style={{ fontSize: "18px" }}>
               {userInfo.fullName}

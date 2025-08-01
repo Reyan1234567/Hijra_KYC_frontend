@@ -1,6 +1,6 @@
 import { Modal } from "antd";
-import DisplayInfo from "./DisplayInfo";
-import { allTableDataType } from "./MakeFormTable";
+import DisplayInfo from "../Helper/RequestModals/DisplayInfo";
+import { allTableDataType } from "../MakeForm/MakeFormTable";
 
 interface modal {
   modal: allTableDataType;

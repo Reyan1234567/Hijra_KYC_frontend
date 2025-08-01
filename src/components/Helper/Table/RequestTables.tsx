@@ -1,10 +1,10 @@
 import { Flex, Table, TableColumnsType, Tag } from "antd";
-import { allTableDataType } from "./MakeFormTable";
-import { ExtractDate } from "../services/DisplayFunctions";
+import { allTableDataType } from "../../MakeForm/MakeFormTable";
+import { ExtractDate } from "../../../services/DisplayFunctions";
 
 interface dataSource {
   data: allTableDataType[];
-  colums: TableColumnsType<allTableDataType>;
+  colums?: TableColumnsType<allTableDataType>;
 }
 
 const RequestTables = (dataSource: dataSource) => {
@@ -55,7 +55,7 @@ const RequestTables = (dataSource: dataSource) => {
 
   return (
     <Table<allTableDataType>
-      columns={[...columns, ...dataSource.colums]}
+      columns={dataSource.colums?[...columns, ...dataSource.colums]:[...columns]}
       dataSource={dataSource.data}
       pagination={{
         showSizeChanger: true,

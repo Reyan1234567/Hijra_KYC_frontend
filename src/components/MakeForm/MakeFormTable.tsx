@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Flex, message, Spin, Table, Tabs } from "antd";
 import type { MenuProps, TableColumnsType, TabsProps } from "antd";
-import { api } from "../services/axios";
+import DateDropDown from "../Helper/DateDropdown/DateDropDown";
+import { api } from "../../services/axios";
 import {
   EditOutlined,
   EyeOutlined,
@@ -10,9 +11,9 @@ import {
 } from "@ant-design/icons";
 
 import EditModal from "./EditModal";
-import ViewModal from "./ViewModal";
-import DropDown from "./DropDown";
-import RequestTables from "./RequestTables";
+import ViewModal from "../Helper/RequestModals/ViewModal";
+import DropDown from "../Helper/DateDropdown/DropDown";
+import RequestTables from "../Helper/Table/RequestTables";
 
 interface imageReturn {
   id: number;
@@ -48,9 +49,13 @@ export interface egami {
 }
 
 const MakeFormTable = () => {
+  const today = new Date();
   const [messageApi, contextHolder] = message.useMessage();
   const [editModal, setEditModal] = useState(false);
   const [componentReload, setComponentReload] = useState(0);
+  const [date, setDate] = useState(
+    new Date(today.setMonth(today.getMonth(), 1))
+  );
   const view: MenuProps["items"] = [
     {
       label: "View",
@@ -190,7 +195,9 @@ const MakeFormTable = () => {
     const fetchAccepted = async () => {
       try {
         console.log("in the useEffect");
-        const form = await api.get("/makeForm", { params: { makerId: 2 } });
+        const form = await api.get("/makeForm", {
+          params: { makerId: 2, date: date },
+        });
         if (!form || form.data.length === 0) {
           setState("empty");
         } else {
@@ -204,7 +211,7 @@ const MakeFormTable = () => {
       }
     };
     fetchAccepted();
-  }, [componentReload]);
+  }, [componentReload, date]);
 
   const handleCancel = () => {
     setIsModalOpen(false);
@@ -262,15 +269,29 @@ const MakeFormTable = () => {
   return (
     <>
       {state === "empty" && (
-        <Table<allTableDataType> columns={columns} dataSource={[]} />
+        <>
+          <div style={{ display: "flex", justifyContent:"space-between", alignItems:"center"}}>
+            <h1>MakeTable</h1>
+            <DateDropDown date={date} setDate={setDate} />
+          </div>
+          <Table<allTableDataType> dataSource={[]} />
+        </>
       )}
-      {state === "loading" && <Spin style={{position:"absolute", left:"50%", top:"50%"}} size="large" />}
+      {state === "loading" && (
+        <Spin
+          style={{ position: "absolute", left: "50%", top: "50%" }}
+          size="large"
+        />
+      )}
       {state === "error" && <p>Something wrong happened</p>}
       {state === "success" && (
         <>
           {contextHolder}
+          <div style={{ display: "flex", justifyContent:"space-between", alignItems:"center"}}>
+            <h1>MakeTable</h1>
+            <DateDropDown date={date} setDate={setDate} />
+          </div>
           <Flex gap="middle" vertical>
-            
             <Tabs type="card" defaultActiveKey="1" items={items} />
           </Flex>
           <ViewModal

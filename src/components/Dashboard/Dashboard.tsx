@@ -1,11 +1,11 @@
 import { Flex } from "antd";
 import DashboardCard from "./DashboardCard";
-import DateDropDown from "./DateDropDown";
+import DateDropDown from "../Helper/DateDropdown/DateDropDown";
 import { useState } from "react";
 
 const Dashboard = () => {
   const [date, setDate] = useState(new Date());
-  console.log(date)
+  console.log(date);
   return (
     <Flex vertical gap={10}>
       <Flex justify="space-around" align="center">

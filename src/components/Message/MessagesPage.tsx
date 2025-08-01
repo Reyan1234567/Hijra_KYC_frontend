@@ -1,17 +1,17 @@
 import { Input, Spin, Typography } from "antd";
-import Message from "../components/Message";
-import { userInfo } from "../types/MessageTypes";
+import Message from "./Message";
+import { userInfo } from "../../types/MessageTypes";
 import { useEffect, useState } from "react";
-import { api } from "../services/axios";
-import { messages } from "../components/MessagesView";
+import { api } from "../../services/axios";
+import { messages } from "./MessagesView";
 
-interface drawerInterface{
-  open:boolean
-  setOpen:React.Dispatch<React.SetStateAction<boolean>>
-  setChatInfo:React.Dispatch<React.SetStateAction<messages>>
+interface drawerInterface {
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setChatInfo: React.Dispatch<React.SetStateAction<messages>>;
 }
 
-const MessagesPage = (drawer:drawerInterface) => {
+const MessagesPage = (drawer: drawerInterface) => {
   const [user, setUser] = useState<userInfo[] | null>(null);
   const [filteredUsers, setFilteredUsers] = useState<userInfo[]>();
   const [state, setState] = useState<"loading" | "success" | "error" | "empty">(
@@ -71,10 +71,15 @@ const MessagesPage = (drawer:drawerInterface) => {
         onChange={(e) => {
           setSearch(e.target.value.toLowerCase());
         }}
-        style={{marginBottom:"10px"}}
+        style={{ marginBottom: "10px" }}
       />
       {state === "empty" && <p>No Messages</p>}
-      {state === "loading" && <Spin style={{position:"absolute", left:"50%", top:"50%"}} size="large" />}
+      {state === "loading" && (
+        <Spin
+          style={{ position: "absolute", left: "50%", top: "50%" }}
+          size="large"
+        />
+      )}
       {state === "error" && <Typography.Text>{error}</Typography.Text>}
       {state === "success" &&
         (filteredUsers === undefined || filteredUsers === null ? (
@@ -82,10 +87,14 @@ const MessagesPage = (drawer:drawerInterface) => {
         ) : (
           filteredUsers.map((userInfo) => (
             <div
-            style={{cursor:"pointer"}}
+              style={{ cursor: "pointer" }}
               onClick={() => {
-                drawer.setOpen(true)
-                drawer.setChatInfo({id:userInfo.id, senderName:userInfo.fullName, senderProfile:userInfo.profilePhoto})
+                drawer.setOpen(true);
+                drawer.setChatInfo({
+                  id: userInfo.id,
+                  senderName: userInfo.fullName,
+                  senderProfile: userInfo.profilePhoto,
+                });
               }}
             >
               {/* in the real thing, when incorporating auth receiver will be imported using useContext */}

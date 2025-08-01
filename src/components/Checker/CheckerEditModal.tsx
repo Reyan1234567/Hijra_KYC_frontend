@@ -1,9 +1,9 @@
 import { Button, Flex, Input, message, Modal } from "antd";
-import DisplayInfo from "./DisplayInfo";
-import { api } from "../services/axios";
+import DisplayInfo from "../Helper/RequestModals/DisplayInfo";
+import { api } from "../../services/axios";
 import { useState } from "react";
-import { allTableDataType } from "./MakeFormTable";
-import BackReason from "./BackReason";
+import { allTableDataType } from "../MakeForm/MakeFormTable";
+import BackReason from "../Helper/RequestModals/BackReason";
 
 export interface checkerViewModal {
   modal: allTableDataType;

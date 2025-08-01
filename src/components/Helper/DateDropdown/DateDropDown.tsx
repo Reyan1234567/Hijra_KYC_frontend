@@ -10,19 +10,20 @@ interface state {
 const DateDropDown = (state: state) => {
   const today = new Date();
 
+  const Title="Select Date"
   const setDay = (month: number) => {
     const thisMonth = today;
     thisMonth.setMonth(thisMonth.getMonth() - month, 1);
     state.setDate(thisMonth);
   };
 
-  const June = new Date(today.getFullYear() + 1, 6, 1);
-  const July = new Date(today.getFullYear(), 7, 1);
-  const August = new Date(today.getFullYear(), 8, 1);
-  const December = new Date(today.getFullYear(), 12, 1);
-  const February = new Date(today.getFullYear() + 1, 2, 1);
+  const July = new Date(today.getFullYear(), 6, 1);
+  const August = new Date(today.getFullYear(), 7, 1);
+  const October = new Date(today.getFullYear(), 9, 1);
+  const December = new Date(today.getFullYear(), 11, 1);
+  const June = new Date(today.getFullYear() + 1, 5, 1);
 
-  const aroundJuly: MenuProps["items"] = [
+  const betweenJulyAndAugust: MenuProps["items"] = [
     {
       key: "1",
       label: "This month",
@@ -34,7 +35,7 @@ const DateDropDown = (state: state) => {
     },
   ];
 
-  const aroundAugust: MenuProps["items"] = [
+  const betweenAugustAndOctober: MenuProps["items"] = [
     {
       key: "1",
       label: "This month",
@@ -53,7 +54,7 @@ const DateDropDown = (state: state) => {
     },
   ];
 
-  const aroundDecember: MenuProps["items"] = [
+  const betweenOctoberAndDecember: MenuProps["items"] = [
     {
       key: "1",
       label: "This month",
@@ -79,7 +80,7 @@ const DateDropDown = (state: state) => {
     },
   ];
 
-  const aroundFebruary: MenuProps["items"] = [
+  const betweenDecemberAndJune: MenuProps["items"] = [
     {
       key: "1",
       label: "This month",
@@ -112,7 +113,7 @@ const DateDropDown = (state: state) => {
     },
   ];
 
-  const aroundJune: MenuProps["items"] = [
+  const afterJune: MenuProps["items"] = [
     {
       key: "1",
       label: "This month",
@@ -153,16 +154,19 @@ const DateDropDown = (state: state) => {
   ];
   return (
     <>
-      {August >= today && <DropDown menu={aroundJuly} onChange={() => {}} />}
-      {December >= today && today >= August && (
-        <DropDown menu={aroundAugust} onChange={() => {}} />
+      {August > today && today >= July && (
+        <DropDown menu={betweenJulyAndAugust} onChange={() => { } } title={Title} />
       )}
-      {February >= today && today >= December && (
-        <DropDown menu={aroundDecember} onChange={() => {}} />
+      {October > today && today >= August && (
+        <DropDown menu={betweenAugustAndOctober} onChange={() => { } } title={Title} />
       )}
-      {today > February && (
-        <DropDown menu={aroundJune} onChange={() => {}} />
+      {December > today && today >= October && (
+        <DropDown menu={betweenOctoberAndDecember} onChange={() => { } } title={Title} />
       )}
+      {June > today && today >= December && (
+        <DropDown menu={betweenDecemberAndJune} onChange={() => { } } title={Title} />
+      )}
+      {today > June && <DropDown menu={afterJune} onChange={() => { } } title={Title} />}
     </>
   );
 };

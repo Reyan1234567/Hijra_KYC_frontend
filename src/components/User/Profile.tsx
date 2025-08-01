@@ -14,12 +14,12 @@ import {
   Popconfirm,
 } from "antd";
 import { useEffect, useState } from "react";
-import { toBase64 } from "../services/DisplayFunctions";
+import { toBase64 } from "../../services/DisplayFunctions";
 import { UserOutlined } from "@ant-design/icons";
-import { api } from "../services/axios";
+import { api } from "../../services/axios";
 
 export interface user {
-  id:number;
+  id: number;
   name: string;
   username: string;
   userId: string;
@@ -37,7 +37,7 @@ const Profile = () => {
   const [profileImageModal, setProfileImageModal] = useState(false);
   const [trigger, setTrigger] = useState(0);
   const [user, setUser] = useState<user>({
-    id:0,
+    id: 0,
     name: "",
     username: "",
     userId: "",

@@ -1,11 +1,11 @@
 import "./App.css";
-import { BrowserRouter} from "react-router-dom";
-import FullLayout from "./components/FullLayout";
+import { BrowserRouter } from "react-router-dom";
+import FullLayout from "./components/Layout/FullLayout";
 
 function App() {
   return (
     <BrowserRouter>
-      <FullLayout/>
+      <FullLayout />
     </BrowserRouter>
   );
 }

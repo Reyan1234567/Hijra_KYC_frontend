@@ -1,6 +1,6 @@
 import { Flex, Modal } from "antd";
 import DisplayInfo from "./DisplayInfo";
-import { allTableDataType } from "./MakeFormTable";
+import { allTableDataType } from "../../MakeForm/MakeFormTable";
 
 interface viewModalInterface {
   handleCancel: () => void;

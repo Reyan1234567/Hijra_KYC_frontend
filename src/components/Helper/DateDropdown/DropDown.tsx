@@ -4,6 +4,7 @@ import { Button, Dropdown, MenuProps } from "antd";
 interface dropDownInterface {
   menu: MenuProps["items"];
   onChange: () => void;
+  title?:string;
 }
 
 const DropDown = (drop: dropDownInterface) => (
@@ -17,7 +18,7 @@ const DropDown = (drop: dropDownInterface) => (
     }}
   >
     <Button>
-      Actions
+      {drop.title==null?"Actions":drop.title}
       <DownOutlined />
     </Button>
   </Dropdown>

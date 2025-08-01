@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { api } from "../services/axios";
-import { allTableDataType } from "./MakeFormTable";
+import { api } from "../../services/axios";
+import { allTableDataType } from "../MakeForm/MakeFormTable";
 import { Button, Flex, message, Select, Typography } from "antd";
-import {user} from "./Profile"
+import { user } from "../User/Profile";
 
 interface assignModal {
   modal: allTableDataType;
@@ -41,7 +41,7 @@ const Assign = (modal: assignModal) => {
         type: "success",
         content: "Assignement made successfully",
       });
-      modal.trigger()
+      modal.trigger();
     } catch (e) {
       console.log(e);
       messageApi.open({

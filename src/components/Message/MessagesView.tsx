@@ -1,7 +1,7 @@
 import { Avatar, Card, Flex, Input, message } from "antd";
 import { ChevronLeft } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { api } from "../services/axios";
+import { api } from "../../services/axios";
 import { SendOutlined, UserOutlined } from "@ant-design/icons";
 import { useSearchParams } from "react-router-dom";
 

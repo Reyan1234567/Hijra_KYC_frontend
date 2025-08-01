@@ -1,8 +1,8 @@
-import { Divider, Flex } from 'antd'
-import { allTableDataType } from './MakeFormTable'
-import { ExtractDate } from '../services/DisplayFunctions'
+import { Divider, Flex } from "antd";
+import { allTableDataType } from "../../MakeForm/MakeFormTable";
+import { ExtractDate } from "../../../services/DisplayFunctions";
 
-const MakeInfo = (modal:allTableDataType) => {
+const MakeInfo = (modal: allTableDataType) => {
   return (
     <Flex justify="space-between">
       <Flex vertical style={{ width: "40%" }}>
@@ -78,7 +78,7 @@ const MakeInfo = (modal:allTableDataType) => {
         </Flex>
       </Flex>
     </Flex>
-  )
-}
+  );
+};
 
-export default MakeInfo
+export default MakeInfo;
