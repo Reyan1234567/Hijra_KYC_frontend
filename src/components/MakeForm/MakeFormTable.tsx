@@ -17,7 +17,7 @@ import RequestTables from "../Helper/Table/RequestTables";
 
 interface imageReturn {
   id: number;
-  name: string;
+  url: string;
   description: string;
   descriptionCopy: string;
   make_id: string;

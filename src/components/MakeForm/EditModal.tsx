@@ -132,7 +132,7 @@ const EditModal = (editModalParam: editModalParam) => {
                         style={{ position: "relative" }}
                         wrap
                       >
-                        <Image width={260} src={image.name} />
+                        <Image width={260} src={image.url} />
                         <Input
                           value={image.description}
                           onChange={(e) => {

@@ -7,6 +7,8 @@ import { messages } from "./MessagesView";
 
 interface drawerInterface {
   open: boolean;
+  badge: number;
+  setBadge: React.Dispatch<React.SetStateAction<number>>;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setChatInfo: React.Dispatch<React.SetStateAction<messages>>;
 }
@@ -35,6 +37,11 @@ const MessagesPage = (drawer: drawerInterface) => {
           setState("success");
           setUser(userMessage.data);
           setFilteredUsers(userMessage.data);
+          let messageSum = 0;
+          userMessage.data.forEach((data: userInfo) => {
+            messageSum += data.unreadCount;
+          });
+          drawer.setBadge(messageSum);
         }
       } catch (e) {
         console.log(e);

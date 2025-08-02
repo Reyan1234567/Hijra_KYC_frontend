@@ -27,7 +27,7 @@ const DisplayInfo = (modal: allTableDataType) => (
                   align="center"
                   style={{ position: "relative" }}
                 >
-                  <Image width={200} src={image.name} />
+                  <Image width={200} src={image.url} />
                   <Input disabled value={image.description} />
                 </Flex>
               </Flex>

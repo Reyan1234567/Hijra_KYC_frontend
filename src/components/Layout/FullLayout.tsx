@@ -23,6 +23,7 @@ const { Header, Content, Footer, Sider } = Layout;
 
 const FullLayout = () => {
   const [open, setOpen] = useState(false);
+  const [messageBadge, setMessageBadge] = useState(0);
   const [inOpen, setInOpen] = useState(false);
   const [chat, setChat] = useState<messages>({
     id: 0,
@@ -125,18 +126,16 @@ const FullLayout = () => {
           >
             <div>
               <Dropdown menu={{ items }} placement="bottom">
-                <Badge count={0}>
-                  <Avatar
-                    style={{
-                      backgroundColor: "#87d068",
-                    }}
-                    icon={<UserOutlined />}
-                  />
-                </Badge>
+                <Avatar
+                  style={{
+                    backgroundColor: "#87d068",
+                  }}
+                  icon={<UserOutlined />}
+                />
               </Dropdown>
             </div>
             <div style={{ marginLeft: "10px" }}>
-              <Badge count={0}>
+              <Badge count={messageBadge}>
                 <Avatar
                   style={{ backgroundColor: "black" }}
                   onClick={showDrawer}
@@ -205,7 +204,7 @@ const FullLayout = () => {
         onClose={onClose}
         open={open}
       >
-        <MessagesPage open={inOpen} setOpen={setInOpen} setChatInfo={setChat} />
+        <MessagesPage open={inOpen} setOpen={setInOpen} setChatInfo={setChat} badge={messageBadge} setBadge={setMessageBadge} />
       </Drawer>
       <Drawer onClose={() => setInOpen(false)} open={inOpen} closable={false}>
         <MessagesView messageInfo={chat} setInOpen={setInOpen} />
