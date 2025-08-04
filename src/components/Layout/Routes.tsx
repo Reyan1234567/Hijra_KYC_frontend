@@ -1,4 +1,4 @@
-import { lazy } from "react";
+import { JSX, lazy } from "react";
 
 const MakeFormTable = lazy(() => import("../MakeForm/MakeFormTable.tsx"));
 const Distribute = lazy(() => import("../Helper/Distribute.tsx"));
@@ -9,9 +9,14 @@ const CheckerTable = lazy(() => import("../Checker/CheckerTable.tsx"));
 const MakeTable = lazy(() => import("../MakeForm/MakeFormTable.tsx"));
 const Search = lazy(() => import("../Search.tsx"));
 
-const routes = [
-  { path: "/", exact: true, component: <Dashboard /> },
-  { path: "/userProfiel", exact: true, component: <Profile /> },
+interface routes{
+  path:string,
+  component: JSX.Element
+}
+
+const routes:routes[] = [
+  { path: "/", component: <Dashboard /> },
+  { path: "/userProfiel", component: <Profile /> },
   { path: "/checkerTable", component: <CheckerTable /> },
   { path: "/makerTable", component: <MakeTable /> },
   { path: "/makeForm", component: <MakeFormTable /> },

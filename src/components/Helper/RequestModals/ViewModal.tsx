@@ -1,4 +1,4 @@
-import { Flex, Modal } from "antd";
+import { Flex, Modal, Typography } from "antd";
 import DisplayInfo from "./DisplayInfo";
 import { allTableDataType } from "../../MakeForm/MakeFormTable";
 
@@ -8,9 +8,10 @@ interface viewModalInterface {
   modal: allTableDataType;
 }
 const ViewModal = (viewModal: viewModalInterface) => {
+  const { Title } = Typography;
   return (
     <Modal
-      title="View Request"
+      title={<p>View Request</p>}
       okButtonProps={{ style: { display: "none" } }}
       onCancel={viewModal.handleCancel}
       cancelButtonProps={{ style: { display: "none" } }}

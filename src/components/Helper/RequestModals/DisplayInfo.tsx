@@ -1,16 +1,19 @@
 import { Divider, Flex, Input, Image } from "antd";
 import { allTableDataType } from "../../MakeForm/MakeFormTable";
+import {Typography} from "antd";
 import MakeInfo from "./MakeInfo";
 import BackReason from "./BackReason";
 
-const DisplayInfo = (modal: allTableDataType) => (
+const DisplayInfo = (modal: allTableDataType) => {
+  const {Title}=Typography;
+  return (
   <Flex vertical gap={"middle"}>
     <MakeInfo {...modal} />
     <Divider />
     <Flex vertical align="center" gap={"middle"}>
-      <p>
-        <strong>Images</strong>
-      </p>
+      <Title level={3}>
+        Images
+      </Title>
       <Flex gap={"large"} wrap justify="center" align="center">
         {modal.images.length !== 0 ? (
           modal.images.map((image) => {
@@ -27,7 +30,7 @@ const DisplayInfo = (modal: allTableDataType) => (
                   align="center"
                   style={{ position: "relative" }}
                 >
-                  <Image width={200} src={image.url} />
+                  <Image height={200} src={image.url} />
                   <Input disabled value={image.description} />
                 </Flex>
               </Flex>
@@ -40,6 +43,6 @@ const DisplayInfo = (modal: allTableDataType) => (
       </Flex>
     </Flex>
   </Flex>
-);
+)};
 
 export default DisplayInfo;

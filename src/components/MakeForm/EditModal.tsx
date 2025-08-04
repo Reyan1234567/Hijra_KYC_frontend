@@ -19,7 +19,7 @@ import { Plus } from "lucide-react";
 import { api } from "../../services/axios";
 import { allTableDataType } from "./MakeFormTable";
 import { useForm } from "antd/es/form/Form";
-import { useState } from "react";
+import { useReducer } from "react";
 import { toBase64 } from "../../services/DisplayFunctions";
 import MakeInfo from "../Helper/RequestModals/MakeInfo";
 import BackReason from "../Helper/RequestModals/BackReason";
@@ -39,34 +39,39 @@ interface egami {
   url: string;
 }
 
+type EgamiAction =
+  | { type: "ADD_IMAGE" }
+  | { type: "REMOVE_IMAGE"; index: number }
+  | { type: "SET_DESCRIPTION"; index: number; description: string }
+  | { type: "SET_FILE"; index: number; file: string; url: string }
+  | { type: "CLEAR_IMAGES" };
+
+const imagesReducer = (state: egami[], action: EgamiAction): egami[] => {
+  switch (action.type) {
+    case "ADD_IMAGE":
+      return [...state, { file: "", description: "", url: "" }];
+    case "REMOVE_IMAGE":
+      return state.filter((_, i) => i !== action.index);
+    case "SET_DESCRIPTION":
+      return state.map((img, i) =>
+        i === action.index ? { ...img, description: action.description } : img
+      );
+    case "SET_FILE":
+      return state.map((img, i) =>
+        i === action.index
+          ? { ...img, file: action.file, url: action.url }
+          : img
+      );
+    case "CLEAR_IMAGES":
+      return [];
+    default:
+      return state;
+  }
+};
+
 const EditModal = (editModalParam: editModalParam) => {
-  const [images, setImage] = useState<egami[]>([]);
-  const addImage = () => {
-    setImage([...images, { file: "", description: "", url: "" }]);
-  };
 
-  const removeImage = (index: number) => {
-    if (images) {
-      setImage(images.filter((img) => images[index] !== img));
-    }
-  };
-
-  const setDescription = (index: number, description: string) => {
-    setImage(
-      images.map((img, i) => (i === index ? { ...img, description } : img))
-    );
-  };
-
-  const setFile = (index: number, file: string, url: string) => {
-    setImage(
-      images.map((img, i) => (i === index ? { ...img, file, url } : img))
-    );
-  };
-
-  const clearImage = () => {
-    setImage([]);
-  };
-
+  const [images, dispatch] = useReducer(imagesReducer, []);
   const [form] = useForm();
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -84,14 +89,14 @@ const EditModal = (editModalParam: editModalParam) => {
 
       editModalParam.triggerRender();
       editModalParam.editModalOff();
-      clearImage();
+      dispatch({type:"CLEAR_IMAGES"});
       messageApi.open({
         type: "success",
         content: "Images created Successfully",
       });
     } catch (e: unknown) {
       //   console.log("Error on edit" + e);
-      clearImage();
+      dispatch({type:"CLEAR_IMAGES"});
       messageApi.open({
         type: "error",
         content: e instanceof Error ? e.message : String(e),
@@ -132,7 +137,7 @@ const EditModal = (editModalParam: editModalParam) => {
                         style={{ position: "relative" }}
                         wrap
                       >
-                        <Image width={260} src={image.url} />
+                        <Image height={260} src={image.url} />
                         <Input
                           value={image.description}
                           onChange={(e) => {
@@ -310,9 +315,8 @@ const EditModal = (editModalParam: editModalParam) => {
                                     const url = URL.createObjectURL(
                                       e.target?.files[0]
                                     );
-                                    setFile(index, encoded, url);
+                                    dispatch({type:"SET_FILE", index, file: encoded,  url})
                                   }
-                                  //   form.setFieldValue(["images", index, "file"], encodedFile);
                                 }}
                               />
                             </Form.Item>
@@ -328,7 +332,7 @@ const EditModal = (editModalParam: editModalParam) => {
                             >
                               <Input
                                 onChange={(e) => {
-                                  setDescription(index, e.target.value);
+                                  dispatch({type:"SET_DESCRIPTION", index, description:e.target.value});
                                 }}
                               />
                             </Form.Item>
@@ -344,7 +348,7 @@ const EditModal = (editModalParam: editModalParam) => {
                         <Button
                           onClick={() => {
                             remove(index);
-                            removeImage(index);
+                            dispatch({type:"REMOVE_IMAGE", index:index})
                           }}
                         >
                           <DeleteOutlined /> Remove
@@ -353,7 +357,7 @@ const EditModal = (editModalParam: editModalParam) => {
                     ))}
                     <Button
                       onClick={() => {
-                        addImage();
+                        dispatch({type:"ADD_IMAGE"})
                         add();
                       }}
                     >
