@@ -1,4 +1,5 @@
 import { JSX, lazy } from "react";
+import Attendance from "../Manager/Attendance.tsx";
 
 const MakeFormTable = lazy(() => import("../MakeForm/MakeFormTable.tsx"));
 const Distribute = lazy(() => import("../Helper/Distribute.tsx"));
@@ -9,12 +10,12 @@ const CheckerTable = lazy(() => import("../Checker/CheckerTable.tsx"));
 const MakeTable = lazy(() => import("../MakeForm/MakeFormTable.tsx"));
 const Search = lazy(() => import("../Search.tsx"));
 
-interface routes{
-  path:string,
-  component: JSX.Element
+interface routes {
+  path: string;
+  component: JSX.Element;
 }
 
-const routes:routes[] = [
+const routes: routes[] = [
   { path: "/", component: <Dashboard /> },
   { path: "/userProfiel", component: <Profile /> },
   { path: "/checkerTable", component: <CheckerTable /> },
@@ -25,6 +26,8 @@ const routes:routes[] = [
   { path: "/dashboard", component: <Dashboard /> },
   { path: "/profile", component: <Profile /> },
   { path: "/kycManager", component: <KycManagerTable /> },
+  { path: "/attendance", component: <Attendance /> },
+  { path: "/search", component: <Search /> },
 ];
 
 export default routes;

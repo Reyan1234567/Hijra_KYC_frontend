@@ -204,7 +204,13 @@ const FullLayout = () => {
         onClose={onClose}
         open={open}
       >
-        <MessagesPage open={inOpen} setOpen={setInOpen} setChatInfo={setChat} badge={messageBadge} setBadge={setMessageBadge} />
+        <MessagesPage
+          open={inOpen}
+          setOpen={setInOpen}
+          setChatInfo={setChat}
+          badge={messageBadge}
+          setBadge={setMessageBadge}
+        />
       </Drawer>
       <Drawer onClose={() => setInOpen(false)} open={inOpen} closable={false}>
         <MessagesView messageInfo={chat} setInOpen={setInOpen} />

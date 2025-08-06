@@ -1,108 +1,39 @@
-import {
-  DeleteOutlined,
-  QuestionCircleOutlined,
-  SaveOutlined,
-} from "@ant-design/icons";
-import {
-  Button,
-  Divider,
-  Flex,
-  Form,
-  Input,
-  Modal,
-  Popconfirm,
-  Image,
-  Card,
-  message,
-} from "antd";
-import { Plus } from "lucide-react";
-import { api } from "../../services/axios";
-import { allTableDataType } from "./MakeFormTable";
-import { useForm } from "antd/es/form/Form";
-import { useReducer } from "react";
-import { toBase64 } from "../../services/DisplayFunctions";
+import { Divider, Modal, message } from "antd";
+import { allTableDataType, egami } from "./MakeFormTable";
 import MakeInfo from "../Helper/RequestModals/MakeInfo";
-import BackReason from "../Helper/RequestModals/BackReason";
+
+import ImageEdit from "./ImageEdit";
+import AddImageForm from "./AddImageForm";
+import { createImage } from "../../services/MakeForm";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface editModalParam {
   handleCancel: () => void;
   editModal: boolean;
   modal: allTableDataType;
-  setModal: React.Dispatch<React.SetStateAction<allTableDataType>>;
   editModalOff: () => void;
-  triggerRender: () => void;
 }
-
-interface egami {
-  description: string;
-  file: string;
-  url: string;
-}
-
-type EgamiAction =
-  | { type: "ADD_IMAGE" }
-  | { type: "REMOVE_IMAGE"; index: number }
-  | { type: "SET_DESCRIPTION"; index: number; description: string }
-  | { type: "SET_FILE"; index: number; file: string; url: string }
-  | { type: "CLEAR_IMAGES" };
-
-const imagesReducer = (state: egami[], action: EgamiAction): egami[] => {
-  switch (action.type) {
-    case "ADD_IMAGE":
-      return [...state, { file: "", description: "", url: "" }];
-    case "REMOVE_IMAGE":
-      return state.filter((_, i) => i !== action.index);
-    case "SET_DESCRIPTION":
-      return state.map((img, i) =>
-        i === action.index ? { ...img, description: action.description } : img
-      );
-    case "SET_FILE":
-      return state.map((img, i) =>
-        i === action.index
-          ? { ...img, file: action.file, url: action.url }
-          : img
-      );
-    case "CLEAR_IMAGES":
-      return [];
-    default:
-      return state;
-  }
-};
 
 const EditModal = (editModalParam: editModalParam) => {
-
-  const [images, dispatch] = useReducer(imagesReducer, []);
-  const [form] = useForm();
   const [messageApi, contextHolder] = message.useMessage();
-
-  const onFinishEdit = async (makeId: number) => {
-    console.log(images[0]);
-    try {
-      //   console.log(image);
-      await api.post(
-        `/image/create-Images/${makeId}`,
-        images.map((image) => ({
-          file: image.file,
-          description: image.description,
-        }))
-      );
-
-      editModalParam.triggerRender();
-      editModalParam.editModalOff();
-      dispatch({type:"CLEAR_IMAGES"});
+  const queryClient = useQueryClient();
+  const createMutation = useMutation({
+    mutationFn: ({ makeId, imaged }: { makeId: number; imaged: egami[] }) =>
+      createImage(makeId, imaged),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["makes"] });
       messageApi.open({
         type: "success",
-        content: "Images created Successfully",
+        content: "Image created Successfully",
       });
-    } catch (e: unknown) {
-      //   console.log("Error on edit" + e);
-      dispatch({type:"CLEAR_IMAGES"});
+    },
+    onError: (error) => {
       messageApi.open({
         type: "error",
-        content: e instanceof Error ? e.message : String(e),
+        content: error instanceof Error ? error.message : String(error),
       });
-    }
-  };
+    },
+  });
 
   return (
     <>
@@ -121,255 +52,18 @@ const EditModal = (editModalParam: editModalParam) => {
         ) : (
           <>
             <MakeInfo {...editModalParam.modal} />
-            <Flex vertical align="center" gap={"middle"} wrap>
-              <Divider />
-              <p>
-                <strong>Images</strong>
-              </p>
-              <Flex gap={"large"} wrap justify="center" align="center">
-                {editModalParam.modal.images.length !== 0 ? (
-                  editModalParam.modal.images.map((image) => {
-                    return (
-                      <Flex
-                        vertical
-                        gap={"middle"}
-                        align="center"
-                        style={{ position: "relative" }}
-                        wrap
-                      >
-                        <Image height={260} src={image.url} />
-                        <Input
-                          value={image.description}
-                          onChange={(e) => {
-                            editModalParam.setModal({
-                              ...editModalParam.modal,
-                              images: [
-                                ...editModalParam.modal.images.map((img) =>
-                                  img.id === image.id
-                                    ? { ...image, description: e.target.value }
-                                    : img
-                                ),
-                              ],
-                            });
-                          }}
-                          addonAfter={
-                            <Popconfirm
-                              title={
-                                "Are you sure, you want to edit the description"
-                              }
-                              onConfirm={async () => {
-                                try {
-                                  await api.patch(
-                                    "/image/description",
-                                    { description: image.description },
-                                    { params: { id: image.id } }
-                                  );
-                                  messageApi.open({
-                                    type: "success",
-                                    content: "Description edited successfully",
-                                  });
-                                  editModalParam.setModal({
-                                    ...editModalParam.modal,
-                                    images: [
-                                      ...editModalParam.modal.images.map(
-                                        (img) =>
-                                          img.id !== image.id
-                                            ? img
-                                            : {
-                                                ...image,
-                                                descriptionCopy:
-                                                  image.description,
-                                              }
-                                      ),
-                                    ],
-                                  });
-                                  editModalParam.triggerRender();
-                                } catch (e: unknown) {
-                                  //   console.log("Error on edit" + e);
-                                  messageApi.open({
-                                    type: "error",
-                                    content:
-                                      e instanceof Error
-                                        ? e.message
-                                        : String(e),
-                                  });
-                                }
-                              }}
-                              okText="Yes"
-                              cancelText="No"
-                              icon={
-                                <QuestionCircleOutlined
-                                  style={{ color: "red" }}
-                                />
-                              }
-                            >
-                              <Button
-                                disabled={
-                                  image.descriptionCopy === image.description ||
-                                  image.description == ""
-                                }
-                              >
-                                <SaveOutlined />
-                              </Button>
-                            </Popconfirm>
-                          }
-                        ></Input>
-                        <Popconfirm
-                          title={"Are you sure, you want to delete this image?"}
-                          onConfirm={async () => {
-                            try {
-                              await api.patch(
-                                `/image/disassociate/${image.id}`
-                              );
-                              messageApi.open({
-                                type: "success",
-                                content: "Image deleted successfully",
-                              });
-                              editModalParam.setModal({
-                                ...editModalParam.modal,
-                                images: editModalParam.modal.images.filter(
-                                  (img) => img.id !== image.id
-                                ),
-                              });
-                              editModalParam.triggerRender();
-                            } catch (e: unknown) {
-                              messageApi.open({
-                                type: "error",
-                                content:
-                                  e instanceof Error ? e.message : String(e),
-                              });
-                            }
-                          }}
-                          okText="Yes"
-                          cancelText="No"
-                          icon={
-                            <QuestionCircleOutlined style={{ color: "red" }} />
-                          }
-                        >
-                          <Button
-                            style={{
-                              position: "absolute",
-                              right: "0",
-                              top: "0",
-                            }}
-                          >
-                            <DeleteOutlined />
-                          </Button>
-                        </Popconfirm>
-                      </Flex>
-                    );
-                  })
-                ) : (
-                  <>
-                    <p>No images are found</p>
-                  </>
-                )}
-              </Flex>
-              <BackReason {...editModalParam.modal} />
-            </Flex>
             <Divider />
-            <Form
-              form={form}
-              onFinish={() => {
-                // setDescription(value);
-                onFinishEdit(editModalParam.modal.makeId);
-                form.resetFields();
+            <ImageEdit images={editModalParam.modal.images} />
+            <Divider />
+            <AddImageForm
+              setEditModal={() => {
+                editModalParam.editModalOff();
               }}
-            >
-              <Form.List name="images">
-                {(fields, { add, remove }) => (
-                  <Flex vertical gap={"middle"}>
-                    {fields.map((field, index) => (
-                      <Card
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Flex
-                          justify="space-between"
-                          align="center"
-                          gap={"large"}
-                          style={{ width: "100%" }}
-                        >
-                          <Flex vertical>
-                            <Form.Item
-                              name={[field.name, "file"]}
-                              label="Image"
-                              rules={[
-                                {
-                                  required: true,
-                                  message: "This field in required!",
-                                },
-                              ]}
-                            >
-                              <Input
-                                type="file"
-                                accept="image/*"
-                                onChange={async (e) => {
-                                  if (e.target.files?.[0] !== null) {
-                                    const encoded = await toBase64(
-                                      e.target.files?.[0]
-                                    );
-                                    const url = URL.createObjectURL(
-                                      e.target?.files[0]
-                                    );
-                                    dispatch({type:"SET_FILE", index, file: encoded,  url})
-                                  }
-                                }}
-                              />
-                            </Form.Item>
-                            <Form.Item
-                              name={[field.name, "description"]}
-                              label="Description"
-                              rules={[
-                                {
-                                  required: true,
-                                  message: "This field in required!",
-                                },
-                              ]}
-                            >
-                              <Input
-                                onChange={(e) => {
-                                  dispatch({type:"SET_DESCRIPTION", index, description:e.target.value});
-                                }}
-                              />
-                            </Form.Item>
-                          </Flex>
-                          {images[index].url !== "" && (
-                            <Image
-                              src={images[index].url}
-                              width={260}
-                              style={{ width: "260px" }}
-                            />
-                          )}
-                        </Flex>
-                        <Button
-                          onClick={() => {
-                            remove(index);
-                            dispatch({type:"REMOVE_IMAGE", index:index})
-                          }}
-                        >
-                          <DeleteOutlined /> Remove
-                        </Button>
-                      </Card>
-                    ))}
-                    <Button
-                      onClick={() => {
-                        dispatch({type:"ADD_IMAGE"})
-                        add();
-                      }}
-                    >
-                      <Plus /> Add Image
-                    </Button>
-                    <Button disabled={fields.length === 0} htmlType="submit">
-                      Save
-                    </Button>
-                  </Flex>
-                )}
-              </Form.List>
-            </Form>
+              makeId={editModalParam.modal.id}
+              onFinish={({ makeId, images }) =>
+                createMutation.mutate({ makeId, imaged:images })
+              }
+            />
           </>
         )}
       </Modal>

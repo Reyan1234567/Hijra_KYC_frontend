@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Flex, message, Spin, Table, Tabs } from "antd";
 import type { MenuProps, TableColumnsType, TabsProps } from "antd";
 import DateDropDown from "../Helper/DateDropdown/DateDropDown";
-import { api } from "../../services/axios";
 import {
   EditOutlined,
   EyeOutlined,
@@ -14,8 +13,10 @@ import EditModal from "./EditModal";
 import ViewModal from "../Helper/RequestModals/ViewModal";
 import DropDown from "../Helper/DateDropdown/DropDown";
 import RequestTables from "../Helper/Table/RequestTables";
+import { addToDrafts, getMakes, sendToHo } from "../../services/MakeForm";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-interface imageReturn {
+export interface imageReturn {
   id: number;
   url: string;
   description: string;
@@ -49,10 +50,10 @@ export interface egami {
 }
 
 const MakeFormTable = () => {
+  const queryClient = useQueryClient();
   const today = new Date();
   const [messageApi, contextHolder] = message.useMessage();
   const [editModal, setEditModal] = useState(false);
-  const [componentReload, setComponentReload] = useState(0);
   const [date, setDate] = useState(
     new Date(today.setMonth(today.getMonth(), 1))
   );
@@ -88,21 +89,8 @@ const MakeFormTable = () => {
       label: "Send to HO",
       key: "3",
       icon: <SendOutlined />,
-      onClick: async () => {
-        try {
-          await api.patch(`/makeForm/send-ToHo/${modal.id}`);
-          messageApi.open({
-            type: "success",
-            content: "succesfully sent to ho",
-          });
-          setComponentReload((prev) => prev + 1);
-        } catch (e: unknown) {
-          console.log(e);
-          messageApi.open({
-            type: "error",
-            content: e instanceof Error ? e.message : String(e),
-          });
-        }
+      onClick: () => {
+        sendToHoMutation.mutate(modal.id);
       },
     },
   ];
@@ -121,20 +109,7 @@ const MakeFormTable = () => {
       key: "2",
       icon: <FileTextOutlined />,
       onClick: async () => {
-        try {
-          await api.patch(`/makeForm/toDrafts/${modal.id}`);
-          messageApi.open({
-            type: "success",
-            content: "successfully added to drafts",
-          });
-          setComponentReload((prev) => prev + 1);
-        } catch (e) {
-          console.log(e);
-          messageApi.open({
-            type: "error",
-            content: e instanceof Error ? e.message : String(e),
-          });
-        }
+        addToDraftsMutation.mutate(modal.id);
       },
     },
   ];
@@ -186,50 +161,97 @@ const MakeFormTable = () => {
     },
   ];
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [state, setState] = useState<"empty" | "loading" | "success" | "error">(
-    "loading"
-  );
-  const [makeForms, setMakeForms] = useState<allTableDataType[]>([]);
-  useEffect(() => {
-    const fetchAccepted = async () => {
-      try {
-        console.log("in the useEffect");
-        const form = await api.get("/makeForm", {
-          params: { makerId: 2, date: date },
-        });
-        if (!form || form.data.length === 0) {
-          setState("empty");
-        } else {
-          setState("success");
-          console.log(form.data[5]);
-          setMakeForms(form.data);
-        }
-      } catch (error) {
-        setState("error");
-        console.log("error" + error);
-      }
-    };
-    fetchAccepted();
-  }, [componentReload, date]);
-
   const handleCancel = () => {
     setIsModalOpen(false);
     setEditModal(false);
   };
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { data, isLoading, isError, isSuccess, error } = useQuery({
+    queryKey: ["makes", date],
+    queryFn: () => getMakes(date),
+  });
+
+  const sendToHoMutation = useMutation({
+    mutationFn: (id: number) => sendToHo(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["makes"] });
+      messageApi.open({
+        type: "success",
+        content: "Successfully sent to Ho",
+      });
+    },
+    onError: (error) => {
+      messageApi.open({
+        type: "error",
+        content: error instanceof Error ? error.message : String(error),
+      });
+    },
+  });
+
+  const addToDraftsMutation = useMutation({
+    mutationFn: (id: number) => addToDrafts(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["makes"] });
+      messageApi.open({
+        type: "success",
+        content: "Successfully added to drafts",
+      });
+    },
+    onError: (error) => {
+      messageApi.open({
+        type: "error",
+        content: error instanceof Error ? error.message : String(error),
+      });
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <Spin
+        style={{ position: "absolute", left: "50%", top: "50%" }}
+        size="large"
+      />
+    );
+  }
+  if (isError || data?.data === undefined) {
+    return (
+      <p style={{ position: "absolute", left: "50%", top: "50%" }}>
+        Something went wrong{error ? error.message : ""}
+      </p>
+    );
+  }
+  if (isSuccess && data.data.length === 0) {
+    return (
+      <>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <h1>MakeTable</h1>
+          <DateDropDown date={date} setDate={setDate} />
+        </div>
+        <Table<allTableDataType> dataSource={[]} />
+      </>
+    );
+  }
+
+  const res: allTableDataType[] = data.data;
   const items: TabsProps["items"] = [
     {
       key: "1",
       label: "All Requests",
-      children: <RequestTables data={makeForms} colums={columns} />,
+      children: <RequestTables data={res} colums={columns} />,
     },
     {
       key: "2",
       label: "Drafts",
       children: (
         <RequestTables
-          data={makeForms.filter((request) => request.status === 0)}
+          data={res.filter((request) => request.status === 0)}
           colums={columns}
         />
       ),
@@ -239,7 +261,7 @@ const MakeFormTable = () => {
       label: "Pending",
       children: (
         <RequestTables
-          data={makeForms.filter((request) => request.status === 1)}
+          data={res.filter((request) => request.status === 1)}
           colums={columns}
         />
       ),
@@ -249,7 +271,7 @@ const MakeFormTable = () => {
       label: "Approved",
       children: (
         <RequestTables
-          data={makeForms.filter((request) => request.status === 2)}
+          data={res.filter((request) => request.status === 2)}
           colums={columns}
         />
       ),
@@ -259,7 +281,7 @@ const MakeFormTable = () => {
       label: "Rejected",
       children: (
         <RequestTables
-          data={makeForms.filter((request) => request.status === 3)}
+          data={res.filter((request) => request.status === 3)}
           colums={columns}
         />
       ),
@@ -268,76 +290,35 @@ const MakeFormTable = () => {
 
   return (
     <>
-      {state === "empty" && (
-        <>
-          <div style={{ display: "flex", justifyContent:"space-between", alignItems:"center"}}>
-            <h1>MakeTable</h1>
-            <DateDropDown date={date} setDate={setDate} />
-          </div>
-          <Table<allTableDataType> dataSource={[]} />
-        </>
-      )}
-      {state === "loading" && (
-        <Spin
-          style={{ position: "absolute", left: "50%", top: "50%" }}
-          size="large"
-        />
-      )}
-      {state === "error" && <p>Something wrong happened</p>}
-      {state === "success" && (
-        <>
-          {contextHolder}
-          <div style={{ display: "flex", justifyContent:"space-between", alignItems:"center"}}>
-            <h1>MakeTable</h1>
-            <DateDropDown date={date} setDate={setDate} />
-          </div>
-          <Flex gap="middle" vertical>
-            <Tabs type="card" defaultActiveKey="1" items={items} />
-          </Flex>
-          <ViewModal
-            handleCancel={handleCancel}
-            isModalOpen={isModalOpen}
-            modal={modal}
-          />
-          <EditModal
-            handleCancel={handleCancel}
-            editModal={editModal}
-            modal={modal}
-            setModal={setModal}
-            editModalOff={() => {
-              setEditModal(false);
-            }}
-            triggerRender={() => {
-              console.log("re-rendered");
-              setComponentReload((prev) => prev + 1);
-            }}
-          />
-        </>
-      )}
+      {contextHolder}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <h1>MakeTable</h1>
+        <DateDropDown date={date} setDate={setDate} />
+      </div>
+      <Flex gap="middle" vertical>
+        <Tabs type="card" defaultActiveKey="1" items={items} />
+      </Flex>
+      <ViewModal
+        handleCancel={handleCancel}
+        isModalOpen={isModalOpen}
+        modal={modal}
+      />
+      <EditModal
+        handleCancel={handleCancel}
+        editModal={editModal}
+        modal={modal}
+        editModalOff={() => {
+          setEditModal(false);
+        }}
+      />
     </>
   );
 };
 
 export default MakeFormTable;
-
-// current: page,
-// pageSize: pageSize,
-// total: totalCount,
-// showSizeChanger: true, // allows changing how many rows per page
-// onChange: (page, pageSize) => {
-//   setPage(page);
-//   setPageSize(pageSize);
-// }
-
-// <Dropdown
-//                 menu={{ items: view }}
-//                 trigger={["click"]}
-//                 onOpenChange={() => {
-//                   setModal(row);
-//                 }}
-//               >
-//                 <Button>
-//                   Actions
-//                   <DownOutlined />
-//                 </Button>
-//               </Dropdown>

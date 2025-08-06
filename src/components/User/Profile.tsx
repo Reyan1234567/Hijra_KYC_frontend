@@ -27,6 +27,7 @@ export interface user {
   role: string;
   phoneNumber: string;
   status: number;
+  presentStatus:number;
   profilePicture: string;
 }
 
@@ -45,6 +46,7 @@ const Profile = () => {
     role: "",
     phoneNumber: "",
     status: 0,
+    presentStatus:0,
     profilePicture: "",
   });
   useEffect(() => {

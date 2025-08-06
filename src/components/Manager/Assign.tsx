@@ -12,11 +12,12 @@ const Assign = (modal: assignModal) => {
   const [users, setUsers] = useState<user[]>([]);
   const { Title } = Typography;
 
-  const [checker, setChecker] = useState(modal.modal.hoId);
+  const [checker, setChecker] = useState(modal.modal.hoId??undefined);
   const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
     const getUsers = async () => {
+      setChecker(modal.modal.hoId);
       try {
         const checkers = await api.get("/api/user-profiles/getCheckers");
         console.log(checkers.data);
@@ -26,7 +27,7 @@ const Assign = (modal: assignModal) => {
       }
     };
     getUsers();
-  }, [modal.modal.makeId]);
+  }, [modal.modal.hoId, modal.modal.makeId]);
 
   const handleSave = () => {
     try {
@@ -63,8 +64,9 @@ const Assign = (modal: assignModal) => {
         <Flex vertical gap={5}>
           <Title level={4}>Change HO</Title>
           <Select
-            options={users.map((user) => ({
+            options={users.map((user, index) => ({
               value: user.id,
+              key: index,
               label: user.name,
             }))}
             value={checker}
@@ -76,11 +78,13 @@ const Assign = (modal: assignModal) => {
           <Title level={4}>Assign HO</Title>
           <Select
             options={users.map((user) => ({
-              value: user.id,
-              label: user.name,
-            }))}
-            placeholder={"Select a value"}
+                value: user.id,
+                label: user.name,
+              }))
+            }
+            value={checker}
             onChange={handleChange}
+            placeholder="Assign an Ho"
           />
         </Flex>
       )}
