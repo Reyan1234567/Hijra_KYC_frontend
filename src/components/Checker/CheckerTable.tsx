@@ -9,7 +9,7 @@ import {
   TabsProps,
 } from "antd";
 import RequestTables from "../Helper/Table/RequestTables";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { api } from "../../services/axios";
 import DateDropDown from "../Helper/DateDropdown/DateDropDown";
 import { allTableDataType } from "../MakeForm/MakeFormTable";
@@ -17,9 +17,10 @@ import DropDown from "../Helper/DateDropdown/DropDown";
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 import CheckerEditModal from "./CheckerEditModal";
 import ViewModal from "../Helper/RequestModals/ViewModal";
+import { AuthContext } from "../../context/AuthContext";
 
 const CheckerTable = () => {
-  const [/*messageApi*/, contextHolder] = message.useMessage();
+  const [, /*messageApi*/ contextHolder] = message.useMessage();
   const today = new Date();
   const [trigger, setTrigger] = useState(0);
   const [viewModal, setViewModal] = useState(false);
@@ -27,6 +28,7 @@ const CheckerTable = () => {
   const [date, setDate] = useState(
     new Date(today.setMonth(today.getMonth(), 1))
   );
+  const USER = useContext(AuthContext);
   const [modal, setModal] = useState<allTableDataType>({
     id: 0,
     makerId: 0,
@@ -54,7 +56,7 @@ const CheckerTable = () => {
     const getRequestsAssignedToMe = async () => {
       try {
         const makes = await api.get("/makeForm/getHo", {
-          params: { hoUserId: 1, date: date },
+          params: { hoUserId: USER?.user?.userId, date: date },
         });
         console.log(makes.data[0]);
         setMakeRequests(makes.data);
@@ -70,7 +72,7 @@ const CheckerTable = () => {
     };
 
     getRequestsAssignedToMe();
-  }, [trigger, date]);
+  }, [trigger, date, USER?.user?.userId]);
 
   const view: MenuProps["items"] = [
     {

@@ -1,9 +1,10 @@
 import { Avatar, Card, Flex, Input, message } from "antd";
 import { ChevronLeft } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { api } from "../../services/axios";
 import { SendOutlined, UserOutlined } from "@ant-design/icons";
 import { useSearchParams } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 
 interface message {
   senderId: number;
@@ -34,6 +35,7 @@ const MessagesView = (messageDetail: yme) => {
   );
   const [messages, setMessages] = useState<message[]>([]);
 
+  const USER=useContext(AuthContext)
   useEffect(() => {
     const scroll = () => {
       bottomRef.current?.scrollIntoView();
@@ -46,7 +48,7 @@ const MessagesView = (messageDetail: yme) => {
       try {
         const messageList = await api.get("/message/getConvo", {
           params: {
-            user1: 3,
+            user1: USER?.user?.userId,
             user2: messageDetail.messageInfo.id,
           },
         });
@@ -54,7 +56,7 @@ const MessagesView = (messageDetail: yme) => {
         const seen = await api.patch(
           "/message/updateSeen",
           {},
-          { params: { senderId: messageDetail.messageInfo.id, recieverId: 3 } }
+          { params: { senderId: messageDetail.messageInfo.id, recieverId: USER?.user?.userId } }
         );
         console.log(seen);
         if (messageList.data.length == 0) {
@@ -70,7 +72,7 @@ const MessagesView = (messageDetail: yme) => {
     };
 
     getMessages();
-  }, [messageDetail.messageInfo.id]);
+  }, [USER?.user?.userId, messageDetail.messageInfo.id]);
 
   const error = () => {
     messageApi.open({
@@ -83,7 +85,7 @@ const MessagesView = (messageDetail: yme) => {
     try {
       console.log(message, messageDetail.messageInfo.id);
       const res = await api.post("/message", {
-        sender: 3,
+        sender: USER?.user?.userId,
         message: message,
         receiver: messageDetail.messageInfo.id,
       });

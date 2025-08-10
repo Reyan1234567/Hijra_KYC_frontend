@@ -13,10 +13,11 @@ import {
   Tag,
   Popconfirm,
 } from "antd";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { toBase64 } from "../../services/DisplayFunctions";
 import { UserOutlined } from "@ant-design/icons";
 import { api } from "../../services/axios";
+import { AuthContext } from "../../context/AuthContext";
 
 export interface user {
   id: number;
@@ -49,10 +50,11 @@ const Profile = () => {
     presentStatus:0,
     profilePicture: "",
   });
+  const USER=useContext(AuthContext)
   useEffect(() => {
     const userProfile = async () => {
       try {
-        const res = await api.get(`/api/user-profiles/get-user/${1}`);
+        const res = await api.get(`/api/user-profiles/get-user/${USER?.user?.userId}`);
         setUser(res.data);
       } catch (e) {
         console.log(e);
@@ -132,7 +134,7 @@ const Profile = () => {
 
   async function handleDelete() {
     try {
-      await api.patch(`/api/user-profiles/delete-profile/${1}`);
+      await api.patch(`/api/user-profiles/delete-profile/${USER?.user?.userId}`);
       messageApi.open({
         type: "success",
         content: "Deleted profile successfully",

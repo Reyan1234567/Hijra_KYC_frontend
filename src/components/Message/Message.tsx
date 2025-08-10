@@ -1,9 +1,6 @@
 import { Badge, Card, Flex, Avatar, Typography } from "antd";
-// import vite from "../../public/vite.svg";
 import { userInfo } from "../../types/MessageTypes";
 import { UserOutlined } from "@ant-design/icons";
-// import { useEffect, useState } from "react";
-// import { api } from "../services/axios";
 
 const Message = (userInfo: userInfo) => {
   const avatar = () => {

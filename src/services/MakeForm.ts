@@ -10,9 +10,9 @@ export const sendToHo = async (id: number) => {
   return await api.patch(`/makeForm/send-ToHo/${id}`);
 };
 
-export const getMakes = async (date: Date) => {
+export const getMakes = async (date: Date, makerId:number) => {
   return await api.get("/makeForm", {
-    params: { makerId: 2, date: date },
+    params: { makerId: makerId, date: date },
   });
 };
 
@@ -45,9 +45,9 @@ export const searchAccount = async (account: number) => {
 };
 
 
-export const createMakeForm=async(makeForm:makeFormInteface)=>{
+export const createMakeForm=async(makeForm:makeFormInteface, makerId:number)=>{
   return await api.post("/makeForm", {
-    makerId:2,
+    makerId:makerId,
     cif:makeForm.cif,
     customerAccount: makeForm.accountNumber,
     customerPhone: makeForm.phoneNumber,

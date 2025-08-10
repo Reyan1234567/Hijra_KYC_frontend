@@ -1,9 +1,10 @@
 import { Input, Spin, Typography } from "antd";
 import Message from "./Message";
 import { userInfo } from "../../types/MessageTypes";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { api } from "../../services/axios";
 import { messages } from "./MessagesView";
+import { AuthContext } from "../../context/AuthContext";
 
 interface drawerInterface {
   open: boolean;
@@ -21,13 +22,14 @@ const MessagesPage = (drawer: drawerInterface) => {
   );
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const USER=useContext(AuthContext)
 
   useEffect(() => {
     const getUserMessage = async () => {
       try {
         setState("loading");
         const userMessage = await api.get("/message/getAll", {
-          params: { receiverId: 3 },
+          params: { receiverId: USER?.user?.userId},
           //  in the real thing, when incorporating auth receiver will be imported using useContext
         });
         console.log(userMessage);
@@ -50,7 +52,7 @@ const MessagesPage = (drawer: drawerInterface) => {
       }
     };
     getUserMessage();
-  }, []);
+  }, [USER?.user?.userId, drawer]);
 
   useEffect(() => {
     const Search = () => {
@@ -66,7 +68,7 @@ const MessagesPage = (drawer: drawerInterface) => {
       }
     };
     Search();
-  }, [search]);
+  }, [search, user]);
 
   console.log(state);
   return (

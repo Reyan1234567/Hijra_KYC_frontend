@@ -11,11 +11,12 @@ import {
   Spin,
   Typography,
 } from "antd";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import axios from "axios";
 import AddImageForm from "./MakeForm/AddImageForm";
 import { egami } from "./MakeForm/MakeFormTable";
 import { createImage, createMakeForm } from "../services/MakeForm";
+import { AuthContext } from "../context/AuthContext";
 
 export interface makeFormInteface {
   fullName: string;
@@ -44,7 +45,7 @@ const Search = () => {
   );
   const { Title } = Typography;
   const [form] = Form.useForm<{ AccountNumber: number }>();
-
+  const USER=useContext(AuthContext)
   const onImageSubmit = async ({
     makeId,
     images,
@@ -56,7 +57,7 @@ const Search = () => {
       return;
     }
     try {
-      const make = await createMakeForm(makeForm);
+      const make = await createMakeForm(makeForm, USER?.user?.userId);
       await createImage(make.data, images);
     } catch (e) {
       console.log(e);

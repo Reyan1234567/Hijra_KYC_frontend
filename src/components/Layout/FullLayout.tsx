@@ -12,16 +12,19 @@ import {
 import { MessageOutlined, UserOutlined } from "@ant-design/icons";
 import logo from "../../assets/logo.png";
 import { Route, Routes } from "react-router-dom";
-
 import routes from "./Routes.tsx";
 import MessagesPage from "../Message/MessagesPage.tsx";
 import SidebarMenu from "./SidebarMenu.tsx";
 import { useNavigate } from "react-router-dom";
 import MessagesView, { messages } from "../Message/MessagesView.tsx";
+import LoginForm from "../LoginForm.tsx";
+import ProtectionRotue from "../../ProtectionRotue.tsx";
 
 const { Header, Content, Footer, Sider } = Layout;
 
 const FullLayout = () => {
+  const pathName = window.location.pathname;
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [messageBadge, setMessageBadge] = useState(0);
   const [inOpen, setInOpen] = useState(false);
@@ -30,7 +33,6 @@ const FullLayout = () => {
     senderName: "no-one",
     senderProfile: "no-profile",
   });
-  const navigate = useNavigate();
 
   const showDrawer = () => {
     setOpen(true);
@@ -64,7 +66,9 @@ const FullLayout = () => {
     },
   ];
 
-  return (
+  return pathName == "/login" ? (
+    <LoginForm />
+  ) : (
     <Layout style={{ height: "100vh", overflowX: "hidden" }}>
       <Sider
         style={{ backgroundColor: "white" }}
@@ -172,9 +176,11 @@ const FullLayout = () => {
               }
             >
               <Routes>
-                {routes.map(({ path, component }, index) => (
-                  <Route path={path} key={index} element={component} />
-                ))}
+                <Route element={<ProtectionRotue />}>
+                  {routes.map(({ path, component }, index) => (
+                    <Route path={path} key={index} element={component} />
+                  ))}
+                </Route>
               </Routes>
             </Suspense>
           </div>
@@ -218,4 +224,5 @@ const FullLayout = () => {
     </Layout>
   );
 };
+
 export default FullLayout;

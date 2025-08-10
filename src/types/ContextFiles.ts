@@ -2,6 +2,7 @@ import { LoginRequest } from "../types/LoginRequest";
 
 export interface userInfo {
   username: string;
+  userId:number;
   role: string;
 }
 
