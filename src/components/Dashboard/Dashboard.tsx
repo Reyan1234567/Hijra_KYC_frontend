@@ -1,19 +1,20 @@
 import { Flex, Spin } from "antd";
 import DashboardCard from "./DashboardCard";
 import DateDropDown from "../Helper/DateDropdown/DateDropDown";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getDashboard } from "../../services/Dashboard";
+import { AuthContext } from "../../context/AuthContext";
 
 const Dashboard = () => {
   const [date, setDate] = useState(new Date());
   const role = "maker";
-  const id = 2;
+  const USER=useContext(AuthContext);
   console.log(date);
 
   const { data, isLoading, isError, isSuccess, error } = useQuery({
     queryKey: ["makeDashboard", date],
-    queryFn: () => getDashboard(id, date),
+    queryFn: () => getDashboard(USER?.user?.userId, date),
   });
 
   if (isLoading) {

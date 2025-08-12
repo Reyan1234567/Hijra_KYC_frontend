@@ -30,7 +30,6 @@ const MessagesPage = (drawer: drawerInterface) => {
         setState("loading");
         const userMessage = await api.get("/message/getAll", {
           params: { receiverId: USER?.user?.userId},
-          //  in the real thing, when incorporating auth receiver will be imported using useContext
         });
         console.log(userMessage);
         if (userMessage.data.length === 0) {
@@ -52,7 +51,7 @@ const MessagesPage = (drawer: drawerInterface) => {
       }
     };
     getUserMessage();
-  }, [USER?.user?.userId, drawer]);
+  }, [USER?.user?.userId]);
 
   useEffect(() => {
     const Search = () => {

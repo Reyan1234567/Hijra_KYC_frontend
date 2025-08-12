@@ -10,6 +10,8 @@ const Message = (userInfo: userInfo) => {
       <Avatar shape={"square"} size={48} icon={<UserOutlined />} />
     );
   };
+
+  console.log(userInfo.unreadCount);
   return (
     <Card
       variant="borderless"
@@ -37,9 +39,7 @@ const Message = (userInfo: userInfo) => {
             </Typography.Text>
           </Flex>
         </Flex>
-        {userInfo.unreadCount > 0 && (
-          <Badge count={userInfo.unreadCount}></Badge>
-        )}
+        {userInfo.unreadCount > 0 && <Badge count={userInfo.unreadCount} />}
       </Flex>
     </Card>
   );

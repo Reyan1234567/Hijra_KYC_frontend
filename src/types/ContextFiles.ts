@@ -11,6 +11,7 @@ export interface AuthInfo {
   login: (userData: LoginRequest) => Promise<void>;
   logout: () => Promise<void>;
 }
+
 export interface AuthContextProps {
   children: React.ReactNode;
 }

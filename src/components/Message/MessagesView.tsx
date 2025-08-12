@@ -35,7 +35,7 @@ const MessagesView = (messageDetail: yme) => {
   );
   const [messages, setMessages] = useState<message[]>([]);
 
-  const USER=useContext(AuthContext)
+  const USER = useContext(AuthContext);
   useEffect(() => {
     const scroll = () => {
       bottomRef.current?.scrollIntoView();
@@ -56,7 +56,12 @@ const MessagesView = (messageDetail: yme) => {
         const seen = await api.patch(
           "/message/updateSeen",
           {},
-          { params: { senderId: messageDetail.messageInfo.id, recieverId: USER?.user?.userId } }
+          {
+            params: {
+              senderId: messageDetail.messageInfo.id,
+              recieverId: USER?.user?.userId,
+            },
+          }
         );
         console.log(seen);
         if (messageList.data.length == 0) {
@@ -131,7 +136,7 @@ const MessagesView = (messageDetail: yme) => {
         {state === "error" && <p>Something went wrong</p>}
         {state === "success" &&
           messages?.map((message) =>
-            message.recieverId === 3 ? (
+            message.recieverId === USER?.user?.userId ? (
               <Flex justify="start" style={{ width: "100%" }}>
                 <Card
                   styles={{ body: { padding: "0px 3px" } }}

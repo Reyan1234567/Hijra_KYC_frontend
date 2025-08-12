@@ -5,20 +5,14 @@ import { AuthContext } from "../context/AuthContext";
 import { Typography } from "antd";
 
 const LoginForm = () => {
-  type FieldType = {
-    username?: string;
-    password?: string;
-    remember?: string;
-  };
 
   const user = useContext(AuthContext);
   const { Title } = Typography;
-  const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
-    console.log("Success:", values);
-    console.log(user?.user, user?.login, user?.logout);
+  const onFinish: FormProps["onFinish"] = async(values) => {
+    await user?.login({username:values.username.toString(), password:values.password.toString()})
   };
 
-  const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (
+  const onFinishFailed: FormProps["onFinishFailed"] = (
     errorInfo
   ) => {
     console.log("Failed:", errorInfo);
@@ -42,7 +36,7 @@ const LoginForm = () => {
             onFinishFailed={onFinishFailed}
             autoComplete="off"
           >
-            <Form.Item<FieldType>
+            <Form.Item
               label="Username"
               name="username"
               rules={[
@@ -52,7 +46,7 @@ const LoginForm = () => {
               <Input />
             </Form.Item>
 
-            <Form.Item<FieldType>
+            <Form.Item
               label="Password"
               name="password"
               rules={[

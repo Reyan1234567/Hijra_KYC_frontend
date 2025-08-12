@@ -3,49 +3,49 @@ import {
   DashboardOutlined,
   EditOutlined,
   FullscreenOutlined,
+  SearchOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { Menu } from "antd";
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import Search from "../Search";
 import Attendance from "../Manager/Attendance";
 
 const SidebarMenu = () => {
   const USER = useContext(AuthContext);
-  const all = [
-    {
-      key: "dashboard",
-      icon: <DashboardOutlined />,
-      label: "Dashboard",
-      path: "/",
-    },
-    {
-      key: "makeFormTable",
-      icon: <EditOutlined />,
-      label: "Make Form",
-      path: "/makeForm",
-    },
-    {
-      key: "checkerTable",
-      icon: <BookOutlined />,
-      label: "Check Form",
-      path: "/checkerTable",
-    },
-    {
-      key: "kycManagerTable",
-      icon: <UserOutlined />,
-      label: "KYC Manager",
-      path: "/kycManager",
-    },
-    {
-      key: "distributer",
-      icon: <FullscreenOutlined />,
-      label: "Distribute",
-      path: "/distribute",
-    },
-  ];
+  // const all = [
+  //   {
+  //     key: "dashboard",
+  //     icon: <DashboardOutlined />,
+  //     label: "Dashboard",
+  //     path: "/",
+  //   },
+  //   {
+  //     key: "makeFormTable",
+  //     icon: <EditOutlined />,
+  //     label: "Make Form",
+  //     path: "/makeForm",
+  //   },
+  //   {
+  //     key: "checkerTable",
+  //     icon: <BookOutlined />,
+  //     label: "Check Form",
+  //     path: "/checkerTable",
+  //   },
+  //   {
+  //     key: "kycManagerTable",
+  //     icon: <UserOutlined />,
+  //     label: "KYC Manager",
+  //     path: "/kycManager",
+  //   },
+  //   {
+  //     key: "distributer",
+  //     icon: <FullscreenOutlined />,
+  //     label: "Distribute",
+  //     path: "/distribute",
+  //   },
+  // ];
 
   const maker = [
     {
@@ -62,7 +62,7 @@ const SidebarMenu = () => {
     },
     {
       key: "search",
-      icon: <Search />,
+      icon: <SearchOutlined />,
       label: "Search",
       path: "/search",
     },
@@ -83,7 +83,7 @@ const SidebarMenu = () => {
     },
     {
       key: "search",
-      icon: <Search />,
+      icon: <SearchOutlined />,
       label: "Search",
       path: "/search",
     },
@@ -116,18 +116,18 @@ const SidebarMenu = () => {
     },
     {
       key: "search",
-      icon: <Search />,
+      icon: <SearchOutlined />,
       label: "Search",
       path: "/search",
     },
   ];
 
-  return (
-    USER?.user?.role==="maker"?<div>
+  return USER?.user?.role === "maker" ? (
+    <div>
       <Menu
         mode="inline"
         defaultSelectedKeys={["shareHolder"]}
-        style={{ height: "100%", borderRight: 0 }}
+        style={{ borderRight: 0 }}
       >
         {maker.map((item) => (
           <Menu.Item key={item.key} icon={item.icon}>
@@ -135,32 +135,40 @@ const SidebarMenu = () => {
           </Menu.Item>
         ))}
       </Menu>
-    </div>:USER?.user?.role==="checker"?
+    </div>
+  ) : USER?.user?.role === "checker" ? (
     <>
-          <Menu
+      <Menu
         mode="inline"
         defaultSelectedKeys={["shareHolder"]}
-        style={{ height: "100%", borderRight: 0 }}
+        style={{ borderRight: 0 }}
       >
         {checker.map((item) => (
           <Menu.Item key={item.key} icon={item.icon}>
             <Link to={item.path}>{item.label}</Link>
           </Menu.Item>
         ))}
-      </Menu></>:USER?.user?.role==="manager"?<>
-      USER?.user?.role==="checker"?
+      </Menu>
+    </>
+  ) : USER?.user?.role === "manager" ? (
     <>
-          <Menu
-        mode="inline"
-        defaultSelectedKeys={["shareHolder"]}
-        style={{ height: "100%", borderRight: 0 }}
-      >
-        {manager.map((item) => (
-          <Menu.Item key={item.key} icon={item.icon}>
-            <Link to={item.path}>{item.label}</Link>
-          </Menu.Item>
-        ))}
-      </Menu></></>
+      USER?.user?.role==="checker"?
+      <>
+        <Menu
+          mode="inline"
+          defaultSelectedKeys={["shareHolder"]}
+          style={{ height: "100%", borderRight: 0 }}
+        >
+          {manager.map((item) => (
+            <Menu.Item key={item.key} icon={item.icon}>
+              <Link to={item.path}>{item.label}</Link>
+            </Menu.Item>
+          ))}
+        </Menu>
+      </>
+    </>
+  ) : (
+    <></>
   );
 };
 
