@@ -8,8 +8,8 @@ import { AuthContext } from "../../context/AuthContext";
 
 const Dashboard = () => {
   const [date, setDate] = useState(new Date());
-  const role = "maker";
-  const USER=useContext(AuthContext);
+  const USER = useContext(AuthContext);
+  const role = USER?.user?.role ?? "maker";
   console.log(date);
 
   const { data, isLoading, isError, isSuccess, error } = useQuery({
@@ -27,9 +27,10 @@ const Dashboard = () => {
   }
 
   if (isError || data?.data === undefined) {
+    console.log(error);
     return (
       <p style={{ position: "absolute", left: "50%", top: "50%" }}>
-        Something went wrong{error ? error.message : ""}
+        {error ? error.response.data : "Something went wrong"}
       </p>
     );
   }
@@ -65,7 +66,7 @@ const Dashboard = () => {
           </Flex>
         </Flex>
       );
-    } else if (role === "checker") {
+    } else if (role === "HO_Checker") {
       return (
         <Flex vertical gap={10}>
           <Flex justify="space-around" align="center">
@@ -90,7 +91,7 @@ const Dashboard = () => {
           </Flex>
         </Flex>
       );
-    } else if (role === "manager") {
+    } else if (role === "HO_Manager") {
       return (
         <Flex vertical gap={10}>
           <Flex justify="space-around" align="center">
@@ -99,10 +100,10 @@ const Dashboard = () => {
           </Flex>
 
           <Flex wrap gap={20} justify="center" align="center">
-            <DashboardCard title={`Accepted Requests`} amount={10} />
-            <DashboardCard title={`Rejected Requests`} amount={10} />
-            <DashboardCard title={`Pending Requests`} amount={10} />
-            <DashboardCard title={`Total Requests`} amount={10} />
+            <DashboardCard title={`Accepted Requests`} amount={data.data.accepted} />
+            <DashboardCard title={`Rejected Requests`} amount={data.data.rejected} />
+            <DashboardCard title={`Pending Requests`} amount={data.data.pending} />
+            <DashboardCard title={`Total Requests`} amount={data.data.total} />
           </Flex>
         </Flex>
       );

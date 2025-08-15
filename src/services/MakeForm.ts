@@ -47,7 +47,7 @@ export const searchAccount = async (account: number) => {
 
 export const createMakeForm=async(makeForm:makeFormInteface, makerId:number)=>{
   return await api.post("/makeForm", {
-    makerId:makerId,
+    makerId: makerId,
     cif:makeForm.cif,
     customerAccount: makeForm.accountNumber,
     customerPhone: makeForm.phoneNumber,

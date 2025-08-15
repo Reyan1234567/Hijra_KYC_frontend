@@ -21,7 +21,7 @@ const Distribute = () => {
               console.log(e);
               messageApi.open({
                 type: "error",
-                content: e.message,
+                content: e?.response?.data??"Something went wrong",
               });
             }
           }}

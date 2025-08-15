@@ -1,20 +1,28 @@
 import type { FormProps } from "antd";
 import { Button, Card, Flex, Form, Input } from "antd";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { Typography } from "antd";
 
 const LoginForm = () => {
-
-  const user = useContext(AuthContext);
+  const USER = useContext(AuthContext);
   const { Title } = Typography;
-  const onFinish: FormProps["onFinish"] = async(values) => {
-    await user?.login({username:values.username.toString(), password:values.password.toString()})
+  const [loading, setLoading] = useState(false);
+  const onFinish: FormProps["onFinish"] = async (values) => {
+    try {
+      setLoading(true);
+      await USER?.login({
+        username: values.username.toString(),
+        password: values.password.toString(),
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const onFinishFailed: FormProps["onFinishFailed"] = (
-    errorInfo
-  ) => {
+  const onFinishFailed: FormProps["onFinishFailed"] = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
   return (
@@ -57,7 +65,7 @@ const LoginForm = () => {
             </Form.Item>
 
             <Form.Item label={null}>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" loading={loading}>
                 Submit
               </Button>
             </Form.Item>

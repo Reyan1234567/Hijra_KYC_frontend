@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import MessagesView, { messages } from "../Message/MessagesView.tsx";
 import LoginForm from "../LoginForm.tsx";
 import ProtectionRotue from "../../ProtectionRotue.tsx";
+import { Logout } from "../../services/axios.ts";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -46,7 +47,9 @@ const FullLayout = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const handleLogout = () => {};
+  const handleLogout = () => {
+    Logout();
+  };
 
   const items = [
     {

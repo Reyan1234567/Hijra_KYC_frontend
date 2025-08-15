@@ -6,7 +6,7 @@ import {
   SearchOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Menu } from "antd";
+import { Badge, Menu } from "antd";
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
@@ -74,6 +74,7 @@ const SidebarMenu = () => {
       icon: <DashboardOutlined />,
       label: "Dashboard",
       path: "/",
+      Badge: 2,
     },
     {
       key: "checkerTable",
@@ -109,12 +110,6 @@ const SidebarMenu = () => {
       path: "/distribute",
     },
     {
-      key: "attendance",
-      icon: <Attendance />,
-      label: "Attendance",
-      path: "/attendance",
-    },
-    {
       key: "search",
       icon: <SearchOutlined />,
       label: "Search",
@@ -136,7 +131,7 @@ const SidebarMenu = () => {
         ))}
       </Menu>
     </div>
-  ) : USER?.user?.role === "checker" ? (
+  ) : USER?.user?.role === "HO_Checker" ? (
     <>
       <Menu
         mode="inline"
@@ -150,22 +145,19 @@ const SidebarMenu = () => {
         ))}
       </Menu>
     </>
-  ) : USER?.user?.role === "manager" ? (
+  ) : USER?.user?.role === "HO_Manager" ? (
     <>
-      USER?.user?.role==="checker"?
-      <>
-        <Menu
-          mode="inline"
-          defaultSelectedKeys={["shareHolder"]}
-          style={{ height: "100%", borderRight: 0 }}
-        >
-          {manager.map((item) => (
-            <Menu.Item key={item.key} icon={item.icon}>
-              <Link to={item.path}>{item.label}</Link>
-            </Menu.Item>
-          ))}
-        </Menu>
-      </>
+      <Menu
+        mode="inline"
+        defaultSelectedKeys={["shareHolder"]}
+        style={{ borderRight: 0 }}
+      >
+        {manager.map((item) => (
+          <Menu.Item key={item.key} icon={item.icon}>
+            <Link to={item.path}>{item.label}</Link>
+          </Menu.Item>
+        ))}
+      </Menu>
     </>
   ) : (
     <></>

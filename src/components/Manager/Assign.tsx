@@ -12,7 +12,7 @@ const Assign = (modal: assignModal) => {
   const [users, setUsers] = useState<user[]>([]);
   const { Title } = Typography;
 
-  const [checker, setChecker] = useState(modal.modal.hoId??undefined);
+  const [checker, setChecker] = useState(modal.modal.hoId ?? undefined);
   const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
@@ -47,7 +47,7 @@ const Assign = (modal: assignModal) => {
       console.log(e);
       messageApi.open({
         type: "error",
-        content: "Assignment wasn't successful",
+        content: e?.response?.data ?? "Assignment wasn't successful",
       });
     }
   };
@@ -78,10 +78,9 @@ const Assign = (modal: assignModal) => {
           <Title level={4}>Assign HO</Title>
           <Select
             options={users.map((user) => ({
-                value: user.id,
-                label: user.name,
-              }))
-            }
+              value: user.id,
+              label: user.name,
+            }))}
             value={checker}
             onChange={handleChange}
             placeholder="Assign an Ho"

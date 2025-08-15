@@ -117,7 +117,7 @@ const Profile = () => {
   async function handleSave() {
     try {
       await api.patch("/api/user-profiles/change-profile", {
-        id: 1,
+        id: USER?.user?.userId,
         base64: encodedProfile,
       });
       messageApi.open({

@@ -14,9 +14,10 @@ import {
 import { useContext, useState } from "react";
 import axios from "axios";
 import AddImageForm from "./MakeForm/AddImageForm";
-import { egami } from "./MakeForm/MakeFormTable";
+import { allTableDataType, egami } from "./MakeForm/MakeFormTable";
 import { createImage, createMakeForm } from "../services/MakeForm";
 import { AuthContext } from "../context/AuthContext";
+import { api } from "../services/axios";
 
 export interface makeFormInteface {
   fullName: string;
@@ -31,7 +32,7 @@ const Search = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [modal, setModal] = useState(false);
   const defaultMakeForm = {
-    fullName: "No one",
+    fullName: "",
     branchName: "No branch",
     branchId: "No Id",
     phoneNumber: "09393020",
@@ -39,13 +40,24 @@ const Search = () => {
     accountType: "string",
     cif: "string",
   };
+  const defaultErrorMakeForm = {
+    fullName: null,
+    branchName: null,
+    branchId: null,
+    phoneNumber: null,
+    accountNumber: null,
+    accountType: null,
+    cif: null,
+  };
   const [makeForm, setMakeForm] = useState<makeFormInteface>(defaultMakeForm);
   const [state, setState] = useState<"idle" | "loading" | "success" | "error">(
     "idle"
   );
   const { Title } = Typography;
+  const [MakeId, setMakeId] = useState(0);
+  const [flag, setFlag] = useState(false);
   const [form] = Form.useForm<{ AccountNumber: number }>();
-  const USER=useContext(AuthContext)
+  const USER = useContext(AuthContext);
   const onImageSubmit = async ({
     makeId,
     images,
@@ -53,42 +65,63 @@ const Search = () => {
     makeId: number;
     images: egami[];
   }) => {
-    if (makeForm == defaultMakeForm) {
+    if (makeForm == defaultMakeForm || !USER?.user?.userId) {
       return;
     }
     try {
       const make = await createMakeForm(makeForm, USER?.user?.userId);
-      await createImage(make.data, images);
+      if (make.status === 200) {
+        setMakeId(make.data.id);
+        await createImage(make.data.id, images);
+        form.setFieldValue("AccountNumber", "");
+        setState("idle");
+        messageApi.open({
+          type: "success",
+          content: "MakeForm Request Successful",
+        });
+      }
     } catch (e) {
       console.log(e);
       messageApi.open({
         type: "error",
-        content: "Some error happened",
+        content: "Something went wrong",
       });
     }
   };
+
   async function onFinish() {
-    try {
-      const makeFormResponse = await axios.get(
-        `https://dd3ef816daf3.ngrok-free.app/api/customerDetail/${
-          form.getFieldsValue().AccountNumber
-        }`
-        // {
-        // headers: {
-        //   "ngrok-skip-browser-warning": "69420",
-        //   "User-Agent":
-        //     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
-        // },
-        // }
-      );
+    setState("loading");
+    const makeFormResponse = await axios.get(
+      `https://5884aa1d5b0b.ngrok-free.app/api/customerDetail/${
+        form.getFieldsValue().AccountNumber
+      }`
+    );
+    if (
+      makeFormResponse.data.fullName !== defaultErrorMakeForm.fullName &&
+      makeFormResponse.data.fullName !== defaultMakeForm.fullName
+    ) {
       setMakeForm(makeFormResponse.data);
+      try {
+        await api.get<allTableDataType>("/makeForm/accountCheck", {
+          params: {
+            accountNumber: form.getFieldValue("AccountNumber"),
+          },
+        });
+        setFlag(false);
+      } catch (e) {
+        console.log(e);
+        setFlag(true);
+      }
       setState("success");
-    } catch (e) {
+      messageApi.open({
+        type: "success",
+        content: "Successfully fetched account",
+      });
+    } else {
       setState("error");
-      console.log(e);
       messageApi.open({
         type: "error",
-        content: e instanceof Error ? e.message : String(e),
+        content: "Error fetching account",
       });
     }
   }
@@ -199,9 +232,13 @@ const Search = () => {
               <p>Cif</p>
               <Input value={makeForm.cif} disabled />
             </Flex>
-            <Flex style={{ width: "100%", padding: "15px" }} justify="center">
-              <Button>Create a Make Request</Button>
-            </Flex>
+            {flag && (
+              <Flex style={{ width: "100%", padding: "15px" }} justify="center">
+                <Button onClick={() => setModal(true)}>
+                  Create a Make Request
+                </Button>
+              </Flex>
+            )}
           </Card>
           <Modal
             open={modal}
@@ -209,10 +246,11 @@ const Search = () => {
             okButtonProps={{ style: { display: "none" } }}
             cancelButtonProps={{ style: { display: "none" } }}
             title="Add Images"
+            width={1000}
           >
             <AddImageForm
               setEditModal={() => setModal(false)}
-              makeId={0}
+              makeId={MakeId}
               onFinish={({ makeId, images }) =>
                 onImageSubmit({ makeId, images })
               }
@@ -220,6 +258,7 @@ const Search = () => {
           </Modal>
         </>
       )}
+      {state === "idle" && <></>}
     </>
   );
 };

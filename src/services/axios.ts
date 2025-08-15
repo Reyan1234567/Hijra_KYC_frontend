@@ -1,14 +1,21 @@
 import axios from "axios";
-// import { config } from "dotenv";
+import { logOutLog } from "./Authentication";
 
 type refreshResponse = {
   accessToken: string;
 };
 
 const getAccessToken = () => {
-  console.log("so that dumbahh fun");
   return localStorage.getItem("accessToken");
 };
+
+const getUserId = () => {
+  return localStorage.getItem("userId");
+};
+
+const getRefreshToken=()=>{
+  return localStorage.getItem("refreshToken")
+}
 
 export const api = axios.create({
   baseURL: "http://localhost:9090/",
@@ -22,7 +29,6 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   async (config) => {
-    console.log("NO error what the hell?????");
     return config;
   },
   async (error) => {
@@ -32,19 +38,12 @@ api.interceptors.response.use(
       !originalRequest._retry
     ) {
       try {
-        console.log("In the interceptor");
-        console.log(error.response.status);
         originalRequest._retry = true;
         const newTokens = await getNewRefresh();
-        console.log("THE NEW TOKEN");
-        console.log(newTokens);
-        originalRequest.headers.Authorization = `Bearer ${newTokens}`;
         localStorage.setItem("accessToken", newTokens!.accessToken);
         return api(originalRequest);
       } catch (e) {
-        console.log(e);
-        console.log("SHIIIIIT AIIINNTT WORKING");
-        // Logout(); //the logout function in the context and this specific function are different so what do you say????
+        Logout(); //the logout function in the context and this specific function are different so what do you say????
         return Promise.reject(e);
       }
     }
@@ -55,9 +54,9 @@ api.interceptors.response.use(
 
 const getNewRefresh = async () => {
   try {
-    const refresh = await axios.get<refreshResponse>(
+    const refresh = await axios.post<refreshResponse>(
       "http://localhost:9090/user/refresh",
-      { withCredentials: true }
+      { refreshToken: getRefreshToken() }
     );
     console.log(refresh);
     return refresh.data;
@@ -68,10 +67,14 @@ const getNewRefresh = async () => {
 
 export const Logout = async () => {
   try {
-    window.location.replace("http://localhost:5173/login");
+    if (!getUserId()) {
+      throw new Error("no UserId found");
+    }
+    await logOutLog(Number(getUserId()));
   } catch (e) {
     console.log(e);
+  } finally {
+    window.location.replace("http://localhost:5173/login");
+    localStorage.clear();
   }
-  localStorage.clear();
-  localStorage.removeItem("accessToken");
 };

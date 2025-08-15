@@ -2,7 +2,7 @@ import { ReactNode, useLayoutEffect, useState } from "react";
 import { userInfo } from "../types/ContextFiles";
 import { LoginRequest } from "../types/LoginRequest";
 import { AuthContext } from "./AuthContext";
-import { loginFetch } from "../services/Authentication";
+import { loginFetch, loginLog } from "../services/Authentication";
 import { Logout } from "../services/axios.ts";
 import { useNavigate } from "react-router-dom";
 import { message } from "antd";
@@ -29,20 +29,22 @@ export const AuthProvider = (children: prop) => {
   }, []);
 
   const login = async (userData: LoginRequest) => {
-    const response = await loginFetch(userData);
-    if (response?.status == 200) {
+    try {
+      const response = await loginFetch(userData);
       console.log(response.data.userInfo);
       localStorage.setItem("accessToken", response.data.accessToken);
+      localStorage.setItem("refreshToken", response.data.refreshToken);
       localStorage.setItem("username", response.data.userInfo.username);
       localStorage.setItem("userId", response.data.userInfo.userId.toString());
       localStorage.setItem("role", response.data.userInfo.role);
+      await loginLog(response.data.userInfo.userId);
       setUser(response.data.userInfo);
       navigate("/dashboard");
-    } else {
+    } catch (e) {
       setUser(null);
       messageApi.open({
         type: "error",
-        content: "wrong credentials",
+        content: e?.response?.data??"Something went wrong",
       });
     }
   };
