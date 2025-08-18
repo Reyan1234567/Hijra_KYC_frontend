@@ -12,7 +12,7 @@ import RequestTables from "../Helper/Table/RequestTables";
 import { useContext, useEffect, useState } from "react";
 import { api } from "../../services/axios";
 import DateDropDown from "../Helper/DateDropdown/DateDropDown";
-import { allTableDataType } from "../MakeForm/MakeFormTable";
+import { allTableDataType } from "../MakeForm/AllMakeFormTable";
 import DropDown from "../Helper/DateDropdown/DropDown";
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 import CheckerEditModal from "./CheckerEditModal";

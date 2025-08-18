@@ -11,7 +11,7 @@ import {
 import RequestTables from "../Helper/Table/RequestTables";
 import { useEffect, useState } from "react";
 import { api } from "../../services/axios";
-import { allTableDataType } from "../MakeForm/MakeFormTable";
+import { allTableDataType } from "../MakeForm/AllMakeFormTable";
 import DropDown from "../Helper/DateDropdown/DropDown";
 import { BookOutlined, EyeOutlined } from "@ant-design/icons";
 import ManagerEdit from "./ManagerEdit";
@@ -53,7 +53,9 @@ const KycManagerTable = () => {
   useEffect(() => {
     const getRequestsAssignedToMe = async () => {
       try {
-        const makes = await api.get("/makeForm/manager",{params:{date:date}});
+        const makes = await api.get("/makeForm/manager", {
+          params: { date: date },
+        });
         console.log(makes.data[0]);
         setMakeRequests(makes.data);
         if (makes.data.length === 0) {

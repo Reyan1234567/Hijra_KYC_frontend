@@ -2,7 +2,7 @@ import { Button, Flex, Input, message, Modal } from "antd";
 import DisplayInfo from "../Helper/RequestModals/DisplayInfo";
 import { api } from "../../services/axios";
 import { useState } from "react";
-import { allTableDataType } from "../MakeForm/MakeFormTable";
+import { allTableDataType } from "../MakeForm/AllMakeFormTable";
 import BackReason from "../Helper/RequestModals/BackReason";
 
 export interface checkerViewModal {
@@ -96,7 +96,7 @@ const CheckerEditModal = (checkerEditModal: checkerViewModal) => {
                   console.log(e);
                   messageApi.open({
                     type: "error",
-                    content: e?.response.data??"Something went wrong",
+                    content: e?.response.data ?? "Something went wrong",
                   });
                 }
               }}

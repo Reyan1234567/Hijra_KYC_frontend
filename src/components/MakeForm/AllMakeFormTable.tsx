@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Flex, message, Spin, Table, Tabs } from "antd";
+import { Flex, message, Spin, Table } from "antd";
 import type { MenuProps, TableColumnsType, TabsProps } from "antd";
 import DateDropDown from "../Helper/DateDropdown/DateDropDown";
 import {
@@ -50,7 +50,11 @@ export interface egami {
   url: string;
 }
 
-const MakeFormTable = () => {
+export interface pageableReturn {
+  makes: allTableDataType[];
+  total: number;
+}
+const AllMakeFormTable = () => {
   const queryClient = useQueryClient();
   const today = new Date();
   const [messageApi, contextHolder] = message.useMessage();
@@ -168,10 +172,16 @@ const MakeFormTable = () => {
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const USER=useContext(AuthContext)
+  const USER = useContext(AuthContext);
+  const [pageSize, setPageSize] = useState(1);
+  const [pageNumber, setPageNumber] = useState(1);
+  const onchange = (pageNo: number, pageSi: number) => {
+    setPageNumber(pageNo);
+    setPageSize(pageSi);
+  };
   const { data, isLoading, isError, isSuccess, error } = useQuery({
-    queryKey: ["makes", date],
-    queryFn: () => getMakes(date, USER?.user?.userId),
+    queryKey: ["makes", date, pageNumber, pageSize],
+    queryFn: () => getMakes(date, USER?.user?.userId, pageSize, pageNumber,),
   });
 
   const sendToHoMutation = useMutation({
@@ -223,7 +233,7 @@ const MakeFormTable = () => {
       </p>
     );
   }
-  if (isSuccess && data.data.length === 0) {
+  if (isSuccess && data.data.makes.length === 0) {
     return (
       <>
         <div
@@ -241,12 +251,21 @@ const MakeFormTable = () => {
     );
   }
 
-  const res: allTableDataType[] = data.data;
+  const res: allTableDataType[] = data.data.makes;
   const items: TabsProps["items"] = [
     {
       key: "1",
       label: "All Requests",
-      children: <RequestTables data={res} colums={columns} />,
+      children: (
+        <RequestTables
+          data={res}
+          colums={columns}
+          pageSize={pageSize}
+          pageNumber={pageNumber}
+          total={data.data.total}
+          onChange={onchange}
+        />
+      ),
     },
     {
       key: "2",
@@ -255,7 +274,11 @@ const MakeFormTable = () => {
         <RequestTables
           data={res.filter((request) => request.status === 0)}
           colums={columns}
-        />
+          pageSize={pageSize}
+          pageNumber={pageNumber}
+          total={data.data.total}
+          onChange={onchange} 
+          />
       ),
     },
     {
@@ -265,6 +288,10 @@ const MakeFormTable = () => {
         <RequestTables
           data={res.filter((request) => request.status === 1)}
           colums={columns}
+          pageSize={pageSize}
+          pageNumber={pageNumber}
+          total={data.data.total}
+          onChange={onchange}
         />
       ),
     },
@@ -275,6 +302,10 @@ const MakeFormTable = () => {
         <RequestTables
           data={res.filter((request) => request.status === 2)}
           colums={columns}
+          pageSize={pageSize}
+          pageNumber={pageNumber}
+          total={data.data.total}
+          onChange={onchange}
         />
       ),
     },
@@ -285,6 +316,10 @@ const MakeFormTable = () => {
         <RequestTables
           data={res.filter((request) => request.status === 3)}
           colums={columns}
+          pageSize={pageSize}
+          pageNumber={pageNumber}
+          total={data.data.total}
+          onChange={onchange}
         />
       ),
     },
@@ -304,7 +339,15 @@ const MakeFormTable = () => {
         <DateDropDown date={date} setDate={setDate} />
       </div>
       <Flex gap="middle" vertical>
-        <Tabs type="card" defaultActiveKey="1" items={items} />
+        <RequestTables
+          data={res}
+          colums={columns}
+          pageSize={pageSize}
+          pageNumber={pageNumber}
+          total={data.data.total}
+          onChange={onchange}
+          // onSizeChange={onchange}
+        />{" "}
       </Flex>
       <ViewModal
         handleCancel={handleCancel}
@@ -323,4 +366,4 @@ const MakeFormTable = () => {
   );
 };
 
-export default MakeFormTable;
+export default AllMakeFormTable;

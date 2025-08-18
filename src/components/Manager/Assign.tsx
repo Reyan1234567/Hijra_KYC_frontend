@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../../services/axios";
-import { allTableDataType } from "../MakeForm/MakeFormTable";
+import { allTableDataType } from "../MakeForm/AllMakeFormTable";
 import { Button, Flex, message, Select, Typography } from "antd";
 import { user } from "../User/Profile";
 

@@ -1,5 +1,5 @@
   export const ExtractDate = (date: Date) => {
-    if (date === null) return "------------";
+    if (date === null) return "-----------";
     else {
       const day = new Date(date);
       return `${day.getDate()}/${day.getMonth()}/${day.getFullYear()}  ${day.getHours()}:${day.getMinutes()}:${day.getSeconds()}`;

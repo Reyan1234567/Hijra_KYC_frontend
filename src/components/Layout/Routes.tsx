@@ -1,13 +1,13 @@
 import { JSX, lazy } from "react";
 import Attendance from "../Manager/Attendance.tsx";
 
-const MakeFormTable = lazy(() => import("../MakeForm/MakeFormTable.tsx"));
+const MakeFormTable = lazy(() => import("../MakeForm/AllMakeFormTable.tsx"));
 const Distribute = lazy(() => import("../Helper/Distribute.tsx"));
 const Dashboard = lazy(() => import("../Dashboard/Dashboard.tsx"));
 const Profile = lazy(() => import("../User/Profile.tsx"));
 const KycManagerTable = lazy(() => import("../Manager/KycManagerTable.tsx"));
 const CheckerTable = lazy(() => import("../Checker/CheckerTable.tsx"));
-const MakeTable = lazy(() => import("../MakeForm/MakeFormTable.tsx"));
+const MakeTable = lazy(() => import("../MakeForm/AllMakeFormTable.tsx"));
 const Search = lazy(() => import("../Search.tsx"));
 
 interface routes {

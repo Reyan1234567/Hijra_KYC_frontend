@@ -5,7 +5,7 @@ import {
 } from "@ant-design/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button, Flex, Input, message, Popconfirm, Image } from "antd";
-import { imageReturn } from "./MakeFormTable";
+import { imageReturn } from "./AllMakeFormTable";
 import { dissassociate, editDescription } from "../../services/MakeForm";
 import { useEffect, useState } from "react";
 

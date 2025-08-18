@@ -1,5 +1,5 @@
 import { Divider, Modal, message } from "antd";
-import { allTableDataType, egami } from "./MakeFormTable";
+import { allTableDataType, egami } from "./AllMakeFormTable";
 import MakeInfo from "../Helper/RequestModals/MakeInfo";
 
 import ImageEdit from "./ImageEdit";
@@ -61,7 +61,7 @@ const EditModal = (editModalParam: editModalParam) => {
               }}
               makeId={editModalParam.modal.id}
               onFinish={({ makeId, images }) =>
-                createMutation.mutate({ makeId, imaged:images })
+                createMutation.mutate({ makeId, imaged: images })
               }
             />
           </>

@@ -14,7 +14,7 @@ import {
 import { useContext, useState } from "react";
 import axios from "axios";
 import AddImageForm from "./MakeForm/AddImageForm";
-import { allTableDataType, egami } from "./MakeForm/MakeFormTable";
+import { allTableDataType, egami } from "./MakeForm/AllMakeFormTable";
 import { createImage, createMakeForm } from "../services/MakeForm";
 import { AuthContext } from "../context/AuthContext";
 import { api } from "../services/axios";

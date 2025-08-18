@@ -1,10 +1,15 @@
 import { Flex, Table, TableColumnsType, Tag } from "antd";
-import { allTableDataType } from "../../MakeForm/MakeFormTable";
+import { allTableDataType } from "../../MakeForm/AllMakeFormTable";
 import { ExtractDate } from "../../../services/DisplayFunctions";
 
 interface dataSource {
   data: allTableDataType[];
   colums?: TableColumnsType<allTableDataType>;
+  pageSize: number;
+  pageNumber: number;
+  total: number;
+  onChange: (pageNo: number, pageSi: number) => void;
+  // onSizeChange: (current:number, size:number)=>void;
 }
 
 const RequestTables = (dataSource: dataSource) => {
@@ -55,11 +60,21 @@ const RequestTables = (dataSource: dataSource) => {
 
   return (
     <Table<allTableDataType>
-      columns={dataSource.colums?[...columns, ...dataSource.colums]:[...columns]}
+      columns={
+        dataSource.colums ? [...columns, ...dataSource.colums] : [...columns]
+      }
       dataSource={dataSource.data}
       pagination={{
         showSizeChanger: true,
-        pageSizeOptions: ["5", "10", "20", "50", "100", "200"],
+        current: dataSource.pageNumber,
+        pageSize: dataSource.pageSize,
+        total: dataSource.total,
+        onChange: (page: number, pageSize: number) => {
+          dataSource.onChange(page, pageSize);
+        },
+        // onShowSizeChange:(current:number, size:number)=>{
+        //   dataSource.onSizeChange(size, current)
+        // }
       }}
     />
   );

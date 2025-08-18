@@ -1,10 +1,10 @@
 import { Divider, Flex } from "antd";
-import { allTableDataType } from "../../MakeForm/MakeFormTable";
+import { allTableDataType } from "../../MakeForm/AllMakeFormTable";
 import { ExtractDate } from "../../../services/DisplayFunctions";
-import {Typography} from "antd";
+import { Typography } from "antd";
 
 const MakeInfo = (modal: allTableDataType) => {
-  const {Title}=Typography;
+  const { Title } = Typography;
   return (
     <Flex justify="space-between">
       <Flex vertical style={{ width: "40%" }}>
@@ -15,9 +15,7 @@ const MakeInfo = (modal: allTableDataType) => {
           <p>{modal!.cif}</p>
         </Flex>
         <Divider />
-        <Title level={3}>
-          Customer Info
-        </Title>
+        <Title level={3}>Customer Info</Title>
         <Flex justify="space-between">
           <p>Name:</p>
           <p>{modal!.customerName}</p>
@@ -33,9 +31,7 @@ const MakeInfo = (modal: allTableDataType) => {
       </Flex>
 
       <Flex vertical style={{ width: "40%" }}>
-        <Title level={3}>
-          Request Info
-        </Title>
+        <Title level={3}>Request Info</Title>
         <Flex justify="space-between">
           <p>Maker ID:</p>
           <p>{modal!.makerId}</p>
@@ -47,9 +43,7 @@ const MakeInfo = (modal: allTableDataType) => {
 
         <Divider />
 
-        <Title level={3}>
-          Checker Info
-        </Title>
+        <Title level={3}>Checker Info</Title>
         <Flex justify="space-between">
           <p>Checker ID:</p>
           <p>{modal?.hoId || "No checker assigned"}</p>

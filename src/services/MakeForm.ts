@@ -1,4 +1,8 @@
-import { egami, imageReturn } from "../components/MakeForm/MakeFormTable";
+import {
+  egami,
+  imageReturn,
+  pageableReturn,
+} from "../components/MakeForm/AllMakeFormTable";
 import { makeFormInteface } from "../components/Search";
 import { api } from "./axios";
 
@@ -10,10 +14,30 @@ export const sendToHo = async (id: number) => {
   return await api.patch(`/makeForm/send-ToHo/${id}`);
 };
 
-export const getMakes = async (date: Date, makerId:number) => {
-  return await api.get("/makeForm", {
-    params: { makerId: makerId, date: date },
+export const getMakes = async (
+  date: Date,
+  makerId: number,
+  pageSize: number,
+  pageNumber: number
+) => {
+  const req = await api.get<pageableReturn>("/makeForm", {
+    params: { makerId, date, pageSize: pageSize, pageNumber: pageNumber },
   });
+  console.log(req.data);
+  return req;
+};
+
+export const getDraftedMakes = async (
+  date: Date,
+  makerId: number,
+  pageSize: number,
+  pageNumber: number
+) => {
+  const req = await api.get<pageableReturn>("/makeForm/drafts", {
+    params: { makerId, date, pageSize: pageSize, pageNumber: pageNumber },
+  });
+  console.log(req.data);
+  return req;
 };
 
 export const dissassociate = async (imageId: number) => {
@@ -44,13 +68,15 @@ export const searchAccount = async (account: number) => {
   );
 };
 
-
-export const createMakeForm=async(makeForm:makeFormInteface, makerId:number)=>{
+export const createMakeForm = async (
+  makeForm: makeFormInteface,
+  makerId: number
+) => {
   return await api.post("/makeForm", {
     makerId: makerId,
-    cif:makeForm.cif,
+    cif: makeForm.cif,
     customerAccount: makeForm.accountNumber,
     customerPhone: makeForm.phoneNumber,
-    customerName: makeForm.fullName
-  })
-}
+    customerName: makeForm.fullName,
+  });
+};
