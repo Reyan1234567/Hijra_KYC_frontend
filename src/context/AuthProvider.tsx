@@ -15,6 +15,7 @@ export const AuthProvider = (children: prop) => {
   const [user, setUser] = useState<userInfo | null>(null);
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
+  // const [count, setCount] = useState({ message: 0, rejected: 0, approved: 0 });
 
   useLayoutEffect(() => {
     const onReload = () => {
@@ -27,6 +28,24 @@ export const AuthProvider = (children: prop) => {
     };
     onReload();
   }, []);
+
+  // interface counts {
+  //   message: number;
+  //   rejected: number;
+  //   accepted: number;
+  // }
+
+  // useEffect(() => {
+  //   const badges = async () => {
+  //     try {
+  //       const res=await api.get<counts>("/Counts");
+  //       setCount({message:res.data.message, accepted: res.data.accepted, rejected: res.data.rejected});
+  //     } catch (e) {
+  //       console.log(e);
+  //     }
+  //   };
+  //   badges();
+  // }, []);
 
   const login = async (userData: LoginRequest) => {
     try {
@@ -41,10 +60,11 @@ export const AuthProvider = (children: prop) => {
       setUser(response.data.userInfo);
       navigate("/dashboard");
     } catch (e) {
+      console.log(e)
       setUser(null);
       messageApi.open({
         type: "error",
-        content: e?.response?.data??"Something went wrong",
+        content: e?.response?.data ?? "Something went wrong",
       });
     }
   };

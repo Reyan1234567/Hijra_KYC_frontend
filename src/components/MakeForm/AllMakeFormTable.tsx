@@ -173,7 +173,7 @@ const AllMakeFormTable = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const USER = useContext(AuthContext);
-  const [pageSize, setPageSize] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [pageNumber, setPageNumber] = useState(1);
   const onchange = (pageNo: number, pageSi: number) => {
     setPageNumber(pageNo);

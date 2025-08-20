@@ -1,17 +1,17 @@
-import { Flex, MenuProps, message, Spin, Table, TableColumnsType } from "antd";
+import { Flex, MenuProps, Spin, Table, TableColumnsType } from "antd";
 import RequestTables from "../Helper/Table/RequestTables";
 import { useContext, useEffect, useState } from "react";
 import { api } from "../../services/axios";
 import DateDropDown from "../Helper/DateDropdown/DateDropDown";
 import { allTableDataType, pageableReturn } from "../MakeForm/AllMakeFormTable";
 import DropDown from "../Helper/DateDropdown/DropDown";
-import { EditOutlined, EyeOutlined } from "@ant-design/icons";
-import CheckerEditModal from "./CheckerEditModal";
+import { BookOutlined, EyeOutlined } from "@ant-design/icons";
 import ViewModal from "../Helper/RequestModals/ViewModal";
 import { AuthContext } from "../../context/AuthContext";
+import ManagerEdit from "./ManagerEdit";
 
-const CheckerTable = () => {
-  const [, /*messageApi*/ contextHolder] = message.useMessage();
+const KycManagerPendingTable = () => {
+  // const [ /*messageApi*/ contextHolder] = message.useMessage();
   const today = new Date();
   const [trigger, setTrigger] = useState(0);
   const [viewModal, setViewModal] = useState(false);
@@ -55,9 +55,8 @@ const CheckerTable = () => {
   useEffect(() => {
     const getRequestsAssignedToMe = async () => {
       try {
-        const makes = await api.get<pageableReturn>("/makeForm/getHo", {
+        const makes = await api.get<pageableReturn>("/makeForm/manager/pending", {
           params: {
-            hoUserId: USER?.user?.userId,
             date: date,
             pageNumber: pageNumber,
             pageSize: pageSize,
@@ -89,7 +88,7 @@ const CheckerTable = () => {
     },
   ];
 
-  const edit: MenuProps["items"] = [
+  const assign: MenuProps["items"] = [
     {
       label: "view",
       key: "1",
@@ -99,15 +98,19 @@ const CheckerTable = () => {
       },
     },
     {
-      label: "Edit",
+      label: "Edit HO Assignment",
       key: "2",
-      icon: <EditOutlined />,
+      icon: <BookOutlined />,
       onClick: () => {
         setEditModal(true);
       },
     },
   ];
   const columns: TableColumnsType<allTableDataType> = [
+    {
+      title: "Maker",
+      dataIndex: "makerName",
+    },
     {
       title: "Action",
       dataIndex: "status",
@@ -127,7 +130,7 @@ const CheckerTable = () => {
           return (
             <Flex justify="center">
               <DropDown
-                menu={edit}
+                menu={assign}
                 onChange={() => {
                   setModal(row);
                 }}
@@ -138,6 +141,7 @@ const CheckerTable = () => {
       },
     },
   ];
+
   return (
     <>
       {state === "loading" && (
@@ -155,7 +159,7 @@ const CheckerTable = () => {
               alignItems: "center",
             }}
           >
-            <h1>Check Table</h1>
+            <h1>Pending Requests</h1>
             <DateDropDown date={date} setDate={setDate} />
           </div>
           <Table />
@@ -164,7 +168,7 @@ const CheckerTable = () => {
       {state === "error" && <p>Something wrong happened</p>}
       {state === "success" && (
         <>
-          {contextHolder}
+          {/* {contextHolder} */}
           <div
             style={{
               display: "flex",
@@ -172,18 +176,18 @@ const CheckerTable = () => {
               alignItems: "center",
             }}
           >
-            <h1>Check Table</h1>
+            <h1>Pending Requests</h1>
             <DateDropDown date={date} setDate={setDate} />
           </div>
           <RequestTables
             data={makeRequests.makes}
-            colums={columns}
-            pageSize={pageSize}
-            pageNumber={pageNumber}
-            total={makeRequests.total}
-            onChange={onchange}
-          />
-          <CheckerEditModal
+            colums={columns} 
+            pageSize={pageSize} 
+            pageNumber={pageNumber} 
+            total={makeRequests.total} 
+            onChange={onchange}        
+            />
+          <ManagerEdit
             modal={modal}
             open={editModal}
             onCancel={() => setEditModal(false)}
@@ -200,4 +204,4 @@ const CheckerTable = () => {
   );
 };
 
-export default CheckerTable;
+export default KycManagerPendingTable;

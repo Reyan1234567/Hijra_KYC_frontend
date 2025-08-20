@@ -11,7 +11,7 @@ interface loginResult {
 
 export const loginFetch = async (userInfo: LoginRequest) => {
   const loginResult = await axios.post<loginResult>(
-    "http://localhost:9090/user/login",
+    "http://localhost:9090/auth/login",
     userInfo,
     { withCredentials: true }
   );

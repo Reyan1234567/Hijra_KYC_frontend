@@ -1,51 +1,24 @@
 import {
   BookOutlined,
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  CloseCircleOutlined,
   DashboardOutlined,
   EditOutlined,
+  FormOutlined,
   FullscreenOutlined,
+  ProfileOutlined,
   SearchOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Badge, Menu } from "antd";
+import { Menu } from "antd";
 import { useContext } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import Attendance from "../Manager/Attendance";
 
 const SidebarMenu = () => {
+  const navigate = useNavigate();
   const USER = useContext(AuthContext);
-  // const all = [
-  //   {
-  //     key: "dashboard",
-  //     icon: <DashboardOutlined />,
-  //     label: "Dashboard",
-  //     path: "/",
-  //   },
-  //   {
-  //     key: "makeFormTable",
-  //     icon: <EditOutlined />,
-  //     label: "Make Form",
-  //     path: "/makeForm",
-  //   },
-  //   {
-  //     key: "checkerTable",
-  //     icon: <BookOutlined />,
-  //     label: "Check Form",
-  //     path: "/checkerTable",
-  //   },
-  //   {
-  //     key: "kycManagerTable",
-  //     icon: <UserOutlined />,
-  //     label: "KYC Manager",
-  //     path: "/kycManager",
-  //   },
-  //   {
-  //     key: "distributer",
-  //     icon: <FullscreenOutlined />,
-  //     label: "Distribute",
-  //     path: "/distribute",
-  //   },
-  // ];
 
   const maker = [
     {
@@ -58,7 +31,34 @@ const SidebarMenu = () => {
       key: "makeFormTable",
       icon: <EditOutlined />,
       label: "Make Form",
-      path: "/makeForm",
+      children: [
+        {
+          key: "makeForm",
+          icon: <ProfileOutlined />,
+          label: "All Requests",
+          path: "/makeForm",
+        },
+        {
+          key: "makeTable/drafts",
+          icon: <FormOutlined />,
+          label: "Drafts",
+        },
+        {
+          key: "makeTable/pending",
+          icon: <ClockCircleOutlined />,
+          label: "Pending",
+        },
+        {
+          key: "makeTable/approved",
+          icon: <CheckCircleOutlined />,
+          label: "Approved",
+        },
+        {
+          key: "makeTable/rejected",
+          icon: <CloseCircleOutlined />,
+          label: "Rejected",
+        },
+      ],
     },
     {
       key: "search",
@@ -74,13 +74,33 @@ const SidebarMenu = () => {
       icon: <DashboardOutlined />,
       label: "Dashboard",
       path: "/",
-      Badge: 2,
     },
     {
       key: "checkerTable",
       icon: <BookOutlined />,
       label: "Check Form",
-      path: "/checkerTable",
+      children: [
+        {
+          key: "checkerTable",
+          label: "All Requests",
+          icon: <ProfileOutlined />,
+        },
+        {
+          key: "checkTable/pending",
+          label: "Pending",
+          icon: <ClockCircleOutlined />,
+        },
+        {
+          key: "checkTable/approved",
+          label: "Approved",
+          icon: <CheckCircleOutlined />,
+        },
+        {
+          key: "checkTable/rejected",
+          label: "Rejected",
+          icon: <CloseCircleOutlined />,
+        },
+      ],
     },
     {
       key: "search",
@@ -101,10 +121,27 @@ const SidebarMenu = () => {
       key: "kycManagerTable",
       icon: <UserOutlined />,
       label: "KYC Manager",
-      path: "/kycManager",
+      children: [
+        { key: "manager", icon: <ProfileOutlined />, label: "All Requests" },
+        {
+          key: "manager/pending",
+          icon: <ClockCircleOutlined/>,
+          label: "Pending",
+        },
+        {
+          key: "manager/approved",
+          icon: <CheckCircleOutlined />,
+          label: "Approved",
+        },
+        {
+          key: "manager/rejected",
+          icon: <ClockCircleOutlined />,
+          label: "Rejected",
+        },
+      ],
     },
     {
-      key: "distributer",
+      key: "distribute",
       icon: <FullscreenOutlined />,
       label: "Distribute",
       path: "/distribute",
@@ -117,19 +154,19 @@ const SidebarMenu = () => {
     },
   ];
 
+  const onclick = (e) => {
+    navigate(e.key);
+  };
+
   return USER?.user?.role === "maker" ? (
     <div>
       <Menu
         mode="inline"
         defaultSelectedKeys={["shareHolder"]}
         style={{ borderRight: 0 }}
-      >
-        {maker.map((item) => (
-          <Menu.Item key={item.key} icon={item.icon}>
-            <Link to={item.path}>{item.label}</Link>
-          </Menu.Item>
-        ))}
-      </Menu>
+        items={maker}
+        onClick={onclick}
+      />
     </div>
   ) : USER?.user?.role === "HO_Checker" ? (
     <>
@@ -137,13 +174,9 @@ const SidebarMenu = () => {
         mode="inline"
         defaultSelectedKeys={["shareHolder"]}
         style={{ borderRight: 0 }}
-      >
-        {checker.map((item) => (
-          <Menu.Item key={item.key} icon={item.icon}>
-            <Link to={item.path}>{item.label}</Link>
-          </Menu.Item>
-        ))}
-      </Menu>
+        items={checker}
+        onClick={onclick}
+      />
     </>
   ) : USER?.user?.role === "HO_Manager" ? (
     <>
@@ -151,13 +184,9 @@ const SidebarMenu = () => {
         mode="inline"
         defaultSelectedKeys={["shareHolder"]}
         style={{ borderRight: 0 }}
-      >
-        {manager.map((item) => (
-          <Menu.Item key={item.key} icon={item.icon}>
-            <Link to={item.path}>{item.label}</Link>
-          </Menu.Item>
-        ))}
-      </Menu>
+        items={manager}
+        onClick={onclick}
+      />
     </>
   ) : (
     <></>

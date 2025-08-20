@@ -10,7 +10,7 @@ import CheckerEditModal from "./CheckerEditModal";
 import ViewModal from "../Helper/RequestModals/ViewModal";
 import { AuthContext } from "../../context/AuthContext";
 
-const CheckerTable = () => {
+const CheckerPendingTable = () => {
   const [, /*messageApi*/ contextHolder] = message.useMessage();
   const today = new Date();
   const [trigger, setTrigger] = useState(0);
@@ -55,7 +55,7 @@ const CheckerTable = () => {
   useEffect(() => {
     const getRequestsAssignedToMe = async () => {
       try {
-        const makes = await api.get<pageableReturn>("/makeForm/getHo", {
+        const makes = await api.get<pageableReturn>("/makeForm/getHo/pending", {
           params: {
             hoUserId: USER?.user?.userId,
             date: date,
@@ -155,7 +155,7 @@ const CheckerTable = () => {
               alignItems: "center",
             }}
           >
-            <h1>Check Table</h1>
+            <h1>Pending Requests</h1>
             <DateDropDown date={date} setDate={setDate} />
           </div>
           <Table />
@@ -172,7 +172,7 @@ const CheckerTable = () => {
               alignItems: "center",
             }}
           >
-            <h1>Check Table</h1>
+            <h1>Pending Requests</h1>
             <DateDropDown date={date} setDate={setDate} />
           </div>
           <RequestTables
@@ -200,4 +200,4 @@ const CheckerTable = () => {
   );
 };
 
-export default CheckerTable;
+export default CheckerPendingTable;

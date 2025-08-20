@@ -13,7 +13,7 @@ import EditModal from "./EditModal";
 import ViewModal from "../Helper/RequestModals/ViewModal";
 import DropDown from "../Helper/DateDropdown/DropDown";
 import RequestTables from "../Helper/Table/RequestTables";
-import { addToDrafts, getMakes, sendToHo } from "../../services/MakeForm";
+import { addToDrafts, getDraftedMakes, sendToHo } from "../../services/MakeForm";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AuthContext } from "../../context/AuthContext";
 import { allTableDataType } from "./AllMakeFormTable";
@@ -137,7 +137,7 @@ const DraftsMakeFormTable = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const USER = useContext(AuthContext);
-  const [pageSize, setPageSize] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [pageNumber, setPageNumber] = useState(1);
   const onchange = (pageNo: number, pageSi: number) => {
     setPageNumber(pageNo);
@@ -207,7 +207,7 @@ const DraftsMakeFormTable = () => {
             alignItems: "center",
           }}
         >
-          <h1>MakeTable</h1>
+          <h1>Drafts</h1>
           <DateDropDown date={date} setDate={setDate} />
         </div>
         <Table<allTableDataType> dataSource={[]} />
@@ -216,78 +216,6 @@ const DraftsMakeFormTable = () => {
   }
 
   const res: allTableDataType[] = data.data.makes;
-  const items: TabsProps["items"] = [
-    {
-      key: "1",
-      label: "All Requests",
-      children: (
-        <RequestTables
-          data={res}
-          colums={columns}
-          pageSize={pageSize}
-          pageNumber={pageNumber}
-          total={data.data.total}
-          onChange={onchange}
-        />
-      ),
-    },
-    {
-      key: "2",
-      label: "Drafts",
-      children: (
-        <RequestTables
-          data={res.filter((request) => request.status === 0)}
-          colums={columns}
-          pageSize={pageSize}
-          pageNumber={pageNumber}
-          total={data.data.total}
-          onChange={onchange}
-        />
-      ),
-    },
-    {
-      key: "3",
-      label: "Pending",
-      children: (
-        <RequestTables
-          data={res.filter((request) => request.status === 1)}
-          colums={columns}
-          pageSize={pageSize}
-          pageNumber={pageNumber}
-          total={data.data.total}
-          onChange={onchange}
-        />
-      ),
-    },
-    {
-      key: "4",
-      label: "Approved",
-      children: (
-        <RequestTables
-          data={res.filter((request) => request.status === 2)}
-          colums={columns}
-          pageSize={pageSize}
-          pageNumber={pageNumber}
-          total={data.data.total}
-          onChange={onchange}
-        />
-      ),
-    },
-    {
-      key: "5",
-      label: "Rejected",
-      children: (
-        <RequestTables
-          data={res.filter((request) => request.status === 3)}
-          colums={columns}
-          pageSize={pageSize}
-          pageNumber={pageNumber}
-          total={data.data.total}
-          onChange={onchange}
-        />
-      ),
-    },
-  ];
 
   return (
     <>
@@ -299,7 +227,7 @@ const DraftsMakeFormTable = () => {
           alignItems: "center",
         }}
       >
-        <h1>MakeTable</h1>
+        <h1>Drafts</h1>
         <DateDropDown date={date} setDate={setDate} />
       </div>
       <Flex gap="middle" vertical>

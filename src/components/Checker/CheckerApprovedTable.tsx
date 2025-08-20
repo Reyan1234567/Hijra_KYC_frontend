@@ -10,7 +10,7 @@ import CheckerEditModal from "./CheckerEditModal";
 import ViewModal from "../Helper/RequestModals/ViewModal";
 import { AuthContext } from "../../context/AuthContext";
 
-const CheckerTable = () => {
+const CheckerApprovedTable = () => {
   const [, /*messageApi*/ contextHolder] = message.useMessage();
   const today = new Date();
   const [trigger, setTrigger] = useState(0);
@@ -55,7 +55,7 @@ const CheckerTable = () => {
   useEffect(() => {
     const getRequestsAssignedToMe = async () => {
       try {
-        const makes = await api.get<pageableReturn>("/makeForm/getHo", {
+        const makes = await api.get<pageableReturn>("/makeForm/getHo/approved", {
           params: {
             hoUserId: USER?.user?.userId,
             date: date,
@@ -138,6 +138,71 @@ const CheckerTable = () => {
       },
     },
   ];
+
+  // const items: TabsProps["items"] = [
+  //   {
+  //     key: "1",
+  //     label: "All Requests",
+  //     children: (
+  //       <RequestTables
+  //         data={makeRequests.filter((req) => req.status !== 0)}
+  //         colums={columns}
+  //         pageSize={0}
+  //         pageNumber={0}
+  //         total={0}
+  //         onChange={}
+  //       />
+  //     ),
+  //   },
+  //   {
+  //     key: "3",
+  //     label: "Pending",
+  //     children: (
+  //       <RequestTables
+  //         data={makeRequests.filter((request) => request.status === 1)}
+  //         colums={columns}
+  //         pageSize={0}
+  //         pageNumber={0}
+  //         total={0}
+  //         onChange={function (pageNo: number, pageSi: number): void {
+  //           throw new Error("Function not implemented.");
+  //         }}
+  //       />
+  //     ),
+  //   },
+  //   {
+  //     key: "4",
+  //     label: "Approved",
+  //     children: (
+  //       <RequestTables
+  //         data={makeRequests.filter((request) => request.status === 2)}
+  //         colums={columns}
+  //         pageSize={0}
+  //         pageNumber={0}
+  //         total={0}
+  //         onChange={function (pageNo: number, pageSi: number): void {
+  //           throw new Error("Function not implemented.");
+  //         }}
+  //       />
+  //     ),
+  //   },
+  //   {
+  //     key: "5",
+  //     label: "Rejected",
+  //     children: (
+  //       <RequestTables
+  //         data={makeRequests.filter((request) => request.status === 3)}
+  //         colums={columns}
+  //         pageSize={0}
+  //         pageNumber={0}
+  //         total={0}
+  //         onChange={function (pageNo: number, pageSi: number): void {
+  //           throw new Error("Function not implemented.");
+  //         }}
+  //       />
+  //     ),
+  //   },
+  // ];
   return (
     <>
       {state === "loading" && (
@@ -155,7 +220,7 @@ const CheckerTable = () => {
               alignItems: "center",
             }}
           >
-            <h1>Check Table</h1>
+            <h1>Approved Requests</h1>
             <DateDropDown date={date} setDate={setDate} />
           </div>
           <Table />
@@ -172,7 +237,7 @@ const CheckerTable = () => {
               alignItems: "center",
             }}
           >
-            <h1>Check Table</h1>
+            <h1>Approved Requests</h1>
             <DateDropDown date={date} setDate={setDate} />
           </div>
           <RequestTables
@@ -200,4 +265,4 @@ const CheckerTable = () => {
   );
 };
 
-export default CheckerTable;
+export default CheckerApprovedTable;

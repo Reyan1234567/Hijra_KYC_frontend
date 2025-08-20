@@ -55,7 +55,7 @@ api.interceptors.response.use(
 const getNewRefresh = async () => {
   try {
     const refresh = await axios.post<refreshResponse>(
-      "http://localhost:9090/user/refresh",
+      "http://localhost:9090/auth/refresh",
       { refreshToken: getRefreshToken() }
     );
     console.log(refresh);

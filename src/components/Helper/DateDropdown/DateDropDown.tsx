@@ -155,7 +155,7 @@ const DateDropDown = (state: state) => {
   return (
     <>
       {August > today && today >= July && (
-        <DropDown menu={betweenJulyAndAugust} onChange={() => { } } title={Title} />
+        <DropDown  menu={betweenJulyAndAugust} onChange={() => { }} title={Title} />
       )}
       {October > today && today >= August && (
         <DropDown menu={betweenAugustAndOctober} onChange={() => { } } title={Title} />

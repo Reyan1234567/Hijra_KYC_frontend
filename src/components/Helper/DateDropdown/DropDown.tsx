@@ -9,7 +9,7 @@ interface dropDownInterface {
 
 const DropDown = (drop: dropDownInterface) => (
   <Dropdown
-    menu={{ items: drop.menu }}
+    menu={{ items: drop.menu, selectable:true }}
     trigger={["click"]}
     onOpenChange={(open) => {
       if (open) {

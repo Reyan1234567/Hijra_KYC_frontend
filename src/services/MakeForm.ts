@@ -33,12 +33,52 @@ export const getDraftedMakes = async (
   pageSize: number,
   pageNumber: number
 ) => {
-  const req = await api.get<pageableReturn>("/makeForm/drafts", {
+  const req = await api.get<pageableReturn>("/makeForm/draft", {
     params: { makerId, date, pageSize: pageSize, pageNumber: pageNumber },
   });
   console.log(req.data);
   return req;
 };
+
+export const getPendingMakes = async (
+  date: Date,
+  makerId: number,
+  pageSize: number,
+  pageNumber: number
+) => {
+  const req = await api.get<pageableReturn>("/makeForm/pending", {
+    params: { makerId, date, pageSize: pageSize, pageNumber: pageNumber },
+  });
+  console.log(req.data);
+  return req;
+};
+
+export const getApprovedMakes = async (
+  date: Date,
+  makerId: number,
+  pageSize: number,
+  pageNumber: number
+) => {
+  const req = await api.get<pageableReturn>("/makeForm/approved", {
+    params: { makerId, date, pageSize: pageSize, pageNumber: pageNumber },
+  });
+  console.log(req.data);
+  return req;
+};
+
+export const getRejectedMakes = async (
+  date: Date,
+  makerId: number,
+  pageSize: number,
+  pageNumber: number
+) => {
+  const req = await api.get<pageableReturn>("/makeForm/rejected", {
+    params: { makerId, date, pageSize: pageSize, pageNumber: pageNumber },
+  });
+  console.log(req.data);
+  return req;
+};
+
 
 export const dissassociate = async (imageId: number) => {
   return await api.patch(`/image/disassociate/${imageId}`);
