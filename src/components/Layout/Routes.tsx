@@ -62,7 +62,7 @@ const routes: routes[] = [
   { path: "checkTable/pending", component: <CheckerPendingTable /> },
   { path: "checkTable/approved", component: <CheckerApprovedTable /> },
   { path: "checkTable/rejected", component: <CheckerRejectedTable /> },
-    { path: "manager/pending", component: <KycManagerPendingTable /> },
+  { path: "manager/pending", component: <KycManagerPendingTable /> },
   { path: "manager/approved", component: <KycManagerApprovedTable /> },
   { path: "manager/rejected", component: <KycManagerRejectedTable /> },
 ];

@@ -1,4 +1,4 @@
-import { Suspense, useState } from "react";
+import { Suspense, useContext, useState } from "react";
 import {
   Avatar,
   Badge,
@@ -20,11 +20,13 @@ import MessagesView, { messages } from "../Message/MessagesView.tsx";
 import LoginForm from "../LoginForm.tsx";
 import ProtectionRotue from "../../ProtectionRotue.tsx";
 import { Logout } from "../../services/axios.ts";
+import { AuthContext } from "../../context/AuthContext.tsx";
 
 const { Header, Content, Footer, Sider } = Layout;
 
 const FullLayout = () => {
   const pathName = window.location.pathname;
+  const USER=useContext(AuthContext)
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [messageBadge, setMessageBadge] = useState(0);
@@ -142,7 +144,7 @@ const FullLayout = () => {
               </Dropdown>
             </div>
             <div style={{ marginLeft: "10px" }}>
-              <Badge count={messageBadge}>
+              <Badge count={USER?.messageCount}>
                 <Avatar
                   style={{ backgroundColor: "black" }}
                   onClick={showDrawer}
@@ -229,3 +231,4 @@ const FullLayout = () => {
 };
 
 export default FullLayout;
+
