@@ -33,7 +33,7 @@ const SidebarMenu = () => {
       USER?.setRejectedCount(resp?.data);
       const respo = await api.get("/makeForm/getPending");
       console.log(res);
-      USER?.setRejectedCount(respo?.data);
+      USER?.setPendingCount(respo?.data);
     },
     refetchInterval: 40000,
   });
