@@ -1,50 +1,55 @@
 import axios from "axios";
 import { logOutLog } from "./Authentication";
 
-type refreshResponse = {
+type RefreshResponse = {
   accessToken: string;
 };
 
-const getAccessToken = () => {
-  return localStorage.getItem("accessToken");
-};
+const getAccessToken = () => localStorage.getItem("accessToken");
+const getRefreshToken = () => localStorage.getItem("refreshToken");
+const getUserId = () => localStorage.getItem("userId");
 
-const getUserId = () => {
-  return localStorage.getItem("userId");
-};
-
-const getRefreshToken=()=>{
-  return localStorage.getItem("refreshToken")
-}
-
+// Axios instance
 export const api = axios.create({
   baseURL: "http://localhost:9090/",
   timeout: 5000,
 });
 
-api.interceptors.request.use((config) => {
-  config.headers.Authorization = `Bearer ${getAccessToken()}`;
-  return config;
-});
-
-api.interceptors.response.use(
-  async (config) => {
+// Add Authorization header to all requests
+api.interceptors.request.use(
+  (config) => {
+    const token = getAccessToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
+  (error) => Promise.reject(error)
+);
+
+// Response interceptor to handle 401/403 and refresh token
+api.interceptors.response.use(
+  (response) => response,
   async (error) => {
     const originalRequest = error.config;
+
     if (
-      (error.response.status == 401 || error.response.status == 403) &&
+      (error.response?.status === 401 || error.response?.status === 403) &&
       !originalRequest._retry
     ) {
+      originalRequest._retry = true;
       try {
-        originalRequest._retry = true;
-        const newTokens = await getNewRefresh();
-        localStorage.setItem("accessToken", newTokens!.accessToken);
+        const newTokens = await refreshAccessToken();
+        if (!newTokens) throw new Error("Failed to refresh token");
+
+        // Save new access token and retry original request
+        localStorage.setItem("accessToken", newTokens.accessToken);
+        originalRequest.headers.Authorization = `Bearer ${newTokens.accessToken}`;
         return api(originalRequest);
-      } catch (e) {
-        Logout(); //the logout function in the context and this specific function are different so what do you say????
-        return Promise.reject(e);
+      } catch (err) {
+        console.error("Refresh token failed, logging out...", err);
+        await Logout();
+        return Promise.reject(err);
       }
     }
 
@@ -52,29 +57,33 @@ api.interceptors.response.use(
   }
 );
 
-const getNewRefresh = async () => {
+// Refresh token function
+const refreshAccessToken = async (): Promise<RefreshResponse | undefined> => {
   try {
-    const refresh = await axios.post<refreshResponse>(
+    const refreshToken = getRefreshToken();
+    if (!refreshToken) throw new Error("No refresh token available");
+
+    const response = await axios.post<RefreshResponse>(
       "http://localhost:9090/auth/refresh",
-      { refreshToken: getRefreshToken() }
+      { refreshToken }
     );
-    console.log(refresh);
-    return refresh.data;
-  } catch (e) {
-    console.log(e);
+
+    return response.data;
+  } catch (err) {
+    console.error("Error refreshing access token:", err);
+    return undefined;
   }
 };
 
+// Logout function
 export const Logout = async () => {
   try {
-    if (!getUserId()) {
-      throw new Error("no UserId found");
-    }
-    await logOutLog(Number(getUserId()));
-  } catch (e) {
-    console.log(e);
+    const userId = getUserId();
+    if (userId) await logOutLog(Number(userId));
+  } catch (err) {
+    console.error("Error during logout:", err);
   } finally {
-    window.location.replace("http://localhost:5173/login");
     localStorage.clear();
+    window.location.replace("http://localhost:5173/login");
   }
 };

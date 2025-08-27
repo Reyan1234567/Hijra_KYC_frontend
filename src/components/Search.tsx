@@ -92,7 +92,7 @@ const Search = () => {
   async function onFinish() {
     setState("loading");
     const makeFormResponse = await axios.get(
-      `https://5884aa1d5b0b.ngrok-free.app/api/customerDetail/${
+      `http://apps.hijrabank.com:8082/api/customerDetail/${
         form.getFieldsValue().AccountNumber
       }`
     );

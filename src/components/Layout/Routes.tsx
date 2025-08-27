@@ -1,6 +1,7 @@
 import { JSX, lazy } from "react";
 import Attendance from "../Manager/Attendance.tsx";
 
+// Lazy load components from the first code
 const MakeFormTable = lazy(() => import("../MakeForm/AllMakeFormTable.tsx"));
 const DraftsMakeFormTable = lazy(
   () => import("../MakeForm/DraftsMakeFormTable.tsx")
@@ -39,6 +40,18 @@ const RejectedFormTable = lazy(
   () => import("../MakeForm/RejectedMakeFormTable.tsx")
 );
 
+// Lazy load your pages from the first code
+const AddRole = lazy(() => import("../userRole/AddRole"));
+const EditRole = lazy(() => import("../userRole/Edit_Role"));
+const ViewRole = lazy(() => import("../userRole/View_Role"));
+const AddBranch = lazy(() => import("../IssueBranch/Add_Branch"));
+const Edit_branch = lazy(() => import("../IssueBranch/Edit_branch"));
+const View_branch = lazy(() => import("../IssueBranch/View_branch"));
+const AddDistrict = lazy(() => import("../IssueBranch/Add_District"));
+const EditProfile = lazy(() => import("../UserProfile/Edit_Profile"));
+const ViewProfile = lazy(() => import("../UserProfile/ViewProfile"));
+const View_Login=lazy(()=> import("../../components/Manager/View_Login.tsx"));
+
 interface routes {
   path: string;
   component: JSX.Element;
@@ -65,6 +78,16 @@ const routes: routes[] = [
   { path: "manager/pending", component: <KycManagerPendingTable /> },
   { path: "manager/approved", component: <KycManagerApprovedTable /> },
   { path: "manager/rejected", component: <KycManagerRejectedTable /> },
+  { path: "/AddRole", component: <AddRole /> },
+  { path: "/Edit_Role/:roleId", component: <EditRole /> },
+  { path: "/View_Role", component: <ViewRole /> },
+  { path: "/Add_Branch", component: <AddBranch /> },
+  { path: "/Edit_branch/:id", component: <Edit_branch /> },
+  { path: "/View_Branch", component: <View_branch /> },
+  { path: "/Add_District", component: <AddDistrict /> },
+  { path: "/Edit_Profile/:userId", component: <EditProfile /> },
+  { path: "/ViewProfile", component: <ViewProfile /> },
+  {path:"View_Login", component:<View_Login/>},
 ];
 
 export default routes;

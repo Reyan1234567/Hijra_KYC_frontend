@@ -1,15 +1,32 @@
 import { Suspense, useContext, useState } from "react";
+import type { MenuProps } from "antd";
 import {
   Avatar,
   Badge,
+  Button,
   Divider,
   Drawer,
   Dropdown,
+  Input,
   Layout,
   Spin,
   theme,
 } from "antd";
-import { MessageOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  MessageOutlined,
+  UserOutlined,
+  MenuOutlined,
+  CloseOutlined,
+  SearchOutlined,
+  AppstoreOutlined,
+  SettingOutlined,
+  TeamOutlined,
+  EyeOutlined,
+  NotificationOutlined,
+  CodeOutlined,
+  LoginOutlined,
+  ProfileOutlined,
+} from "@ant-design/icons";
 import logo from "../../assets/logo.png";
 import { Route, Routes } from "react-router-dom";
 import routes from "./Routes.tsx";
@@ -19,14 +36,22 @@ import { useNavigate } from "react-router-dom";
 import MessagesView, { messages } from "../Message/MessagesView.tsx";
 import LoginForm from "../LoginForm.tsx";
 import ProtectionRotue from "../../ProtectionRotue.tsx";
-import { Logout } from "../../services/axios.ts";
+import {Logout} from "../../services/axios.ts";
 import { AuthContext } from "../../context/AuthContext.tsx";
 
 const { Header, Content, Footer, Sider } = Layout;
+const { Search } = Input;
+
+interface MenuItemType {
+  code: string;
+  title: string;
+  icon: React.ReactNode;
+  path: string;
+}
 
 const FullLayout = () => {
   const pathName = window.location.pathname;
-  const USER=useContext(AuthContext)
+  const USER = useContext(AuthContext);
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [messageBadge, setMessageBadge] = useState(0);
@@ -36,6 +61,7 @@ const FullLayout = () => {
     senderName: "no-one",
     senderProfile: "no-profile",
   });
+  const [menuVisible, setMenuVisible] = useState(false);
 
   const showDrawer = () => {
     setOpen(true);
@@ -51,12 +77,17 @@ const FullLayout = () => {
 
   const handleLogout = () => {
     Logout();
+    localStorage.clear();
+    navigate("/");
   };
+
+  const User = localStorage.getItem("username") || "User";
+  const role = localStorage.getItem("role") || "";
 
   const items = [
     {
       key: "1",
-      label: <span>User</span>,
+      label: <span>{User}</span>,
       onClick: () => {
         navigate("/userProfiel");
       },
@@ -71,7 +102,22 @@ const FullLayout = () => {
     },
   ];
 
-  return pathName == "/login" ? (
+  const firstRowItems: MenuItemType[] = [
+    { code: "001", title: "Company Info", icon: <AppstoreOutlined />, path: "/company-info" },
+    { code: "002", title: "Server Config", icon: <SettingOutlined />, path: "/server-config" },
+    { code: "003", title: "Add Role", icon: <TeamOutlined />, path: "/AddRole" },
+    { code: "004", title: "View Roles", icon: <EyeOutlined />, path: "/View_Role" },
+    { code: "005", title: "Broadcast Message", icon: <NotificationOutlined />, path: "/broadcast" },
+  ];
+
+  const secondRowItems: MenuItemType[] = [
+    { code: "006", title: "Add District", icon: <NotificationOutlined />, path: "/Add_District" },
+    { code: "007", title: "View Issue Branch", icon: <CodeOutlined />, path: "/View_Branch" },
+    { code: "008", title: "View Login", icon: <LoginOutlined />, path: "/View_Login" },
+    { code: "009", title: "View Profile", icon: <ProfileOutlined />, path: "/ViewProfile" },
+  ];
+
+  return pathName === "/login" ? (
     <LoginForm />
   ) : (
     <Layout style={{ height: "100vh", overflowX: "hidden" }}>
@@ -113,6 +159,7 @@ const FullLayout = () => {
             display: "flex",
             flexDirection: "row",
             alignItems: "center",
+            padding: "0 20px",
           }}
         >
           <h1
@@ -131,8 +178,17 @@ const FullLayout = () => {
               alignItems: "center",
               marginLeft: "auto",
               justifyContent: "space-around",
+              gap: "16px",
             }}
           >
+            {role === "HO_Manager" && (
+              <Button
+                type="text"
+                icon={<MenuOutlined style={{ color: "white", fontSize: "20px" }} />}
+                onClick={() => setMenuVisible(true)}
+              />
+            )}
+
             <div>
               <Dropdown menu={{ items }} placement="bottom">
                 <Avatar
@@ -143,6 +199,7 @@ const FullLayout = () => {
                 />
               </Dropdown>
             </div>
+
             <div style={{ marginLeft: "10px" }}>
               <Badge count={USER?.messageCount}>
                 <Avatar
@@ -155,6 +212,136 @@ const FullLayout = () => {
             </div>
           </div>
         </Header>
+
+        {menuVisible && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "white",
+              zIndex: 1001,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              padding: "80px 24px 24px",
+              overflow: "auto",
+            }}
+          >
+            <div
+              style={{
+                width: "60%",
+                maxWidth: "800px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <Button
+                type="text"
+                icon={<CloseOutlined style={{ fontSize: "20px" }} />}
+                onClick={() => setMenuVisible(false)}
+                style={{ position: "absolute", top: "20px", left: "20px" }}
+              />
+
+              <Search
+                placeholder="Search..."
+                prefix={<SearchOutlined />}
+                style={{ width: "100%", maxWidth: "500px", marginBottom: "70px" }}
+                size="large"
+              />
+
+              {/* First Row */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+                  gap: "16px",
+                  width: "100%",
+                  justifyItems: "center",
+                  marginBottom: "40px",
+                }}
+              >
+                {firstRowItems.map((item: MenuItemType) => (
+                  <Button
+                    key={item.code}
+                    type="text"
+                    onClick={() => {
+                      navigate(item.path);
+                      setMenuVisible(false);
+                    }}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: "16px 12px",
+                      border: "1px solid #f0f0f0",
+                      borderRadius: "12px",
+                      minWidth: "140px",
+                      fontWeight: 600,
+                      backgroundColor: "#fafafa",
+                      transition: "all 0.2s ease-in-out",
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#e6f7ff")}
+                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#fafafa")}
+                  >
+                    <div style={{ fontSize: "26px", marginBottom: "6px" }}>{item.icon}</div>
+                    <div style={{ fontWeight: 700, textAlign: "center" }}>
+                      {item.code} {item.title}
+                    </div>
+                  </Button>
+                ))}
+              </div>
+
+              {/* Second Row */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+                  gap: "16px",
+                  width: "100%",
+                  justifyItems: "center",
+                  marginBottom: "40px",
+                }}
+              >
+                {secondRowItems.map((item: MenuItemType) => (
+                  <Button
+                    key={item.code}
+                    type="text"
+                    onClick={() => {
+                      navigate(item.path);
+                      setMenuVisible(false);
+                    }}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: "16px 12px",
+                      border: "1px solid #f0f0f0",
+                      borderRadius: "12px",
+                      minWidth: "140px",
+                      fontWeight: 600,
+                      backgroundColor: "#fafafa",
+                      transition: "all 0.2s ease-in-out",
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#e6f7ff")}
+                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#fafafa")}
+                  >
+                    <div style={{ fontSize: "26px", marginBottom: "6px" }}>{item.icon}</div>
+                    <div style={{ fontWeight: 700, textAlign: "center" }}>
+                      {item.code} {item.title}
+                    </div>
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         <Content
           style={{
             margin: "24px 16px 0",
@@ -231,4 +418,7 @@ const FullLayout = () => {
 };
 
 export default FullLayout;
+
+
+
 
