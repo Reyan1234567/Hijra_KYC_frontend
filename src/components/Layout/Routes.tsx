@@ -38,6 +38,10 @@ const ApprovedFormTable = lazy(
 const RejectedFormTable = lazy(
   () => import("../MakeForm/RejectedMakeFormTable.tsx")
 );
+//call the api for the reports
+const DetailReport = lazy(() => import("../Report/DetailReport.tsx"));
+const SummaryReport = lazy(() => import("../Report/SummaryReport.tsx"));
+const CheckerReport = lazy(() => import("../Report/CheckerReport.tsx"));
 
 interface routes {
   path: string;
@@ -65,6 +69,11 @@ const routes: routes[] = [
   { path: "manager/pending", component: <KycManagerPendingTable /> },
   { path: "manager/approved", component: <KycManagerApprovedTable /> },
   { path: "manager/rejected", component: <KycManagerRejectedTable /> },
+    //add route and component pair for the reports
+    { path: "reports/detail", component: <DetailReport /> },
+    { path: "reports/summary", component: <SummaryReport /> },
+    { path: "reports/checker", component: <CheckerReport /> },
+
 ];
 
 export default routes;

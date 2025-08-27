@@ -133,7 +133,7 @@ const AddImageForm = (prop: addImageFormInterface) => {
                               index,
                               description: e.target.value,
                             });
-                          }}
+                          }}detail-report"
                         />
                       </Form.Item>
                     </Flex>

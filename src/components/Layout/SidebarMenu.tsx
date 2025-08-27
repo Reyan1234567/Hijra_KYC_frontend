@@ -10,6 +10,10 @@ import {
   ProfileOutlined,
   SearchOutlined,
   UserOutlined,
+    FundOutlined,
+    ProjectOutlined,
+OrderedListOutlined,
+    ZoomInOutlined
 } from "@ant-design/icons";
 import { Badge, Menu } from "antd";
 import { useContext } from "react";
@@ -229,11 +233,45 @@ const SidebarMenu = () => {
       label: "Search",
       path: "/search",
     },
+      {
+          key: "reports",
+          icon: <ProjectOutlined />,
+          label: "Reports",
+          children: [
+              {
+                  key: "reports/detail",
+                  icon: <OrderedListOutlined />,
+                  label: "Detail Report",
+              },
+              {
+                  key: "reports/summary",
+                  icon: <ZoomInOutlined />,
+                  label: "Summary Report",
+              },
+              {
+                  key: "reports/checker",
+                  icon: <FundOutlined />,
+                  label: "Checker Report",
+              },
+          ],
+      },
   ];
 
-  const onclick = (e) => {
-    navigate(e.key);
-  };
+  // const onclick = (e) => {
+  //   navigate(e.key);
+  // };
+    const onclick = (e) => {
+        // Handle report navigation with query parameters
+        if (e.key === "reports/detail") {
+            navigate("/reports/detail");
+        } else if (e.key === "reports/summary") {
+            navigate("/reports/summary");
+        } else if (e.key === "reports/checker") {
+            navigate("/reports/checker");
+        } else {
+            navigate(e.key);
+        }
+    };
 
   return USER?.user?.role === "maker" ? (
     <div>
