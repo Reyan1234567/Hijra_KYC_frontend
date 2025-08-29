@@ -8,7 +8,8 @@ const { Option } = Select;
 
 interface District {
   id: number | string;
-  name: string;
+  districtName: string;
+
 }
 
 interface BranchFormValues {
@@ -104,7 +105,7 @@ const Add_Branch: React.FC = () => {
           <Select placeholder="Select District">
             {districts.map((d) => (
               <Option key={d.id} value={d.id}>
-                {d.name}
+                {d.districtName}
               </Option>
             ))}
           </Select>

@@ -65,11 +65,10 @@ const MakeInfo = (modal: allTableDataType) => {
             <strong>Status:</strong>
           </p>
           <p>
-            {modal!.status === 0
-              ? "Pending"
-              : modal!.status === 1
-              ? "Approved"
-              : "Rejected"}
+            {modal!.status === 1 && "Pending"}
+            {modal!.status === 2 && "Approved"}
+               {modal!.status === 3 && "Rejected"}
+            
           </p>
         </Flex>
       </Flex>

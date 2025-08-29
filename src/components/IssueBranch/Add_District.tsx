@@ -46,7 +46,7 @@ const Add_District: React.FC = () => {
       }}
     >
       <Space style={{ marginBottom: 20 }}>
-        <Button onClick={() => navigate("/View_District")} type="primary">
+        <Button onClick={() => navigate("/dashboard")} type="primary">
           &larr; Back
         </Button>
       </Space>

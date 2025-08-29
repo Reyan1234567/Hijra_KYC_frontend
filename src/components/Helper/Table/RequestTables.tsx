@@ -50,7 +50,7 @@ const RequestTables = (dataSource: dataSource) => {
           <Tag color="yellow">In Drafts</Tag>
         ) : status === 1 ? (
           <Tag color="blue">Pending</Tag>
-        ) : status === 2 ? (
+        ) : status === 2? (
           <Tag color="green">Accepted</Tag>
         ) : (
           <Tag color="red">Rejected</Tag>

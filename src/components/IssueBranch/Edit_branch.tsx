@@ -1,14 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Button, Typography, message, Space, Switch } from "antd";
+import { Form, Input, Button, Typography, message, Space, Switch, Select } from "antd";
 import { useParams, useNavigate } from "react-router-dom";
-import { api } from "../../services/axios"; // <-- use your axios instance
+import { api } from "../../services/axios";
 
 const { Title } = Typography;
+const { Option } = Select;
+
+interface District {
+  districtCode: string;
+  districtName: string;
+}
 
 interface BranchFormValues {
   branchCode: string;
   name: string;
   phone: string;
+  place: string;
+  districtCode: string;
+  districtName:string;
   status: boolean;
 }
 
@@ -16,7 +25,10 @@ interface BranchData {
   branchCode: string;
   name: string;
   phone: string;
+  place: string;
+  districtCode: string;
   status: number;
+  districtName:string;
 }
 
 const Edit_Branch: React.FC = () => {
@@ -24,6 +36,21 @@ const Edit_Branch: React.FC = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm<BranchFormValues>();
   const [loading, setLoading] = useState<boolean>(false);
+  const [districts, setDistricts] = useState<District[]>([]);
+
+  // fetch all districts once
+  useEffect(() => {
+    const fetchDistricts = async () => {
+      try {
+        const res = await api.get<District[]>("/api/districts/get-all-districts");
+        setDistricts(res.data);
+      } catch (err: any) {
+        console.error(err);
+        message.error(err?.response?.data?.message || "Failed to fetch districts");
+      }
+    };
+    fetchDistricts();
+  }, []);
 
   useEffect(() => {
     const fetchBranch = async () => {
@@ -36,7 +63,10 @@ const Edit_Branch: React.FC = () => {
           branchCode: branch.branchCode,
           name: branch.name,
           phone: branch.phone,
-          status: branch.status === 1, // convert 1/0 to boolean
+          place: branch.place,
+          districtCode: branch.districtCode, // preselect district
+          districtName:branch.districtName,
+          status: branch.status === 1,
         });
       } catch (err: any) {
         console.error(err);
@@ -56,7 +86,10 @@ const Edit_Branch: React.FC = () => {
         branchCode: values.branchCode,
         name: values.name,
         phone: values.phone,
-        status: values.status ? 1 : 0, // convert boolean to 1/0
+        place: values.place,
+        districtCode: values.districtCode,
+        districtName:values.districtName,
+        status: values.status ? 1 : 0,
       };
 
       await api.put(`/api/branches/${id}`, payload);
@@ -112,6 +145,34 @@ const Edit_Branch: React.FC = () => {
           rules={[{ message: "Please enter branch phone" }]}
         >
           <Input placeholder="Enter branch phone" />
+        </Form.Item>
+
+        <Form.Item
+          label="District Name"
+          name="districtName"
+          rules={[{ required: true, message: "Please enter branch place" }]}
+        >
+          <Select placeholder="Select District Name">
+            {districts.map((d) => (
+              <Option key={d.districtName} value={d.districtName}>
+                 ({d.districtName})
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+          label="District"
+          name="districtCode"
+          rules={[{ required: true, message: "Please select district" }]}
+        >
+          <Select placeholder="Select District Code">
+            {districts.map((d) => (
+              <Option key={d.districtCode} value={d.districtCode}>
+                 ({d.districtCode}) ({d.districtName})
+              </Option>
+            ))}
+          </Select>
         </Form.Item>
 
         <Form.Item label="Status" name="status" valuePropName="checked">

@@ -51,6 +51,9 @@ const AddDistrict = lazy(() => import("../IssueBranch/Add_District"));
 const EditProfile = lazy(() => import("../UserProfile/Edit_Profile"));
 const ViewProfile = lazy(() => import("../UserProfile/ViewProfile"));
 const View_Login=lazy(()=> import("../../components/Manager/View_Login.tsx"));
+const CheckerReport=lazy(()=>import("../../components/Report/CheckerReport.tsx"));
+const DetailReport=lazy(()=>import("../../components/Report/DetailReport.tsx"));
+const SummaryReport=lazy(()=>import("../../components/Report/SummaryReport.tsx"));
 
 interface routes {
   path: string;
@@ -85,9 +88,12 @@ const routes: routes[] = [
   { path: "/Edit_branch/:id", component: <Edit_branch /> },
   { path: "/View_Branch", component: <View_branch /> },
   { path: "/Add_District", component: <AddDistrict /> },
-  { path: "/Edit_Profile/:userId", component: <EditProfile /> },
+  { path: "/Edit_Profile/:id", component: <EditProfile /> },
   { path: "/ViewProfile", component: <ViewProfile /> },
   {path:"View_Login", component:<View_Login/>},
+  { path: "reports/detail", component: <DetailReport /> },
+    { path: "reports/summary", component: <SummaryReport /> },
+    { path: "reports/checker", component: <CheckerReport /> },
 ];
 
 export default routes;

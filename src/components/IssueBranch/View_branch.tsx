@@ -11,36 +11,15 @@ interface Branch {
   name: string;
   phone: string;
   status: number;
-  districtId: number;
-}
-
-interface DistrictMap {
-  [key: number]: string;
+  districtCode: string;  // ✅ new field
+  districtName: string;  // ✅ new field
 }
 
 const View_Branch: React.FC = () => {
   const navigate = useNavigate();
   const [branches, setBranches] = useState<Branch[]>([]);
-  const [districts, setDistricts] = useState<DistrictMap>({});
 
   useEffect(() => {
-    const fetchDistricts = async () => {
-      try {
-        const res = await api.get<{ districtId: number; name: string; id?: number }[]>(
-          "/api/districts/get-all-districts"
-        );
-        const map: DistrictMap = {};
-        res.data.forEach(d => {
-          const key = d.districtId || d.id!;
-          map[key] = d.name;
-        });
-        setDistricts(map);
-      } catch (err: any) {
-        console.error("Districts fetch error:", err);
-        message.error(err?.response?.data?.message || "Failed to fetch districts");
-      }
-    };
-
     const fetchBranches = async () => {
       try {
         const res = await api.get<Branch[]>("/api/branches");
@@ -51,7 +30,6 @@ const View_Branch: React.FC = () => {
       }
     };
 
-    fetchDistricts();
     fetchBranches();
   }, []);
 
@@ -78,9 +56,14 @@ const View_Branch: React.FC = () => {
       ),
     },
     {
-      title: "District",
-      key: "district",
-      render: (_: any, record: Branch) => districts[record.districtId] || "N/A",
+      title: "District Code",
+      dataIndex: "districtCode",
+      key: "districtCode",
+    },
+    {
+      title: "District Name",
+      dataIndex: "districtName",
+      key: "districtName",
     },
     {
       title: "Actions",

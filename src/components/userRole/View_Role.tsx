@@ -34,11 +34,9 @@ const View_Role: React.FC = () => {
   const [searchText, setSearchText] = useState<string>("");
 
   const predefinedRoles = [
-    "Administrator",
-    "HO Checker",
-    "Branch Maker",
-    "KYC Manager",
-    "District",
+    "maker",
+    "HO_Checker",
+    "HO_Manager",
   ];
 
   useEffect(() => {

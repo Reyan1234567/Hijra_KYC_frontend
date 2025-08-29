@@ -28,7 +28,7 @@ interface Branch {
 }
 
 const Edit_Profile: React.FC = () => {
-  const { userID } = useParams<{ userID: string }>();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [form] = Form.useForm();
 
@@ -49,7 +49,7 @@ const Edit_Profile: React.FC = () => {
         const [rolesRes, branchesRes, userRes] = await Promise.all([
           api.get<Role[]>('/api/roles'),
           api.get<Branch[]>('/api/branches'),
-          api.get(`/api/user-profiles/get-user/${userID}`),
+          api.get(`/api/user-profiles/get-user/${id}`),
         ]);
 
         setRoles(rolesRes.data);
@@ -67,7 +67,7 @@ const Edit_Profile: React.FC = () => {
 
         // Populate form fields
         form.setFieldsValue({
-        userId: userData.userId,
+        id: userData.id,
           firstName: userData.firstName,
           lastName: userData.lastName,
           gender: userData.gender,
@@ -78,7 +78,7 @@ const Edit_Profile: React.FC = () => {
           photoUrl:userData.photoUrl,
         });
 
-        setImageUrl(`/api/user-profiles/user-profile/${userID}/photoUrl`);
+        setImageUrl(`/api/user-profiles/user-profile/${id}/photoUrl`);
 
         setInitialized(true);
       } catch (error: any) {
@@ -90,7 +90,7 @@ const Edit_Profile: React.FC = () => {
     };
 
     fetchData();
-  }, [userId, form]);
+  }, [id, form]);
 
   const handleUploadChange = ({ fileList }: { fileList: any[] }) => {
     setFileList(fileList);
@@ -112,7 +112,7 @@ const Edit_Profile: React.FC = () => {
         formData.append('photoUrl', fileList[0].originFileObj);
       }
 
-      await api.put(`/api/user-profiles/${userID}`, formData, {
+      await api.put(`/api/user-profiles/${id}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 

@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/axios'; // use your axios instance
 
 interface User {
-  userID: number;
+  id: number;
   firstName: string;
   lastName: string;
   roleName: string;
@@ -38,7 +38,7 @@ const ViewProfile: React.FC = () => {
   }, []);
 
   const onEdit = (user: User) => {
-    navigate(`/Edit_Profile/${user.userID}`);
+    navigate(`/Edit_Profile/${user.id}`);
   };
 
   const columns: ColumnsType<User> = useMemo(() => [
@@ -49,7 +49,7 @@ const ViewProfile: React.FC = () => {
     },
     {
       title: 'user ID',
-      dataIndex: 'userId',
+      dataIndex: 'id',
       key: 'userID',
     },
     {
@@ -58,7 +58,7 @@ const ViewProfile: React.FC = () => {
       width: 80,
       render: (_: any, record: User) => (
         <Avatar
-          src={`http://localhost:9090/api/user-profiles/user-profile/${record.userID}/photo`}
+          src={`http://localhost:9090/api/user-profiles/user-profile/${record.id}/photo`}
           alt={`${record.firstName} ${record.lastName}`}
           size={40}
         />
