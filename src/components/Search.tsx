@@ -28,6 +28,7 @@ export interface makeFormInteface {
   accountType: string;
   cif: string;
 }
+
 const Search = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [modal, setModal] = useState(false);
@@ -59,7 +60,7 @@ const Search = () => {
   const [form] = Form.useForm<{ AccountNumber: number }>();
   const USER = useContext(AuthContext);
   const onImageSubmit = async ({
-    makeId,
+    _,
     images,
   }: {
     makeId: number;
@@ -91,14 +92,23 @@ const Search = () => {
 
   async function onFinish() {
     setState("loading");
-    const makeFormResponse = await axios.get(
-      `http://apps.hijrabank.com:8082/api/customerDetail/${
-        form.getFieldsValue().AccountNumber
-      }`
-    );
+    let makeFormResponse;
+    try {
+      makeFormResponse = await axios.get(
+        `http://apps.hijrabank.com:8082/api/customerDetail/${
+          form.getFieldsValue().AccountNumber
+        }`
+      );
+    } catch (e) {
+      setState("error");
+      messageApi.error("Something went wrong");
+      console.log(e);
+      return;
+    }
     if (
-      makeFormResponse.data.fullName !== defaultErrorMakeForm.fullName &&
-      makeFormResponse.data.fullName !== defaultMakeForm.fullName
+      makeFormResponse?.data.fullName !== defaultErrorMakeForm.fullName &&
+      makeFormResponse?.data.fullName !== defaultMakeForm.fullName &&
+      makeFormResponse !== undefined
     ) {
       setMakeForm(makeFormResponse.data);
       try {
@@ -169,7 +179,12 @@ const Search = () => {
           </Form>
         </Flex>
       </Card>
-      {state === "loading" && <Spin />}
+      {state === "loading" && (
+        <Spin
+          style={{ position: "absolute", left: "50%", top: "50%" }}
+          size="large"
+        />
+      )}
       {state === "error" && <Title level={3}></Title>}
       {state === "success" && (
         <>

@@ -6,14 +6,13 @@ import {
   DashboardOutlined,
   EditOutlined,
   FormOutlined,
-  FullscreenOutlined,
   ProfileOutlined,
   SearchOutlined,
   UserOutlined,
   ProjectOutlined,
   OrderedListOutlined,
   ZoomInOutlined,
-  FundOutlined
+  FundOutlined,
 } from "@ant-design/icons";
 import { Badge, Menu } from "antd";
 import { useContext } from "react";
@@ -27,7 +26,7 @@ const SidebarMenu = () => {
   const USER = useContext(AuthContext);
 
   useQuery({
-    queryKey: [],
+    queryKey: ["notification"],
     queryFn: async () => {
       const res = await api.get("/message/unread");
       USER?.setMessageCount(res?.data);
@@ -38,20 +37,25 @@ const SidebarMenu = () => {
       const respo = await api.get("/makeForm/getPending");
       USER?.setPendingCount(respo?.data);
     },
-    refetchInterval: 40000,
+    refetchInterval: 1000 * 60,
   });
 
   const { data: pending } = useQuery({
-    queryKey: [],
+    queryKey: ["pending"],
     queryFn: async () => await api.get("/makeForm/getPending"),
-    refetchInterval: 4000,
+    refetchInterval: 1000 * 60,
   });
 
   USER?.setPendingCount(pending?.data);
 
   // --- Define menus ---
   const maker = [
-    { key: "dashboard", icon: <DashboardOutlined />, label: "Dashboard", path: "/" },
+    {
+      key: "dashboard",
+      icon: <DashboardOutlined />,
+      label: "Dashboard",
+      path: "/",
+    },
     {
       key: "makeFormTable",
       icon: <EditOutlined />,
@@ -69,8 +73,16 @@ const SidebarMenu = () => {
       children: [
         { key: "makeForm", icon: <ProfileOutlined />, label: "All Requests" },
         { key: "makeTable/drafts", icon: <FormOutlined />, label: "Drafts" },
-        { key: "makeTable/pending", icon: <ClockCircleOutlined />, label: "Pending" },
-        { key: "makeTable/approved", icon: <CheckCircleOutlined />, label: "Approved" },
+        {
+          key: "makeTable/pending",
+          icon: <ClockCircleOutlined />,
+          label: "Pending",
+        },
+        {
+          key: "makeTable/approved",
+          icon: <CheckCircleOutlined />,
+          label: "Approved",
+        },
         {
           key: "makeTable/rejected",
           icon: <CloseCircleOutlined />,
@@ -88,11 +100,21 @@ const SidebarMenu = () => {
         },
       ],
     },
-    { key: "search", icon: <SearchOutlined />, label: "Search", path: "/search" },
+    {
+      key: "search",
+      icon: <SearchOutlined />,
+      label: "Search",
+      path: "/search",
+    },
   ];
 
   const checker = [
-    { key: "dashboard", icon: <DashboardOutlined />, label: "Dashboard", path: "/" },
+    {
+      key: "dashboard",
+      icon: <DashboardOutlined />,
+      label: "Dashboard",
+      path: "/",
+    },
     {
       key: "checkerTable",
       icon: <BookOutlined />,
@@ -108,7 +130,11 @@ const SidebarMenu = () => {
         </>
       ),
       children: [
-        { key: "checkerTable", label: "All Requests", icon: <ProfileOutlined /> },
+        {
+          key: "checkerTable",
+          label: "All Requests",
+          icon: <ProfileOutlined />,
+        },
         {
           key: "checkTable/pending",
           label: (
@@ -124,52 +150,85 @@ const SidebarMenu = () => {
           ),
           icon: <ClockCircleOutlined />,
         },
-        { key: "checkTable/approved", label: "Approved", icon: <CheckCircleOutlined /> },
-        { key: "checkTable/rejected", label: "Rejected", icon: <CloseCircleOutlined /> },
+        {
+          key: "checkTable/approved",
+          label: "Approved",
+          icon: <CheckCircleOutlined />,
+        },
+        {
+          key: "checkTable/rejected",
+          label: "Rejected",
+          icon: <CloseCircleOutlined />,
+        },
       ],
     },
-    { key: "search", icon: <SearchOutlined />, label: "Search", path: "/search" },
+    {
+      key: "search",
+      icon: <SearchOutlined />,
+      label: "Search",
+      path: "/search",
+    },
   ];
 
   const manager = [
-    { key: "dashboard", icon: <DashboardOutlined />, label: "Dashboard", path: "/" },
+    {
+      key: "dashboard",
+      icon: <DashboardOutlined />,
+      label: "Dashboard",
+      path: "/",
+    },
     {
       key: "kycManagerTable",
       icon: <UserOutlined />,
       label: "KYC Manager",
       children: [
         { key: "manager", icon: <ProfileOutlined />, label: "All Requests" },
-        { key: "manager/pending", icon: <ClockCircleOutlined />, label: "Pending" },
-        { key: "manager/approved", icon: <CheckCircleOutlined />, label: "Approved" },
-        { key: "manager/rejected", icon: <ClockCircleOutlined />, label: "Rejected" },
+        {
+          key: "manager/pending",
+          icon: <ClockCircleOutlined />,
+          label: "Pending",
+        },
+        {
+          key: "manager/approved",
+          icon: <CheckCircleOutlined />,
+          label: "Approved",
+        },
+        {
+          key: "manager/rejected",
+          icon: <ClockCircleOutlined />,
+          label: "Rejected",
+        },
       ],
     },
-    { key: "distribute", icon: <FullscreenOutlined />, label: "Distribute", path: "/distribute" },
-    { key: "search", icon: <SearchOutlined />, label: "Search", path: "/search" },
-      {
-          key: "reports",
-          icon: <ProjectOutlined />,
-          label: "Reports",
-          children: [
-              {
-                  key: "reports/detail",
-                  icon: <OrderedListOutlined />,
-                  label: "Detail Report",
-              },
-              {
-                  key: "reports/summary",
-                  icon: <ZoomInOutlined />,
-                  label: "Summary Report",
-              },
-              {
-                  key: "reports/checker",
-                  icon: <FundOutlined />,
-                  label: "Checker Report",
-              },
-          ],
-      },
-
-    
+    // { key: "distribute", icon: <FullscreenOutlined />, label: "Distribute", path: "/distribute" },
+    {
+      key: "search",
+      icon: <SearchOutlined />,
+      label: "Search",
+      path: "/search",
+    },
+    {
+      key: "reports",
+      icon: <ProjectOutlined />,
+      label: "Reports",
+      children: [
+        {
+          key: "reports/detail",
+          icon: <OrderedListOutlined />,
+          label: "Detail Report",
+        },
+        {
+          key: "reports/summary",
+          icon: <ZoomInOutlined />,
+          label: "Summary Report",
+        },
+        {
+          key: "reports/checker",
+          icon: <FundOutlined />,
+          label: "Checker Report",
+        },
+      ],
+    },
   ];
 
   const onclick = (e) => {
@@ -204,11 +263,26 @@ const SidebarMenu = () => {
 
       {/* Sidebar Menu */}
       {USER?.user?.role === "maker" ? (
-        <Menu mode="inline" style={{ borderRight: 0 }} items={maker} onClick={onclick} />
+        <Menu
+          mode="inline"
+          style={{ borderRight: 0 }}
+          items={maker}
+          onClick={onclick}
+        />
       ) : USER?.user?.role === "HO_Checker" ? (
-        <Menu mode="inline" style={{ borderRight: 0 }} items={checker} onClick={onclick} />
+        <Menu
+          mode="inline"
+          style={{ borderRight: 0 }}
+          items={checker}
+          onClick={onclick}
+        />
       ) : USER?.user?.role === "HO_Manager" ? (
-        <Menu mode="inline" style={{ borderRight: 0 }} items={manager} onClick={onclick} />
+        <Menu
+          mode="inline"
+          style={{ borderRight: 0 }}
+          items={manager}
+          onClick={onclick}
+        />
       ) : null}
     </div>
   );

@@ -62,6 +62,7 @@ const PendingMakeFormTable = () => {
   const [date, setDate] = useState(
     new Date(today.setMonth(today.getMonth(), 1))
   );
+  date.setHours(0,0,0,0)
   const view: MenuProps["items"] = [
     {
       label: "View",

@@ -8,6 +8,7 @@ import { Button, Flex, Input, message, Popconfirm, Image } from "antd";
 import { imageReturn } from "./AllMakeFormTable";
 import { dissassociate, editDescription } from "../../services/MakeForm";
 import { useEffect, useState } from "react";
+import { BASE_URL } from "../../services/Constants";
 
 const ImageEdit = (images: { images: imageReturn[] }) => {
   const [Images, setImages] = useState<imageReturn[]>(
@@ -73,7 +74,7 @@ const ImageEdit = (images: { images: imageReturn[] }) => {
                 style={{ position: "relative" }}
                 wrap
               >
-                <Image height={260} src={image.url} />
+                <Image height={260} src={BASE_URL+"/"+image.url} />
                 <Input
                   value={image.description}
                   onChange={(e) => {

@@ -3,6 +3,7 @@ import { allTableDataType } from "../../MakeForm/AllMakeFormTable";
 import { Typography } from "antd";
 import MakeInfo from "./MakeInfo";
 import BackReason from "./BackReason";
+import { BASE_URL } from "../../../services/Constants";
 
 const DisplayInfo = (modal: allTableDataType) => {
   const { Title } = Typography;
@@ -28,7 +29,7 @@ const DisplayInfo = (modal: allTableDataType) => {
                     align="center"
                     style={{ position: "relative" }}
                   >
-                    <Image height={200} src={image.url} />
+                    <Image height={200} src={BASE_URL+"/"+image.url} />
                     <Input disabled value={image.description} />
                   </Flex>
                 </Flex>

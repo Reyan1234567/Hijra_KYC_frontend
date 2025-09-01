@@ -200,10 +200,6 @@ const Profile = () => {
             <p>{user.username}</p>
           </Flex>
           <Flex justify="space-between">
-            <p>UserId:</p>
-            <p>{user.userId}</p>
-          </Flex>
-          <Flex justify="space-between">
             <p>Branch:</p>
             <p>{user.branch}</p>
           </Flex>

@@ -105,7 +105,6 @@ const MessagesPage = (drawer: drawerInterface) => {
                 });
               }}
             >
-              {/* in the real thing, when incorporating auth receiver will be imported using useContext */}
               <Message
                 id={userInfo.id}
                 fullName={userInfo.fullName}

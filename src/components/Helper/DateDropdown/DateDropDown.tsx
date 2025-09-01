@@ -9,8 +9,9 @@ interface state {
 
 const DateDropDown = (state: state) => {
   const today = new Date();
+  today.setHours(0)
 
-  const Title="Select Date"
+  const Title = "Select Date";
   const setDay = (month: number) => {
     const thisMonth = today;
     thisMonth.setMonth(thisMonth.getMonth() - month, 1);
@@ -19,6 +20,7 @@ const DateDropDown = (state: state) => {
 
   const July = new Date(today.getFullYear(), 6, 1);
   const August = new Date(today.getFullYear(), 7, 1);
+  const September = new Date(today.getFullYear(), 8, 1);
   const October = new Date(today.getFullYear(), 9, 1);
   const December = new Date(today.getFullYear(), 11, 1);
   const June = new Date(today.getFullYear() + 1, 5, 1);
@@ -30,6 +32,7 @@ const DateDropDown = (state: state) => {
       onClick: () => {
         const yatod = today;
         yatod.setDate(1);
+        yatod.setHours(0);
         state.setDate(yatod);
       },
     },
@@ -42,6 +45,7 @@ const DateDropDown = (state: state) => {
       onClick: () => {
         const yatod = today;
         yatod.setDate(1);
+        yatod.setHours(0);
         state.setDate(yatod);
       },
     },
@@ -54,6 +58,33 @@ const DateDropDown = (state: state) => {
     },
   ];
 
+  const SeptemberMonth: MenuProps["items"] = [
+    {
+      key: "1",
+      label: "This month",
+      onClick: () => {
+        const yatod = today;
+        yatod.setDate(1);
+        yatod.setHours(0);
+        state.setDate(yatod);
+      },
+    },
+    {
+      key: "2",
+      label: "Last month",
+      onClick: () => {
+        setDay(1);
+      },
+    },
+    {
+      key: "3",
+      label: "Last 2 months",
+      onClick: () => {
+        setDay(2);
+      },
+    },
+  ];
+
   const betweenOctoberAndDecember: MenuProps["items"] = [
     {
       key: "1",
@@ -61,6 +92,7 @@ const DateDropDown = (state: state) => {
       onClick: () => {
         const yatod = today;
         yatod.setDate(1);
+        yatod.setHours(0);
         state.setDate(yatod);
       },
     },
@@ -87,6 +119,7 @@ const DateDropDown = (state: state) => {
       onClick: () => {
         const yatod = today;
         yatod.setDate(1);
+        yatod.setHours(0);
         state.setDate(yatod);
       },
     },
@@ -120,6 +153,7 @@ const DateDropDown = (state: state) => {
       onClick: () => {
         const yatod = today;
         yatod.setDate(1);
+        yatod.setHours(0);
         state.setDate(yatod);
       },
     },
@@ -152,21 +186,43 @@ const DateDropDown = (state: state) => {
       },
     },
   ];
+
   return (
     <>
       {August > today && today >= July && (
-        <DropDown  menu={betweenJulyAndAugust} onChange={() => { }} title={Title} />
+        <DropDown
+          menu={betweenJulyAndAugust}
+          onChange={() => {}}
+          title={Title}
+        />
       )}
-      {October > today && today >= August && (
-        <DropDown menu={betweenAugustAndOctober} onChange={() => { } } title={Title} />
+      {September > today && today >= August && (
+        <DropDown
+          menu={betweenAugustAndOctober}
+          onChange={() => {}}
+          title={Title}
+        />
+      )}
+      {October > today && today >= September && (
+        <DropDown menu={SeptemberMonth} onChange={() => {}} title={Title} />
       )}
       {December > today && today >= October && (
-        <DropDown menu={betweenOctoberAndDecember} onChange={() => { } } title={Title} />
+        <DropDown
+          menu={betweenOctoberAndDecember}
+          onChange={() => {}}
+          title={Title}
+        />
       )}
       {June > today && today >= December && (
-        <DropDown menu={betweenDecemberAndJune} onChange={() => { } } title={Title} />
+        <DropDown
+          menu={betweenDecemberAndJune}
+          onChange={() => {}}
+          title={Title}
+        />
       )}
-      {today > June && <DropDown menu={afterJune} onChange={() => { } } title={Title} />}
+      {today > June && (
+        <DropDown menu={afterJune} onChange={() => {}} title={Title} />
+      )}
     </>
   );
 };
