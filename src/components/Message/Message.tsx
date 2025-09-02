@@ -15,7 +15,7 @@ const Message = (userInfo: userInfo) => {
   return (
     <Card
       variant="borderless"
-      style={{ width: 400, marginBottom: "5px" }}
+      style={{ width: 350, marginBottom: "5px" }}
       styles={{ body: { padding: "15px" } }}
     >
       <Flex justify="space-between" align="center">

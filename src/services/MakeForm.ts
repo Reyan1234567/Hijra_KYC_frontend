@@ -115,6 +115,7 @@ export const createMakeForm = async (
   return await api.post("/makeForm", {
     makerId: makerId,
     cif: makeForm.cif,
+    accountType:makeForm.accountType,
     customerAccount: makeForm.accountNumber,
     customerPhone: makeForm.phoneNumber,
     customerName: makeForm.fullName,

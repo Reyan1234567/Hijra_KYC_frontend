@@ -1,5 +1,6 @@
 import axios from "axios";
 import { logOutLog } from "./Authentication";
+import { BASE_URL } from "./Constants";
 
 type RefreshResponse = {
   accessToken: string;
@@ -11,7 +12,7 @@ const getUserId = () => localStorage.getItem("userId");
 
 // Axios instance
 export const api = axios.create({
-  baseURL: "http://localhost:9090/",
+  baseURL: BASE_URL,
   timeout: 5000,
 });
 

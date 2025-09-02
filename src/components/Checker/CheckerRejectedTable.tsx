@@ -19,6 +19,7 @@ const CheckerRejectedTable = () => {
   const [date, setDate] = useState(
     new Date(today.setMonth(today.getMonth(), 1))
   );
+  date.setHours(0, 0, 0, 0);
   const USER = useContext(AuthContext);
   const [modal, setModal] = useState<allTableDataType>({
     id: 0,
@@ -55,14 +56,17 @@ const CheckerRejectedTable = () => {
   useEffect(() => {
     const getRequestsAssignedToMe = async () => {
       try {
-        const makes = await api.get<pageableReturn>("/makeForm/getHo/rejected", {
-          params: {
-            hoUserId: USER?.user?.userId,
-            date: date,
-            pageNumber: pageNumber,
-            pageSize: pageSize,
-          },
-        });
+        const makes = await api.get<pageableReturn>(
+          "/makeForm/getHo/rejected",
+          {
+            params: {
+              hoUserId: USER?.user?.userId,
+              date: date,
+              pageNumber: pageNumber,
+              pageSize: pageSize,
+            },
+          }
+        );
         setMakeRequests(makes.data);
         if (makes.data.makes.length === 0) {
           setState("empty");

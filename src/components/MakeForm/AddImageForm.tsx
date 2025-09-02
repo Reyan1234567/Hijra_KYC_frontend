@@ -4,6 +4,7 @@ import { Button, Flex, Form, Input, Image, Card, message } from "antd";
 import { toBase64 } from "../../services/DisplayFunctions";
 import { Plus } from "lucide-react";
 import { useReducer } from "react";
+import { BASE_URL } from "../../services/Constants";
 
 interface addImageFormInterface {
   setEditModal: () => void;
