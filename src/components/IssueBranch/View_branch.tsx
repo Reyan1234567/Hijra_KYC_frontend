@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { Table, Button, Typography, Space, Tag, message } from "antd";
 import { useNavigate } from "react-router-dom";
@@ -11,26 +12,35 @@ interface Branch {
   name: string;
   phone: string;
   status: number;
-  districtCode: string;  // ✅ new field
-  districtName: string;  // ✅ new field
+  districtId: number;  // ✅ only keep districtId
+}
+
+interface District {
+  id: number;
+  districtName: string;  // ✅ match backend entity
 }
 
 const View_Branch: React.FC = () => {
   const navigate = useNavigate();
   const [branches, setBranches] = useState<Branch[]>([]);
+  const [districts, setDistricts] = useState<District[]>([]);
 
   useEffect(() => {
-    const fetchBranches = async () => {
+    const fetchData = async () => {
       try {
-        const res = await api.get<Branch[]>("/api/branches");
-        setBranches(res.data);
+        const [branchRes, districtRes] = await Promise.all([
+          api.get<Branch[]>("/api/branches"),
+          api.get<District[]>("/api/districts/get-all-districts"),
+        ]);
+        setBranches(branchRes.data);
+        setDistricts(districtRes.data);
       } catch (err: any) {
-        console.error("Branches fetch error:", err);
-        message.error(err?.response?.data?.message || "Failed to fetch branches");
+        console.error("Fetch error:", err);
+        message.error(err?.response?.data?.message || "Failed to fetch data");
       }
     };
 
-    fetchBranches();
+    fetchData();
   }, []);
 
   const handleEdit = (id: number) => {
@@ -39,6 +49,12 @@ const View_Branch: React.FC = () => {
 
   const handleAddNew = () => {
     navigate(`/Add_Branch`);
+  };
+
+  // ✅ helper function to resolve district name
+  const getDistrictName = (districtId: number) => {
+    const district = districts.find((d) => d.id === districtId);
+    return district ? district.districtName : "Unknown";
   };
 
   const columns = [
@@ -56,14 +72,9 @@ const View_Branch: React.FC = () => {
       ),
     },
     {
-      title: "District Code",
-      dataIndex: "districtCode",
-      key: "districtCode",
-    },
-    {
       title: "District Name",
-      dataIndex: "districtName",
       key: "districtName",
+      render: (_: any, record: Branch) => getDistrictName(record.districtId),
     },
     {
       title: "Actions",

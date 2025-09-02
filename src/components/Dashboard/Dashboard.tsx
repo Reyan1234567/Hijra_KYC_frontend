@@ -107,8 +107,32 @@ const Dashboard = () => {
           </Flex>
         </Flex>
       );
-    } else {
-      return;
+    }else if (role === "District") {
+      return (
+         <Flex vertical gap={10}>
+          <Flex justify="space-around" align="center">
+            <h1>Dashboard</h1>
+            <DateDropDown date={date} setDate={setDate} />
+          </Flex>
+
+          <Flex wrap gap={20} justify="center" align="center">
+            <DashboardCard
+              title={`Accepted Requests`}
+              amount={data?.data.accepted}
+            />
+            <DashboardCard
+              title={`Rejected Requests`}
+              amount={data?.data.rejected}
+            />
+            <DashboardCard
+              title={`Pending Requests`}
+              amount={data?.data.pending}
+            />
+            <DashboardCard title={`Total Requests`} amount={data?.data.total} />
+          </Flex>
+        </Flex>
+      )
+        return;
     }
   }
 };

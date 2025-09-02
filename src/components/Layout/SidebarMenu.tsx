@@ -171,6 +171,23 @@ const SidebarMenu = () => {
 
     
   ];
+  const district = [
+    { key: "dashboard", icon: <DashboardOutlined />, label: "Dashboard", path: "/" },
+    {
+          key: "reports",
+          icon: <ProjectOutlined />,
+          label: "Reports",
+          children: [
+              {
+                  key: "reports/summary",
+                  icon: <ZoomInOutlined />,
+                  label: "Summary Report",
+              },
+          ],
+      },
+
+    
+  ];
 
   const onclick = (e) => {
     navigate(e.key);
@@ -182,6 +199,7 @@ const SidebarMenu = () => {
     if (role === "HO_Manager") return "KYC Manager";
     if (role === "maker") return "Branch Maker";
     if (role === "HO_Checker") return "HO_Checker";
+    if(role==="District") return "Distrcit MAnager";
     return "";
   };
 
@@ -207,6 +225,8 @@ const SidebarMenu = () => {
         <Menu mode="inline" style={{ borderRight: 0 }} items={maker} onClick={onclick} />
       ) : USER?.user?.role === "HO_Checker" ? (
         <Menu mode="inline" style={{ borderRight: 0 }} items={checker} onClick={onclick} />
+      ):USER?.user?.role === "District" ? (
+        <Menu mode="inline" style={{ borderRight: 0 }} items={district} onClick={onclick} />
       ) : USER?.user?.role === "HO_Manager" ? (
         <Menu mode="inline" style={{ borderRight: 0 }} items={manager} onClick={onclick} />
       ) : null}
