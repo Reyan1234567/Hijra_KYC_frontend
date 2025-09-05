@@ -17,7 +17,6 @@ import { api, Logout } from "../../services/axios";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-// import { AuthContext } from "../../context/AuthContext";
 
 const { Title } = Typography;
 const { RangePicker } = DatePicker;
@@ -51,23 +50,25 @@ const SummaryReport = () => {
     saved: 0,
     all: 0,
   });
-  // const USER = useContext(AuthContext);
 
+  // Determine whether to fetch district branches or all branches
   useEffect(() => {
-    fetchBranches();
+    const role = localStorage.getItem("role"); // or get from context
+    if (role === "District") {
+      fetchDistrictBranches();
+    } else {
+      fetchBranches();
+    }
   }, []);
 
   const fetchBranches = async () => {
     setBranchesLoading(true);
     try {
-      // Adjust this endpoint based on your actual API
       const response = await api.get("/api/branches/get-all-branches", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
       });
-
-      // Assuming the response structure matches your backend
       setBranches(response.data);
     } catch (error: any) {
       console.error(error);
@@ -77,35 +78,44 @@ const SummaryReport = () => {
     }
   };
 
+  const fetchDistrictBranches = async () => {
+    setBranchesLoading(true);
+    try {
+      const response = await api.get("/api/branches/get-my-branches", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      });
+      setBranches(response.data);
+    } catch (error: any) {
+      console.error(error);
+      message.error("Failed to fetch branches for district");
+    } finally {
+      setBranchesLoading(false);
+    }
+  };
+
   const onFinish = async (values: any) => {
     setLoading(true);
     try {
-      // Check if dates are selected
       if (!values.dates || !values.dates[0] || !values.dates[1]) {
         message.error("Please select a date range");
         setLoading(false);
         return;
       }
 
-      // Extract values from the form
-
-      // Format dates from RangePicker
       const fromDate = values.dates[0].format("YYYY-MM-DD");
       const toDate = values.dates[1].format("YYYY-MM-DD");
 
-      // Always request ALL branches from backend; do branch-specific filtering client-side by name
       const params: any = { fromDate, toDate, branchId: 0 };
       console.log("API Parameters:", params);
 
-      // Call the backend API
       const response = await api.get("/api/summary-report", {
         params,
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
       });
-
-      console.log("API Response:", response.data);
 
       const raw = response.data;
       const rows: any[] = Array.isArray(raw)
@@ -114,7 +124,6 @@ const SummaryReport = () => {
         ? raw.items
         : [];
 
-      // map rows to SummaryReportDto shape, accepting getter-style keys
       const mapped = rows.map((item: any) => {
         const branchName =
           item.branchName ??
@@ -124,35 +133,19 @@ const SummaryReport = () => {
           "Unknown Branch";
         const pendingCount =
           Number(
-            item.pendingCount ??
-              item.getPendingCount ??
-              item.getPending ??
-              item.pending ??
-              0
+            item.pendingCount ?? item.getPendingCount ?? item.getPending ?? item.pending ?? 0
           ) || 0;
         const approvedCount =
           Number(
-            item.approvedCount ??
-              item.getApprovedCount ??
-              item.getApproved ??
-              item.approved ??
-              0
+            item.approvedCount ?? item.getApprovedCount ?? item.getApproved ?? item.approved ?? 0
           ) || 0;
         const rejectedCount =
           Number(
-            item.rejectedCount ??
-              item.getRejectedCount ??
-              item.getRejected ??
-              item.rejected ??
-              0
+            item.rejectedCount ?? item.getRejectedCount ?? item.getRejected ?? item.rejected ?? 0
           ) || 0;
         const savedCount =
           Number(
-            item.savedCount ??
-              item.getSavedCount ??
-              item.getSaved ??
-              item.saved ??
-              0
+            item.savedCount ?? item.getSavedCount ?? item.getSaved ?? item.saved ?? 0
           ) || 0;
         const totalRecords =
           Number(
@@ -172,7 +165,6 @@ const SummaryReport = () => {
         } as SummaryReportDto;
       });
 
-      // Client-side filtering: derive selected branch name from the form value and filter by branchName
       let finalMapped = mapped;
       const selectedBranchName = (() => {
         const v = values.Branch;
@@ -199,27 +191,11 @@ const SummaryReport = () => {
 
       setReportData(finalMapped);
 
-      // Calculate totals defensively from the (possibly filtered) finalMapped
-      const pendingTotal = finalMapped.reduce(
-        (sum, item) => sum + (Number(item.pendingCount) || 0),
-        0
-      );
-      const approvedTotal = finalMapped.reduce(
-        (sum, item) => sum + (Number(item.approvedCount) || 0),
-        0
-      );
-      const rejectedTotal = finalMapped.reduce(
-        (sum, item) => sum + (Number(item.rejectedCount) || 0),
-        0
-      );
-      const savedTotal = finalMapped.reduce(
-        (sum, item) => sum + (Number(item.savedCount) || 0),
-        0
-      );
-      const allTotal = finalMapped.reduce(
-        (sum, item) => sum + (Number(item.totalRecords) || 0),
-        0
-      );
+      const pendingTotal = finalMapped.reduce((sum, item) => sum + (Number(item.pendingCount) || 0), 0);
+      const approvedTotal = finalMapped.reduce((sum, item) => sum + (Number(item.approvedCount) || 0), 0);
+      const rejectedTotal = finalMapped.reduce((sum, item) => sum + (Number(item.rejectedCount) || 0), 0);
+      const savedTotal = finalMapped.reduce((sum, item) => sum + (Number(item.savedCount) || 0), 0);
+      const allTotal = finalMapped.reduce((sum, item) => sum + (Number(item.totalRecords) || 0), 0);
 
       setTotals({
         pending: pendingTotal,
@@ -236,9 +212,7 @@ const SummaryReport = () => {
         await Logout();
       } else {
         message.error(
-          error.response?.data?.message ||
-            error.message ||
-            "Failed to fetch report data"
+          error.response?.data?.message || error.message || "Failed to fetch report data"
         );
       }
     } finally {
@@ -246,7 +220,6 @@ const SummaryReport = () => {
     }
   };
 
-  // Export Excel
   const handleExportExcel = () => {
     if (!reportData.length) {
       message.warning("No data to export");
@@ -266,21 +239,13 @@ const SummaryReport = () => {
     XLSX.writeFile(wb, `SummaryReport_${new Date().toISOString()}.xlsx`);
   };
 
-  // Export PDF
   const handleExportPDF = () => {
     if (!reportData.length) {
       message.warning("No data to export");
       return;
     }
     const doc = new jsPDF();
-    const columns = [
-      "Branch",
-      "Pending",
-      "Approved",
-      "Rejected",
-      "Saved",
-      "Total",
-    ];
+    const columns = ["Branch", "Pending", "Approved", "Rejected", "Saved", "Total"];
     const rows = reportData.map((r) => [
       r.branchName,
       r.pendingCount,
@@ -294,107 +259,39 @@ const SummaryReport = () => {
   };
 
   const columns = [
-    {
-      title: "#",
-      dataIndex: "index",
-      key: "index",
-      width: 50,
-      render: (_text: string, _record: any, index: number) => index + 1,
-    },
-    {
-      title: "Branch",
-      dataIndex: "branchName",
-      key: "branchName",
-      width: 100,
-    },
-    {
-      title: "Pending",
-      dataIndex: "pendingCount",
-      key: "pendingCount",
-      width: 100,
-      render: (value: number) => value.toLocaleString(),
-    },
-    {
-      title: "Approved",
-      dataIndex: "approvedCount",
-      key: "approvedCount",
-      width: 100,
-      render: (value: number) => value.toLocaleString(),
-    },
-    {
-      title: "Rejected",
-      dataIndex: "rejectedCount",
-      key: "rejectedCount",
-      width: 100,
-      render: (value: number) => value.toLocaleString(),
-    },
-    {
-      title: "Saved",
-      dataIndex: "savedCount",
-      key: "savedCount",
-      width: 100,
-      render: (value: number) => value.toLocaleString(),
-    },
-    {
-      title: "Total",
-      dataIndex: "totalRecords",
-      key: "totalRecords",
-      width: 100,
-      render: (value: number) => value.toLocaleString(),
-    },
+    { title: "#", dataIndex: "index", key: "index", width: 50, render: (_text: string, _record: any, index: number) => index + 1 },
+    { title: "Branch", dataIndex: "branchName", key: "branchName", width: 100 },
+    { title: "Pending", dataIndex: "pendingCount", key: "pendingCount", width: 100, render: (value: number) => value.toLocaleString() },
+    { title: "Approved", dataIndex: "approvedCount", key: "approvedCount", width: 100, render: (value: number) => value.toLocaleString() },
+    { title: "Rejected", dataIndex: "rejectedCount", key: "rejectedCount", width: 100, render: (value: number) => value.toLocaleString() },
+    { title: "Saved", dataIndex: "savedCount", key: "savedCount", width: 100, render: (value: number) => value.toLocaleString() },
+    { title: "Total", dataIndex: "totalRecords", key: "totalRecords", width: 100, render: (value: number) => value.toLocaleString() },
   ];
 
   return (
     <Card>
       <Title level={2}>SUMMARY REPORT</Title>
 
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={onFinish}
-        initialValues={{
-          Branch: "0,ALL Branch",
-        }}
-      >
+      <Form form={form} layout="vertical" onFinish={onFinish} initialValues={{ Branch: "0,ALL Branch" }}>
         <Row gutter={16}>
           <Col xs={24} md={8}>
-            <Form.Item
-              name="dates"
-              label="Date Range *"
-              rules={[{ required: true, message: "Please select date range" }]}
-            >
+            <Form.Item name="dates" label="Date Range *" rules={[{ required: true, message: "Please select date range" }]}>
               <RangePicker style={{ width: "100%" }} format="YYYY-MM-DD" />
             </Form.Item>
           </Col>
           <Col xs={24} md={8}>
-            <Form.Item
-              name="Branch"
-              label="Branch *"
-              rules={[{ required: true, message: "Please select branch" }]}
-            >
-              <Select
-                loading={branchesLoading}
-                placeholder={
-                  branchesLoading ? "Loading branches..." : "Select branch"
-                }
-              >
+            <Form.Item name="Branch" label="Branch *" rules={[{ required: true, message: "Please select branch" }]}>
+              <Select loading={branchesLoading} placeholder={branchesLoading ? "Loading branches..." : "Select branch"}>
                 <Option value="0,ALL Branch">ALL Branch</Option>
                 {branches.map((branch) => (
-                  <Option
-                    key={branch.branch_id}
-                    value={`${branch.branch_id},${branch.name}`}
-                  >
+                  <Option key={branch.branch_id} value={`${branch.branch_id},${branch.name}`}>
                     {branch.name}
                   </Option>
                 ))}
               </Select>
             </Form.Item>
           </Col>
-          <Col
-            xs={24}
-            md={4}
-            style={{ display: "flex", alignItems: "flex-end" }}
-          >
+          <Col xs={24} md={4} style={{ display: "flex", alignItems: "flex-end" }}>
             <Form.Item>
               <Button type="primary" htmlType="submit" loading={loading}>
                 Search
@@ -409,34 +306,16 @@ const SummaryReport = () => {
           <Title level={4}>List of Applicants Summary Report</Title>
 
           <Row gutter={16} style={{ marginBottom: 16 }}>
-            <Col span={4}>
-              <Statistic title="Total Pending" value={totals.pending} />
-            </Col>
-            <Col span={4}>
-              <Statistic title="Total Approved" value={totals.approved} />
-            </Col>
-            <Col span={4}>
-              <Statistic title="Total Rejected" value={totals.rejected} />
-            </Col>
-            <Col span={4}>
-              <Statistic title="Total Saved" value={totals.saved} />
-            </Col>
-            <Col span={4}>
-              <Statistic title="Grand Total" value={totals.all} />
-            </Col>
+            <Col span={4}><Statistic title="Total Pending" value={totals.pending} /></Col>
+            <Col span={4}><Statistic title="Total Approved" value={totals.approved} /></Col>
+            <Col span={4}><Statistic title="Total Rejected" value={totals.rejected} /></Col>
+            <Col span={4}><Statistic title="Total Saved" value={totals.saved} /></Col>
+            <Col span={4}><Statistic title="Grand Total" value={totals.all} /></Col>
           </Row>
 
           <Row gutter={8} style={{ marginBottom: 12 }}>
-            <Col>
-              <Button onClick={handleExportExcel} disabled={!reportData.length}>
-                Download as Excel
-              </Button>
-            </Col>
-            <Col>
-              <Button onClick={handleExportPDF} disabled={!reportData.length}>
-                Download as PDF
-              </Button>
-            </Col>
+            <Col><Button onClick={handleExportExcel} disabled={!reportData.length}>Download as Excel</Button></Col>
+            <Col><Button onClick={handleExportPDF} disabled={!reportData.length}>Download as PDF</Button></Col>
           </Row>
 
           <Table
@@ -447,24 +326,12 @@ const SummaryReport = () => {
             pagination={{ pageSize: 10 }}
             summary={() => (
               <Table.Summary.Row>
-                <Table.Summary.Cell index={0} colSpan={2}>
-                  <strong>Total</strong>
-                </Table.Summary.Cell>
-                <Table.Summary.Cell index={1}>
-                  <strong>{totals.pending.toLocaleString()}</strong>
-                </Table.Summary.Cell>
-                <Table.Summary.Cell index={2}>
-                  <strong>{totals.approved.toLocaleString()}</strong>
-                </Table.Summary.Cell>
-                <Table.Summary.Cell index={3}>
-                  <strong>{totals.rejected.toLocaleString()}</strong>
-                </Table.Summary.Cell>
-                <Table.Summary.Cell index={4}>
-                  <strong>{totals.saved.toLocaleString()}</strong>
-                </Table.Summary.Cell>
-                <Table.Summary.Cell index={5}>
-                  <strong>{totals.all.toLocaleString()}</strong>
-                </Table.Summary.Cell>
+                <Table.Summary.Cell index={0} colSpan={2}><strong>Total</strong></Table.Summary.Cell>
+                <Table.Summary.Cell index={1}><strong>{totals.pending.toLocaleString()}</strong></Table.Summary.Cell>
+                <Table.Summary.Cell index={2}><strong>{totals.approved.toLocaleString()}</strong></Table.Summary.Cell>
+                <Table.Summary.Cell index={3}><strong>{totals.rejected.toLocaleString()}</strong></Table.Summary.Cell>
+                <Table.Summary.Cell index={4}><strong>{totals.saved.toLocaleString()}</strong></Table.Summary.Cell>
+                <Table.Summary.Cell index={5}><strong>{totals.all.toLocaleString()}</strong></Table.Summary.Cell>
               </Table.Summary.Row>
             )}
           />
