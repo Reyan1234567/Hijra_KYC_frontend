@@ -48,7 +48,7 @@ const Edit_Profile: React.FC = () => {
         // Fetch roles and branches in parallel
         const [rolesRes, branchesRes, userRes] = await Promise.all([
           api.get<Role[]>('/api/roles'),
-          api.get<Branch[]>('/api/branches'),
+          api.get<Branch[]>('/api/branches/get-all-branches'),
           api.get(`/api/user-profiles/get-user/${id}`),
         ]);
 
@@ -75,10 +75,10 @@ const Edit_Profile: React.FC = () => {
           roleId: userData.roleId,
           branchId: Number(userData.branchId ?? 0),
           status: userData.status === 'Active' || userData.status === 1,
-          photoUrl:userData.photoUrl,
+          photo:userData.photo,
         });
 
-        setImageUrl(`/api/user-profiles/user-profile/${id}/photoUrl`);
+        setImageUrl(`/api/user-profiles/user-profile/${id}/photo`);
 
         setInitialized(true);
       } catch (error: any) {
