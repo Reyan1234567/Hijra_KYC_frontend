@@ -7,7 +7,7 @@ import AddImageForm from "./AddImageForm";
 import { createImage } from "../../services/MakeForm";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-interface editModalParam {
+export interface editModalParam {
   handleCancel: () => void;
   editModal: boolean;
   modal: allTableDataType;
@@ -28,9 +28,10 @@ const EditModal = (editModalParam: editModalParam) => {
       });
     },
     onError: (error) => {
+      console.log(error)
       messageApi.open({
         type: "error",
-        content: error instanceof Error ? error.message : String(error),
+        content: error instanceof Error ? error.name : String(error),
       });
     },
   });

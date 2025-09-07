@@ -13,6 +13,8 @@ import {
   OrderedListOutlined,
   ZoomInOutlined,
   FundOutlined,
+  UnorderedListOutlined,
+  FullscreenOutlined,
 } from "@ant-design/icons";
 import { Badge, Menu } from "antd";
 import { useContext } from "react";
@@ -26,27 +28,20 @@ const SidebarMenu = () => {
   const USER = useContext(AuthContext);
 
   useQuery({
-    queryKey: ["notification"],
+    queryKey: ["notifications"],
     queryFn: async () => {
+      if (USER?.user?.role == "maker") {
+        const resp = await api.get("/makeForm/getRejected");
+        USER?.setRejectedCount(resp?.data);
+      } else if (USER?.user?.role == "HO_Checker") {
+        const respo = await api.get("/makeForm/getPending");
+        USER?.setPendingCount(respo?.data);
+      }
       const res = await api.get("/message/unread");
       USER?.setMessageCount(res?.data);
-
-      const resp = await api.get("/makeForm/getRejected");
-      USER?.setRejectedCount(resp?.data);
-
-      const respo = await api.get("/makeForm/getPending");
-      USER?.setPendingCount(respo?.data);
     },
     refetchInterval: 1000 * 60,
   });
-
-  const { data: pending } = useQuery({
-    queryKey: ["pending"],
-    queryFn: async () => await api.get("/makeForm/getPending"),
-    refetchInterval: 1000 * 60,
-  });
-
-  USER?.setPendingCount(pending?.data);
 
   // --- Define menus ---
   const maker = [
@@ -71,7 +66,7 @@ const SidebarMenu = () => {
         </>
       ),
       children: [
-        { key: "makeForm", icon: <ProfileOutlined />, label: "All Requests" },
+        // { key: "makeForm", icon: <ProfileOutlined />, label: "All Requests" },
         { key: "makeTable/drafts", icon: <FormOutlined />, label: "Drafts" },
         {
           key: "makeTable/pending",
@@ -130,11 +125,11 @@ const SidebarMenu = () => {
         </>
       ),
       children: [
-        {
-          key: "checkerTable",
-          label: "All Requests",
-          icon: <ProfileOutlined />,
-        },
+        // {
+        //   key: "checkerTable",
+        //   label: "All Requests",
+        //   icon: <ProfileOutlined />,
+        // },
         {
           key: "checkTable/pending",
           label: (
@@ -200,7 +195,18 @@ const SidebarMenu = () => {
         },
       ],
     },
-    // { key: "distribute", icon: <FullscreenOutlined />, label: "Distribute", path: "/distribute" },
+    {
+      key: "attendance",
+      icon: <UnorderedListOutlined />,
+      label: "Attendance",
+      path: "/attendance",
+    },
+    {
+      key: "distribute",
+      icon: <FullscreenOutlined />,
+      label: "Distribute",
+      path: "/distribute",
+    },
     {
       key: "search",
       icon: <SearchOutlined />,

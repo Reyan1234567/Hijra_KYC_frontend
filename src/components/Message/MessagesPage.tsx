@@ -5,6 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import { api } from "../../services/axios";
 import { messages } from "./MessagesView";
 import { AuthContext } from "../../context/AuthContext";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface drawerInterface {
   open: boolean;
@@ -15,48 +16,38 @@ interface drawerInterface {
 }
 
 const MessagesPage = (drawer: drawerInterface) => {
-  const [user, setUser] = useState<userInfo[] | null>(null);
   const [filteredUsers, setFilteredUsers] = useState<userInfo[]>();
-  const [state, setState] = useState<"loading" | "success" | "error" | "empty">(
-    "loading"
-  );
-  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const USER=useContext(AuthContext)
+  const USER = useContext(AuthContext);
+  const queryClient = useQueryClient();
+
+  const { data: user, isLoading, isError } = useQuery({
+    queryKey: ["messageContacts", USER?.user?.userId],
+    queryFn: async () => {
+      const userMessage = await api.get("/message/getAll", {
+        params: { receiverId: USER?.user?.userId },
+      });
+      console.log(userMessage);
+      return userMessage.data;
+    },
+    enabled: !!USER?.user?.userId,
+  });
 
   useEffect(() => {
-    const getUserMessage = async () => {
-      try {
-        setState("loading");
-        const userMessage = await api.get("/message/getAll", {
-          params: { receiverId: USER?.user?.userId},
-        });
-        console.log(userMessage);
-        if (userMessage.data.length === 0) {
-          setState("empty");
-        } else {
-          setState("success");
-          setUser(userMessage.data);
-          setFilteredUsers(userMessage.data);
-          let messageSum = 0;
-          userMessage.data.forEach((data: userInfo) => {
-            messageSum += data.unreadCount;
-          });
-          drawer.setBadge(messageSum);
-        }
-      } catch (e) {
-        console.log(e);
-        setState("error");
-        setError("Something went wrong");
-      }
-    };
-    getUserMessage();
-  }, [USER?.user?.userId]);
+    if (user) {
+      setFilteredUsers(user);
+      let messageSum = 0;
+      user.forEach((data: userInfo) => {
+        messageSum += data.unreadCount;
+      });
+      drawer.setBadge(messageSum);
+    }
+  }, [user, drawer]);
 
   useEffect(() => {
     const Search = () => {
       const FilteredUsers = user?.filter(
-        (userM) =>
+        (userM: userInfo) =>
           userM.fullName.toLowerCase().includes(search) ||
           userM.branchName.toLowerCase().includes(search) ||
           userM.role.toLowerCase().includes(search) ||
@@ -69,7 +60,6 @@ const MessagesPage = (drawer: drawerInterface) => {
     Search();
   }, [search, user]);
 
-  console.log(state);
   return (
     <>
       <Input.Search
@@ -81,22 +71,27 @@ const MessagesPage = (drawer: drawerInterface) => {
         }}
         style={{ marginBottom: "10px" }}
       />
-      {state === "empty" && <p>No Messages</p>}
-      {state === "loading" && (
+      {!user && isLoading && (
         <Spin
           style={{ position: "absolute", left: "50%", top: "50%" }}
           size="large"
         />
       )}
-      {state === "error" && <Typography.Text>{error}</Typography.Text>}
-      {state === "success" &&
+      {isError && <Typography.Text>Something went wrong</Typography.Text>}
+      {user && user.length === 0 && <p>No Messages</p>}
+      {user && user.length > 0 &&
         (filteredUsers === undefined || filteredUsers === null ? (
           <p>Nothing to show</p>
         ) : (
           filteredUsers.map((userInfo) => (
             <div
+              key={userInfo.id}
               style={{ cursor: "pointer" }}
               onClick={() => {
+                // Invalidate message contacts query to refresh unread counts
+                queryClient.invalidateQueries({
+                  queryKey: ["messageContacts", USER?.user?.userId],
+                });
                 drawer.setOpen(true);
                 drawer.setChatInfo({
                   id: userInfo.id,

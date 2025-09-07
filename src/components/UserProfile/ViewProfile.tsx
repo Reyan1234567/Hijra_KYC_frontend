@@ -4,6 +4,7 @@ import type { ColumnsType } from 'antd/es/table';
 import { EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/axios'; // use your axios instance
+import { BASE_URL } from '../../services/Constants';
 
 interface User {
   id: number;
@@ -58,7 +59,7 @@ const ViewProfile: React.FC = () => {
       width: 80,
       render: (_: any, record: User) => (
         <Avatar
-          src={`http://localhost:9090/api/user-profiles/user-profile/${record.id}/photo`}
+          src={BASE_URL+`/api/user-profiles/user-profile/${record.id}/photo`}
           alt={`${record.firstName} ${record.lastName}`}
           size={40}
         />

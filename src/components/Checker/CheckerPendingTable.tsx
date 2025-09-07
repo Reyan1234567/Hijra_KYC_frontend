@@ -11,7 +11,7 @@ import ViewModal from "../Helper/RequestModals/ViewModal";
 import { AuthContext } from "../../context/AuthContext";
 
 const CheckerPendingTable = () => {
-  const [, /*messageApi*/ contextHolder] = message.useMessage();
+  const [messageApi, contextHolder] = message.useMessage();
   const today = new Date();
   const [trigger, setTrigger] = useState(0);
   const [viewModal, setViewModal] = useState(false);
@@ -19,7 +19,7 @@ const CheckerPendingTable = () => {
   const [date, setDate] = useState(
     new Date(today.setMonth(today.getMonth(), 1))
   );
-  date.setHours(0,0,0,0)
+  date.setHours(0, 0, 0, 0);
   const USER = useContext(AuthContext);
   const [modal, setModal] = useState<allTableDataType>({
     id: 0,
@@ -149,6 +149,7 @@ const CheckerPendingTable = () => {
       )}
       {state === "empty" && (
         <>
+          {contextHolder}
           <div
             style={{
               display: "flex",
@@ -188,8 +189,7 @@ const CheckerPendingTable = () => {
             modal={modal}
             open={editModal}
             onCancel={() => setEditModal(false)}
-            triggerRender={() => setTrigger((prev) => prev + 1)}
-          />
+            triggerRender={() => setTrigger((prev) => prev + 1)} messageApi={messageApi}          />
           <ViewModal
             modal={modal}
             isModalOpen={viewModal}

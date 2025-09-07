@@ -1,18 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Form,
   Input,
   Select,
   Button,
-  Upload,
   message,
   Switch,
   Card,
   Typography,
-} from 'antd';
-import { UploadOutlined, ArrowLeftOutlined, UserOutlined } from '@ant-design/icons';
-import { api } from '../../services/axios'; // <-- updated axios instance
+} from "antd";
+import { ArrowLeftOutlined, UserOutlined } from "@ant-design/icons";
+import { api } from "../../services/axios"; // <-- updated axios instance
 
 const { Option } = Select;
 const { Title } = Typography;
@@ -34,28 +33,27 @@ const Edit_Profile: React.FC = () => {
 
   const [roles, setRoles] = useState<Role[]>([]);
   const [branches, setBranches] = useState<Branch[]>([]);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  // const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [fileList, setFileList] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
 
-  const fallbackImage = 'https://via.placeholder.com/80x80.png?text=User';
-
+  // const fallbackImage = 'https://via.placeholder.com/80x80.png?text=User';
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Fetch roles and branches in parallel
         const [rolesRes, branchesRes, userRes] = await Promise.all([
-          api.get<Role[]>('/api/roles'),
-          api.get<Branch[]>('/api/branches'),
+          api.get<Role[]>("/api/roles"),
+          api.get<Branch[]>("/api/branches/get-all-branches"),
           api.get(`/api/user-profiles/get-user/${id}`),
         ]);
 
         setRoles(rolesRes.data);
         setBranches(branchesRes.data);
 
-        console.log('User API response:', userRes.data);
+        console.log("User API response:", userRes.data);
 
         // Check if your backend wraps data in `data` property
         const userData = userRes.data.data ? userRes.data.data : userRes.data;
@@ -67,62 +65,55 @@ const Edit_Profile: React.FC = () => {
 
         // Populate form fields
         form.setFieldsValue({
-        id: userData.id,
+          id: userData.id,
           firstName: userData.firstName,
           lastName: userData.lastName,
           gender: userData.gender,
           phoneNumber: userData.phoneNumber,
           roleId: userData.roleId,
           branchId: Number(userData.branchId ?? 0),
-          status: userData.status === 'Active' || userData.status === 1,
-          photoUrl:userData.photoUrl,
+          status: userData.status === "Active" || userData.status === "1",
+          photoUrl: userData.photoUrl,
         });
-
-        setImageUrl(`/api/user-profiles/user-profile/${id}/photoUrl`);
-
+        // setImageUrl(`/api/user-profiles/user-profile/${id}/photoUrl`);
         setInitialized(true);
       } catch (error: any) {
-        console.error('Failed to load data', error);
-        message.error(
-          error?.response?.data?.message || 'Failed to load data'
-        );
+        console.error("Failed to load data", error);
+        message.error(error?.response?.data?.message || "Failed to load data");
       }
     };
-
     fetchData();
   }, [id, form]);
 
-  const handleUploadChange = ({ fileList }: { fileList: any[] }) => {
-    setFileList(fileList);
-  };
+  // const handleUploadChange = ({ fileList }: { fileList: any[] }) => {
+  //   setFileList(fileList);
+  // };
 
   const onFinish = async (values: any) => {
     setLoading(true);
     try {
       const formData = new FormData();
-      formData.append('firstName', values.firstName);
-      formData.append('lastName', values.lastName);
-      formData.append('gender', values.gender);
-      formData.append('phoneNumber', values.phoneNumber);
-      formData.append('roleId', values.roleId);
-      formData.append('branchId', values.branchId);
-      formData.append('status', values.status ? '1' : '0');
+      formData.append("firstName", values.firstName);
+      formData.append("lastName", values.lastName);
+      formData.append("gender", values.gender);
+      formData.append("phoneNumber", values.phoneNumber);
+      formData.append("roleId", values.roleId);
+      formData.append("branchId", values.branchId);
+      formData.append("status", values.status ? "1" : "0");
 
       if (fileList.length > 0 && fileList[0].originFileObj) {
-        formData.append('photoUrl', fileList[0].originFileObj);
+        formData.append("photoUrl", fileList[0].originFileObj);
       }
 
       await api.put(`/api/user-profiles/${id}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
-      message.success('User updated successfully');
-      navigate('/ViewProfile');
+      message.success("User updated successfully");
+      navigate("/ViewProfile");
     } catch (error: any) {
-      console.error('Failed to update user', error);
-      message.error(
-        error?.response?.data?.message || 'Failed to update user'
-      );
+      console.error("Failed to update user", error);
+      message.error(error?.response?.data?.message || "Failed to update user");
     } finally {
       setLoading(false);
     }
@@ -131,13 +122,13 @@ const Edit_Profile: React.FC = () => {
   if (!initialized) return <div>Loading...</div>;
 
   return (
-    <div style={{ maxWidth: 800, margin: 'auto', padding: '20px' }}>
+    <div style={{ maxWidth: 800, margin: "auto", padding: "20px" }}>
       <Card bordered={false}>
         <Button
           type="primary"
           icon={<ArrowLeftOutlined />}
           onClick={() => navigate(-1)}
-          style={{ marginBottom: 24, fontWeight: 'bold' }}
+          style={{ marginBottom: 24, fontWeight: "bold" }}
         >
           Back
         </Button>
@@ -150,7 +141,7 @@ const Edit_Profile: React.FC = () => {
           <Form.Item
             name="roleId"
             label="User Role"
-            rules={[{ required: true, message: 'Please select a role' }]}
+            rules={[{ required: true, message: "Please select a role" }]}
           >
             <Select placeholder="Select Role">
               {roles.map((role) => (
@@ -164,11 +155,14 @@ const Edit_Profile: React.FC = () => {
           <Form.Item
             name="branchId"
             label="Issue Branch"
-            rules={[{ required: true, message: 'Please select a branch' }]}
+            rules={[{ required: true, message: "Please select a branch" }]}
           >
             <Select placeholder="Select Branch">
               {branches.map((branch, index) => (
-                <Option key={branch.branchId || index} value={branch.branchId || index + 1}>
+                <Option
+                  key={branch.branchId || index}
+                  value={branch.branchId || index + 1}
+                >
                   {branch.name}
                 </Option>
               ))}
@@ -178,7 +172,7 @@ const Edit_Profile: React.FC = () => {
           <Form.Item
             name="firstName"
             label="First Name"
-            rules={[{ required: true, message: 'Please input first name' }]}
+            rules={[{ required: true, message: "Please input first name" }]}
           >
             <Input placeholder="Enter first name" />
           </Form.Item>
@@ -186,7 +180,7 @@ const Edit_Profile: React.FC = () => {
           <Form.Item
             name="lastName"
             label="Last Name"
-            rules={[{ required: true, message: 'Please input last name' }]}
+            rules={[{ required: true, message: "Please input last name" }]}
           >
             <Input placeholder="Enter last name" />
           </Form.Item>
@@ -194,7 +188,7 @@ const Edit_Profile: React.FC = () => {
           <Form.Item
             name="gender"
             label="Gender"
-            rules={[{ required: true, message: 'Please select gender' }]}
+            rules={[{ required: true, message: "Please select gender" }]}
           >
             <Select placeholder="Select Gender">
               <Option value="Male">Male</Option>
@@ -205,12 +199,12 @@ const Edit_Profile: React.FC = () => {
           <Form.Item
             name="phoneNumber"
             label="Phone Number"
-            rules={[{ required: true, message: 'Please input phone number' }]}
+            rules={[{ required: true, message: "Please input phone number" }]}
           >
             <Input placeholder="Enter phone number" />
           </Form.Item>
 
-          <Form.Item label="Profile Photo">
+          {/* <Form.Item label="Profile Photo">
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <div>
                 <img
@@ -241,7 +235,7 @@ const Edit_Profile: React.FC = () => {
                 <Button icon={<UploadOutlined />}>Change Photo</Button>
               </Upload>
             </div>
-          </Form.Item>
+          </Form.Item> */}
 
           <Form.Item
             name="status"
@@ -257,7 +251,7 @@ const Edit_Profile: React.FC = () => {
               htmlType="submit"
               loading={loading}
               icon={<UserOutlined />}
-              style={{ width: 150, fontWeight: 'bold' }}
+              style={{ width: 150, fontWeight: "bold" }}
             >
               Update User
             </Button>
@@ -269,4 +263,3 @@ const Edit_Profile: React.FC = () => {
 };
 
 export default Edit_Profile;
-

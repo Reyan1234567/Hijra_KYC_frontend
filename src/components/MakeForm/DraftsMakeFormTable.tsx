@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
-import { Flex, message, Spin, Table } from "antd";
-import type { MenuProps, TableColumnsType, TabsProps } from "antd";
+import { Button, Flex, message, Popconfirm, Spin, Table } from "antd";
+import type { MenuProps, TableColumnsType } from "antd";
 import DateDropDown from "../Helper/DateDropdown/DateDropDown";
 import {
   EditOutlined,
@@ -13,7 +13,11 @@ import EditModal from "./EditModal";
 import ViewModal from "../Helper/RequestModals/ViewModal";
 import DropDown from "../Helper/DateDropdown/DropDown";
 import RequestTables from "../Helper/Table/RequestTables";
-import { addToDrafts, getDraftedMakes, sendToHo } from "../../services/MakeForm";
+import {
+  addToDrafts,
+  getDraftedMakes,
+  sendToHo,
+} from "../../services/MakeForm";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AuthContext } from "../../context/AuthContext";
 import { allTableDataType } from "./AllMakeFormTable";
@@ -26,7 +30,7 @@ const DraftsMakeFormTable = () => {
   const [date, setDate] = useState(
     new Date(today.setMonth(today.getMonth(), 1))
   );
-  date.setHours(0,0,0,0)
+  date.setHours(0, 0, 0, 0);
   const view: MenuProps["items"] = [
     {
       label: "View",
@@ -53,14 +57,6 @@ const DraftsMakeFormTable = () => {
       icon: <EyeOutlined />,
       onClick: () => {
         setIsModalOpen(true);
-      },
-    },
-    {
-      label: "Send to HO",
-      key: "3",
-      icon: <SendOutlined />,
-      onClick: () => {
-        sendToHoMutation.mutate(modal.id);
       },
     },
   ];
@@ -111,13 +107,25 @@ const DraftsMakeFormTable = () => {
         if (status === 0) {
           return (
             <Flex justify="center" align="center">
-              <DropDown menu={draft} onChange={() => setModal(row)} />
+              <DropDown
+                menu={draft}
+                onChange={() => {
+                  console.log(row);
+                  setModal(row);
+                }}
+              />
             </Flex>
           );
         } else if (status === 3) {
           return (
             <Flex justify="center" align="center">
-              <DropDown menu={rejected} onChange={() => setModal(row)} />
+              <DropDown
+                menu={rejected}
+                onChange={() => {
+                  console.log(row);
+                  setModal(row);
+                }}
+              />
             </Flex>
           );
         } else {
@@ -127,6 +135,31 @@ const DraftsMakeFormTable = () => {
             </Flex>
           );
         }
+      },
+    },
+    {
+      title: "Send to HO",
+      dataIndex: "status",
+      render: (_:number, row: allTableDataType) => {
+        console.log("Supposed to be row: ", row);
+        return (
+          <Popconfirm
+            title={"Send to Ho"}
+            onOpenChange={() => {
+              console.log("Row: ", row);
+              setModal(row);
+            }}
+            description="Are you sure You wanna send to Ho?"
+            okText="Yes"
+            cancelText="No"
+            onConfirm={() => {
+              console.log("Modal: ", modal);
+              return sendToHoMutation.mutate(modal.id);
+            }}
+          >
+            <Button>{<SendOutlined />}</Button>
+          </Popconfirm>
+        );
       },
     },
   ];
@@ -146,7 +179,8 @@ const DraftsMakeFormTable = () => {
   };
   const { data, isLoading, isError, isSuccess, error } = useQuery({
     queryKey: ["makes", date, pageNumber, pageSize],
-    queryFn: () => getDraftedMakes(date, USER?.user?.userId, pageSize, pageNumber),
+    queryFn: () =>
+      getDraftedMakes(date, USER?.user?.userId, pageSize, pageNumber),
   });
 
   const sendToHoMutation = useMutation({
@@ -161,7 +195,7 @@ const DraftsMakeFormTable = () => {
     onError: (error) => {
       messageApi.open({
         type: "error",
-        content: error instanceof Error ? error.message : String(error),
+        content: error?.response?.data??"Something went wrong",
       });
     },
   });

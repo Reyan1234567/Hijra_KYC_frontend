@@ -11,7 +11,7 @@ import ViewModal from "../Helper/RequestModals/ViewModal";
 import { AuthContext } from "../../context/AuthContext";
 
 const CheckerRejectedTable = () => {
-  const [, /*messageApi*/ contextHolder] = message.useMessage();
+  const [messageApi, contextHolder] = message.useMessage();
   const today = new Date();
   const [trigger, setTrigger] = useState(0);
   const [viewModal, setViewModal] = useState(false);
@@ -152,6 +152,7 @@ const CheckerRejectedTable = () => {
       )}
       {state === "empty" && (
         <>
+          {contextHolder}
           <div
             style={{
               display: "flex",
@@ -192,6 +193,7 @@ const CheckerRejectedTable = () => {
             open={editModal}
             onCancel={() => setEditModal(false)}
             triggerRender={() => setTrigger((prev) => prev + 1)}
+            messageApi={messageApi}
           />
           <ViewModal
             modal={modal}

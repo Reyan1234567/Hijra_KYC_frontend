@@ -1,9 +1,9 @@
-import { ReactNode, useEffect, useLayoutEffect, useState } from "react";
+import { ReactNode, useLayoutEffect, useState } from "react";
 import { userInfo } from "../types/ContextFiles";
 import { LoginRequest } from "../types/LoginRequest";
 import { AuthContext } from "./AuthContext";
 import { loginFetch, loginLog } from "../services/Authentication";
-import { api, Logout } from "../services/axios.ts";
+import { Logout } from "../services/axios.ts";
 import { useNavigate } from "react-router-dom";
 import { message } from "antd";
 

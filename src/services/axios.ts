@@ -65,7 +65,7 @@ const refreshAccessToken = async (): Promise<RefreshResponse | undefined> => {
     if (!refreshToken) throw new Error("No refresh token available");
 
     const response = await axios.post<RefreshResponse>(
-      "http://localhost:9090/auth/refresh",
+      BASE_URL+"/auth/refresh",
       { refreshToken }
     );
 
@@ -85,6 +85,6 @@ export const Logout = async () => {
     console.error("Error during logout:", err);
   } finally {
     localStorage.clear();
-    window.location.replace("http://localhost:5173/login");
+    window.location.replace("/login");
   }
 };

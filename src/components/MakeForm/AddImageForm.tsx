@@ -4,7 +4,6 @@ import { Button, Flex, Form, Input, Image, Card, message } from "antd";
 import { toBase64 } from "../../services/DisplayFunctions";
 import { Plus } from "lucide-react";
 import { useReducer } from "react";
-import { BASE_URL } from "../../services/Constants";
 
 interface addImageFormInterface {
   setEditModal: () => void;
@@ -50,7 +49,7 @@ const imagesReducer = (state: egami[], action: EgamiAction): egami[] => {
 const AddImageForm = (prop: addImageFormInterface) => {
   const [form] = useForm();
   const [images, dispatch] = useReducer(imagesReducer, []);
-  const [messageApi, contextHolder] = message.useMessage();
+  const [_, contextHolder] = message.useMessage();
   const onFinishEdit = async () => {
     prop.onFinish({makeId:prop.makeId, images:images});
     prop.setEditModal();
