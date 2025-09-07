@@ -2,6 +2,7 @@ import { LoginRequest } from "../types/LoginRequest";
 import { userInfo } from "../types/ContextFiles";
 import axios from "axios";
 import { api } from "./axios";
+import { BASE_URL } from "./Constants";
 
 interface loginResult {
   userInfo: userInfo;
@@ -11,7 +12,7 @@ interface loginResult {
 
 export const loginFetch = async (userInfo: LoginRequest) => {
   const loginResult = await axios.post<loginResult>(
-    "http://localhost:9090/auth/login",
+    BASE_URL+"/auth/login",
     userInfo,
     { withCredentials: true }
   );
@@ -29,6 +30,7 @@ export const loginLog = async (id: number) => {
 export const logOutLog = async (id: number) => {
   try {
     await api.post("/api/system-logs/add-new-logout-log", { userId: id });
+    console.log("logging logout")
   } catch (e) {
     console.log(e);
   }

@@ -4,20 +4,22 @@ import { api } from "../../services/axios";
 import { useState } from "react";
 import { allTableDataType } from "../MakeForm/AllMakeFormTable";
 import BackReason from "../Helper/RequestModals/BackReason";
+import { useQueryClient } from "@tanstack/react-query";
+import { MessageInstance } from "antd/es/message/interface";
 
 export interface checkerViewModal {
   modal: allTableDataType;
   open: boolean;
   onCancel: () => void;
   triggerRender: () => void;
+  messageApi: MessageInstance;
 }
 const CheckerEditModal = (checkerEditModal: checkerViewModal) => {
-  const [messageApi, contextHolder] = message.useMessage();
   const [InputBox, setInputBox] = useState(false);
   const [InputBoxValue, setInputBoxValue] = useState("");
+  const queryClient = useQueryClient();
   return (
     <>
-      {contextHolder}
       <Modal
         title="Edit Request"
         width={1000}
@@ -52,15 +54,21 @@ const CheckerEditModal = (checkerEditModal: checkerViewModal) => {
                         makeFormId: checkerEditModal.modal.id,
                         comment: InputBoxValue,
                       });
-                      messageApi.open({
+                      await queryClient.invalidateQueries({
+                        queryKey: ["notifications"],
+                      });
+                      await queryClient.invalidateQueries({
+                        queryKey: ["pending"],
+                      });
+                      checkerEditModal.triggerRender();
+                      checkerEditModal.onCancel();
+                      checkerEditModal.messageApi.open({
                         type: "success",
                         content: "Request rejected",
                       });
-                      checkerEditModal.onCancel();
-                      checkerEditModal.triggerRender();
                     } catch (e: unknown) {
                       console.log(e);
-                      messageApi.open({
+                      checkerEditModal.messageApi.open({
                         type: "error",
                         content: e.message,
                       });
@@ -86,15 +94,21 @@ const CheckerEditModal = (checkerEditModal: checkerViewModal) => {
                     {},
                     { params: { status: 2 } }
                   );
-                  messageApi.open({
-                    type: "success",
-                    content: "Request rejected",
+                  queryClient.invalidateQueries({
+                    queryKey: ["notifications"],
                   });
-                  checkerEditModal.onCancel();
+                  await queryClient.invalidateQueries({
+                    queryKey: ["pending"],
+                  });
                   checkerEditModal.triggerRender();
+                  checkerEditModal.onCancel();
+                  checkerEditModal.messageApi.open({
+                    type: "success",
+                    content: "Request approved",
+                  });
                 } catch (e: unknown) {
                   console.log(e);
-                  messageApi.open({
+                  checkerEditModal.messageApi.open({
                     type: "error",
                     content: e?.response.data ?? "Something went wrong",
                   });

@@ -11,7 +11,7 @@ import ViewModal from "../Helper/RequestModals/ViewModal";
 import { AuthContext } from "../../context/AuthContext";
 
 const CheckerApprovedTable = () => {
-  const [, /*messageApi*/ contextHolder] = message.useMessage();
+  const [messageApi, contextHolder] = message.useMessage();
   const today = new Date();
   const [trigger, setTrigger] = useState(0);
   const [viewModal, setViewModal] = useState(false);
@@ -19,7 +19,7 @@ const CheckerApprovedTable = () => {
   const [date, setDate] = useState(
     new Date(today.setMonth(today.getMonth(), 1))
   );
-  date.setHours(0,0,0,0)
+  date.setHours(0, 0, 0, 0);
   const USER = useContext(AuthContext);
   const [modal, setModal] = useState<allTableDataType>({
     id: 0,
@@ -56,14 +56,17 @@ const CheckerApprovedTable = () => {
   useEffect(() => {
     const getRequestsAssignedToMe = async () => {
       try {
-        const makes = await api.get<pageableReturn>("/makeForm/getHo/approved", {
-          params: {
-            hoUserId: USER?.user?.userId,
-            date: date,
-            pageNumber: pageNumber,
-            pageSize: pageSize,
-          },
-        });
+        const makes = await api.get<pageableReturn>(
+          "/makeForm/getHo/approved",
+          {
+            params: {
+              hoUserId: USER?.user?.userId,
+              date: date,
+              pageNumber: pageNumber,
+              pageSize: pageSize,
+            },
+          }
+        );
         setMakeRequests(makes.data);
         if (makes.data.makes.length === 0) {
           setState("empty");
@@ -140,70 +143,6 @@ const CheckerApprovedTable = () => {
     },
   ];
 
-  // const items: TabsProps["items"] = [
-  //   {
-  //     key: "1",
-  //     label: "All Requests",
-  //     children: (
-  //       <RequestTables
-  //         data={makeRequests.filter((req) => req.status !== 0)}
-  //         colums={columns}
-  //         pageSize={0}
-  //         pageNumber={0}
-  //         total={0}
-  //         onChange={}
-  //       />
-  //     ),
-  //   },
-  //   {
-  //     key: "3",
-  //     label: "Pending",
-  //     children: (
-  //       <RequestTables
-  //         data={makeRequests.filter((request) => request.status === 1)}
-  //         colums={columns}
-  //         pageSize={0}
-  //         pageNumber={0}
-  //         total={0}
-  //         onChange={function (pageNo: number, pageSi: number): void {
-  //           throw new Error("Function not implemented.");
-  //         }}
-  //       />
-  //     ),
-  //   },
-  //   {
-  //     key: "4",
-  //     label: "Approved",
-  //     children: (
-  //       <RequestTables
-  //         data={makeRequests.filter((request) => request.status === 2)}
-  //         colums={columns}
-  //         pageSize={0}
-  //         pageNumber={0}
-  //         total={0}
-  //         onChange={function (pageNo: number, pageSi: number): void {
-  //           throw new Error("Function not implemented.");
-  //         }}
-  //       />
-  //     ),
-  //   },
-  //   {
-  //     key: "5",
-  //     label: "Rejected",
-  //     children: (
-  //       <RequestTables
-  //         data={makeRequests.filter((request) => request.status === 3)}
-  //         colums={columns}
-  //         pageSize={0}
-  //         pageNumber={0}
-  //         total={0}
-  //         onChange={function (pageNo: number, pageSi: number): void {
-  //           throw new Error("Function not implemented.");
-  //         }}
-  //       />
-  //     ),
-  //   },
-  // ];
   return (
     <>
       {state === "loading" && (
@@ -214,6 +153,7 @@ const CheckerApprovedTable = () => {
       )}
       {state === "empty" && (
         <>
+          {contextHolder}
           <div
             style={{
               display: "flex",
@@ -254,6 +194,7 @@ const CheckerApprovedTable = () => {
             open={editModal}
             onCancel={() => setEditModal(false)}
             triggerRender={() => setTrigger((prev) => prev + 1)}
+            messageApi={messageApi}
           />
           <ViewModal
             modal={modal}

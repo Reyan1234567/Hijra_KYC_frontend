@@ -1,19 +1,14 @@
 import { useContext, useState } from "react";
 import { Flex, message, Spin, Table } from "antd";
-import type { MenuProps, TableColumnsType, TabsProps } from "antd";
+import type { MenuProps, TableColumnsType } from "antd";
 import DateDropDown from "../Helper/DateDropdown/DateDropDown";
-import {
-  EditOutlined,
-  EyeOutlined,
-  FileTextOutlined,
-  SendOutlined,
-} from "@ant-design/icons";
+import { EditOutlined, EyeOutlined, SendOutlined } from "@ant-design/icons";
 
 import EditModal from "./EditModal";
 import ViewModal from "../Helper/RequestModals/ViewModal";
 import DropDown from "../Helper/DateDropdown/DropDown";
 import RequestTables from "../Helper/Table/RequestTables";
-import { addToDrafts, getMakes, sendToHo } from "../../services/MakeForm";
+import { getMakes, sendToHo } from "../../services/MakeForm";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AuthContext } from "../../context/AuthContext";
 
@@ -62,7 +57,7 @@ const AllMakeFormTable = () => {
   const [date, setDate] = useState(
     new Date(today.setMonth(today.getMonth(), 1))
   );
-  date.setHours(0,0,0,0)
+  date.setHours(0, 0, 0, 0);
   const view: MenuProps["items"] = [
     {
       label: "View",
@@ -111,11 +106,11 @@ const AllMakeFormTable = () => {
       },
     },
     {
-      label: "Add to drafts",
+      label: "Edit",
       key: "2",
-      icon: <FileTextOutlined />,
+      icon: <EditOutlined />,
       onClick: async () => {
-        addToDraftsMutation.mutate(modal.id);
+        setEditModal(true);
       },
     },
   ];
@@ -182,7 +177,7 @@ const AllMakeFormTable = () => {
   };
   const { data, isLoading, isError, isSuccess, error } = useQuery({
     queryKey: ["makes", date, pageNumber, pageSize],
-    queryFn: () => getMakes(date, USER?.user?.userId, pageSize, pageNumber,),
+    queryFn: () => getMakes(date, USER?.user?.userId, pageSize, pageNumber),
   });
 
   const sendToHoMutation = useMutation({
@@ -202,23 +197,6 @@ const AllMakeFormTable = () => {
     },
   });
 
-  const addToDraftsMutation = useMutation({
-    mutationFn: (id: number) => addToDrafts(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["makes"] });
-      messageApi.open({
-        type: "success",
-        content: "Successfully added to drafts",
-      });
-    },
-    onError: (error) => {
-      messageApi.open({
-        type: "error",
-        content: error instanceof Error ? error.message : String(error),
-      });
-    },
-  });
-
   if (isLoading) {
     return (
       <Spin
@@ -227,6 +205,7 @@ const AllMakeFormTable = () => {
       />
     );
   }
+
   if (isError || data?.data === undefined) {
     return (
       <p style={{ position: "absolute", left: "50%", top: "50%" }}>

@@ -1,5 +1,4 @@
 import { Suspense, useContext, useState } from "react";
-import type { MenuProps } from "antd";
 import {
   Avatar,
   Badge,
@@ -12,6 +11,7 @@ import {
   Spin,
   theme,
 } from "antd";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   MessageOutlined,
   UserOutlined,
@@ -36,8 +36,10 @@ import { useNavigate } from "react-router-dom";
 import MessagesView, { messages } from "../Message/MessagesView.tsx";
 import LoginForm from "../LoginForm.tsx";
 import ProtectionRotue from "../../ProtectionRotue.tsx";
-import {Logout} from "../../services/axios.ts";
+import { Logout } from "../../services/axios.ts";
 import { AuthContext } from "../../context/AuthContext.tsx";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import useMessage from "antd/es/message/useMessage";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { Search } = Input;
@@ -53,6 +55,7 @@ const FullLayout = () => {
   const pathName = window.location.pathname;
   const USER = useContext(AuthContext);
   const navigate = useNavigate();
+  const [_, contextHolder]=useMessage()
   const [open, setOpen] = useState(false);
   const [messageBadge, setMessageBadge] = useState(0);
   const [inOpen, setInOpen] = useState(false);
@@ -62,6 +65,7 @@ const FullLayout = () => {
     senderProfile: "no-profile",
   });
   const [menuVisible, setMenuVisible] = useState(false);
+  const queryClient = useQueryClient();
 
   const showDrawer = () => {
     setOpen(true);
@@ -69,24 +73,33 @@ const FullLayout = () => {
 
   const onClose = () => {
     setOpen(false);
+    // Invalidate notifications query when message drawer closes to update sidebar count
+    queryClient.invalidateQueries({
+      queryKey: ["notifications"],
+    });
   };
 
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const handleLogout = async () => {
-  try {
-    await Logout(); // make sure your Logout() returns a Promise
-    console.log("Logout API call successful");
-  } catch (err) {
-    console.error("Logout failed", err);
-  } finally {
-    localStorage.clear(); // clear after API call
-    navigate("/");         // redirect to login
-  }
-};
+  const handleLogout = () => {
+    Logout();
+    // localStorage.clear();
+    // navigate("/");
+  };
 
+//  const handleLogout = async () => {
+//  try {
+//    await Logout(); // make sure your Logout() returns a Promise
+//    console.log("Logout API call successful");
+//  } catch (err) {
+//    console.error("Logout failed", err);
+//  } finally {
+//    localStorage.clear(); // clear after API call
+//    navigate("/");         // redirect to login
+//  }
+//};
 
   const User = localStorage.getItem("username") || "User";
   const role = localStorage.getItem("role") || "";
@@ -110,24 +123,71 @@ const FullLayout = () => {
   ];
 
   const firstRowItems: MenuItemType[] = [
-    { code: "001", title: "Company Info", icon: <AppstoreOutlined />, path: "/company-info" },
-    { code: "002", title: "Server Config", icon: <SettingOutlined />, path: "/server-config" },
-    { code: "003", title: "Add Role", icon: <TeamOutlined />, path: "/AddRole" },
-    { code: "004", title: "View Roles", icon: <EyeOutlined />, path: "/View_Role" },
-    { code: "005", title: "Broadcast Message", icon: <NotificationOutlined />, path: "/broadcast" },
+    {
+      code: "001",
+      title: "Company Info",
+      icon: <AppstoreOutlined />,
+      path: "/company-info",
+    },
+    {
+      code: "002",
+      title: "Server Config",
+      icon: <SettingOutlined />,
+      path: "/server-config",
+    },
+    {
+      code: "003",
+      title: "Add Role",
+      icon: <TeamOutlined />,
+      path: "/AddRole",
+    },
+    {
+      code: "004",
+      title: "View Roles",
+      icon: <EyeOutlined />,
+      path: "/View_Role",
+    },
+    {
+      code: "005",
+      title: "Broadcast Message",
+      icon: <NotificationOutlined />,
+      path: "/broadcast",
+    },
   ];
 
   const secondRowItems: MenuItemType[] = [
-    { code: "006", title: "Add District", icon: <NotificationOutlined />, path: "/Add_District" },
-    { code: "007", title: "View Issue Branch", icon: <CodeOutlined />, path: "/View_Branch" },
-    { code: "008", title: "View Login", icon: <LoginOutlined />, path: "/View_Login" },
-    { code: "009", title: "View Profile", icon: <ProfileOutlined />, path: "/ViewProfile" },
+    {
+      code: "006",
+      title: "Add District",
+      icon: <NotificationOutlined />,
+      path: "/Add_District",
+    },
+    {
+      code: "007",
+      title: "View Issue Branch",
+      icon: <CodeOutlined />,
+      path: "/View_Branch",
+    },
+    {
+      code: "008",
+      title: "View Login",
+      icon: <LoginOutlined />,
+      path: "/View_Login",
+    },
+    {
+      code: "009",
+      title: "View Profile",
+      icon: <ProfileOutlined />,
+      path: "/ViewProfile",
+    },
   ];
 
   return pathName === "/login" ? (
     <LoginForm />
   ) : (
     <Layout style={{ height: "100vh", overflowX: "hidden" }}>
+      <ReactQueryDevtools initialIsOpen={false} />
+      {contextHolder}
       <Sider
         style={{ backgroundColor: "white" }}
         theme="light"
@@ -191,7 +251,9 @@ const FullLayout = () => {
             {role === "HO_Manager" && (
               <Button
                 type="text"
-                icon={<MenuOutlined style={{ color: "white", fontSize: "20px" }} />}
+                icon={
+                  <MenuOutlined style={{ color: "white", fontSize: "20px" }} />
+                }
                 onClick={() => setMenuVisible(true)}
               />
             )}
@@ -256,7 +318,11 @@ const FullLayout = () => {
               <Search
                 placeholder="Search..."
                 prefix={<SearchOutlined />}
-                style={{ width: "100%", maxWidth: "500px", marginBottom: "70px" }}
+                style={{
+                  width: "100%",
+                  maxWidth: "500px",
+                  marginBottom: "70px",
+                }}
                 size="large"
               />
 
@@ -292,10 +358,16 @@ const FullLayout = () => {
                       backgroundColor: "#fafafa",
                       transition: "all 0.2s ease-in-out",
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#e6f7ff")}
-                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#fafafa")}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#e6f7ff")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#fafafa")
+                    }
                   >
-                    <div style={{ fontSize: "26px", marginBottom: "6px" }}>{item.icon}</div>
+                    <div style={{ fontSize: "26px", marginBottom: "6px" }}>
+                      {item.icon}
+                    </div>
                     <div style={{ fontWeight: 700, textAlign: "center" }}>
                       {item.code} {item.title}
                     </div>
@@ -335,10 +407,16 @@ const FullLayout = () => {
                       backgroundColor: "#fafafa",
                       transition: "all 0.2s ease-in-out",
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#e6f7ff")}
-                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#fafafa")}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#e6f7ff")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#fafafa")
+                    }
                   >
-                    <div style={{ fontSize: "26px", marginBottom: "6px" }}>{item.icon}</div>
+                    <div style={{ fontSize: "26px", marginBottom: "6px" }}>
+                      {item.icon}
+                    </div>
                     <div style={{ fontWeight: 700, textAlign: "center" }}>
                       {item.code} {item.title}
                     </div>
@@ -425,7 +503,3 @@ const FullLayout = () => {
 };
 
 export default FullLayout;
-
-
-
-

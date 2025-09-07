@@ -9,7 +9,7 @@ import { AuthContext } from "../../context/AuthContext";
 const Dashboard = () => {
   const [date, setDate] = useState(new Date());
   date.setDate(1)
-  date.setHours(0,0,0,0)
+    date.setHours(0,0,0,0)
   const USER = useContext(AuthContext);
   const role = USER?.user?.role ?? "maker";
   console.log(date);

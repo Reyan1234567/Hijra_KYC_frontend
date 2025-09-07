@@ -5,6 +5,8 @@ import { Typography } from "antd";
 
 const MakeInfo = (modal: allTableDataType) => {
   const { Title } = Typography;
+  const now = new Date();
+  console.log(modal);
   return (
     <Flex justify="space-between">
       <Flex vertical style={{ width: "40%" }}>
@@ -45,19 +47,19 @@ const MakeInfo = (modal: allTableDataType) => {
 
         <Title level={3}>Checker Info</Title>
         <Flex justify="space-between">
-          <p>Checker ID:</p>
-          <p>{modal?.hoId || "No checker assigned"}</p>
-        </Flex>
-        <Flex justify="space-between">
           <p>Assigned At:</p>
-          <p>{modal?.assignedAt ? ExtractDate(modal!.assignedAt) : "-"}</p>
+          <p>
+            {new Date(modal?.assignedAt) > now || !modal.assignedAt
+              ? "-"
+              : ExtractDate(modal!.assignedAt)}
+          </p>
         </Flex>
         <Flex justify="space-between">
           <p>Validated At:</p>
           <p>
-            {modal?.checkedAt
-              ? ExtractDate(modal!.checkedAt)
-              : "Not checked yet"}
+            {new Date(modal?.checkedAt) > now || !modal.checkedAt
+              ? "Not checked yet"
+              : ExtractDate(modal!.checkedAt)}
           </p>
         </Flex>
         <Flex justify="space-between">
@@ -67,8 +69,7 @@ const MakeInfo = (modal: allTableDataType) => {
           <p>
             {modal!.status === 1 && "Pending"}
             {modal!.status === 2 && "Approved"}
-               {modal!.status === 3 && "Rejected"}
-            
+            {modal!.status === 3 && "Rejected"}
           </p>
         </Flex>
       </Flex>

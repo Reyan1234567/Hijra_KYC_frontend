@@ -2,7 +2,9 @@ import { user } from "../components/User/Profile";
 import { api } from "./axios";
 
 export const getCheckers = async () => {
-  return await api.get<user[]>("/api/user-profiles/getCheckers");
+  const res=await api.get<user[]>("/api/user-profiles/getCheckers");
+  console.log(res)
+  return res
 };
 
 export const editAttendance = async (list:number[]) => {

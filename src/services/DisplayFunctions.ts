@@ -2,7 +2,7 @@
     if (date === null) return "-----------";
     else {
       const day = new Date(date);
-      return `${day.getDate()}/${day.getMonth()}/${day.getFullYear()}  ${day.getHours()}:${day.getMinutes()}:${day.getSeconds()}`;
+      return `${day.getMonth()+1}/${day.getDate()}/${day.getFullYear()}  ${day.getHours()}:${day.getMinutes()}:${day.getSeconds()}`;
     }
   };
 

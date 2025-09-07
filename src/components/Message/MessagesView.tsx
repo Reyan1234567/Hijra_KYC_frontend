@@ -5,6 +5,7 @@ import { api } from "../../services/axios";
 import { SendOutlined, UserOutlined } from "@ant-design/icons";
 import { useSearchParams } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface message {
   senderId: number;
@@ -36,6 +37,7 @@ const MessagesView = (messageDetail: yme) => {
   const [messages, setMessages] = useState<message[]>([]);
 
   const USER = useContext(AuthContext);
+  const queryClient = useQueryClient();
   useEffect(() => {
     const scroll = () => {
       bottomRef.current?.scrollIntoView();
@@ -112,6 +114,14 @@ const MessagesView = (messageDetail: yme) => {
           size={34}
           onClick={() => {
             messageDetail.setInOpen(false);
+            // Invalidate message contacts query to refresh unread counts when exiting conversation
+            queryClient.invalidateQueries({
+              queryKey: ["messageContacts", USER?.user?.userId],
+            });
+            // Also invalidate notifications query to update sidebar count
+            queryClient.invalidateQueries({
+              queryKey: ["notifications"],
+            });
           }}
           style={{ cursor: "pointer" }}
         />

@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { Flex, message, Spin, Table } from "antd";
-import type { MenuProps, TableColumnsType, TabsProps } from "antd";
+import type { MenuProps, TableColumnsType } from "antd";
 import DateDropDown from "../Helper/DateDropdown/DateDropDown";
 import {
   EditOutlined,
@@ -13,7 +13,7 @@ import EditModal from "./EditModal";
 import ViewModal from "../Helper/RequestModals/ViewModal";
 import DropDown from "../Helper/DateDropdown/DropDown";
 import RequestTables from "../Helper/Table/RequestTables";
-import { addToDrafts, getApprovedMakes, getMakes, sendToHo } from "../../services/MakeForm";
+import { addToDrafts, getApprovedMakes, sendToHo } from "../../services/MakeForm";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AuthContext } from "../../context/AuthContext";
 
@@ -253,78 +253,6 @@ const ApprovedMakeFormTable = () => {
   }
 
   const res: allTableDataType[] = data.data.makes;
-  const items: TabsProps["items"] = [
-    {
-      key: "1",
-      label: "All Requests",
-      children: (
-        <RequestTables
-          data={res}
-          colums={columns}
-          pageSize={pageSize}
-          pageNumber={pageNumber}
-          total={data.data.total}
-          onChange={onchange}
-        />
-      ),
-    },
-    {
-      key: "2",
-      label: "Drafts",
-      children: (
-        <RequestTables
-          data={res.filter((request) => request.status === 0)}
-          colums={columns}
-          pageSize={pageSize}
-          pageNumber={pageNumber}
-          total={data.data.total}
-          onChange={onchange} 
-          />
-      ),
-    },
-    {
-      key: "3",
-      label: "Pending",
-      children: (
-        <RequestTables
-          data={res.filter((request) => request.status === 1)}
-          colums={columns}
-          pageSize={pageSize}
-          pageNumber={pageNumber}
-          total={data.data.total}
-          onChange={onchange}
-        />
-      ),
-    },
-    {
-      key: "4",
-      label: "Approved",
-      children: (
-        <RequestTables
-          data={res.filter((request) => request.status === 2)}
-          colums={columns}
-          pageSize={pageSize}
-          pageNumber={pageNumber}
-          total={data.data.total}
-          onChange={onchange}
-        />
-      ),
-    },
-    {
-      key: "5",
-      label: "Rejected",
-      children: (
-        <RequestTables
-          data={res.filter((request) => request.status === 3)}
-          colums={columns}
-          pageSize={pageSize}
-          pageNumber={pageNumber}
-          total={data.data.total}
-          onChange={onchange}
-        />
-      ),
-    },
-  ];
 
   return (
     <>

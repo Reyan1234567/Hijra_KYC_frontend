@@ -1,19 +1,14 @@
 import { useContext, useState } from "react";
-import { Flex, message, Spin, Table } from "antd";
-import type { MenuProps, TableColumnsType, TabsProps } from "antd";
+import { Button, Flex, message, Popconfirm, Spin, Table } from "antd";
+import type { MenuProps, TableColumnsType } from "antd";
 import DateDropDown from "../Helper/DateDropdown/DateDropDown";
-import {
-  EditOutlined,
-  EyeOutlined,
-  FileTextOutlined,
-  SendOutlined,
-} from "@ant-design/icons";
+import { EditOutlined, EyeOutlined, SendOutlined } from "@ant-design/icons";
 
 import EditModal from "./EditModal";
 import ViewModal from "../Helper/RequestModals/ViewModal";
 import DropDown from "../Helper/DateDropdown/DropDown";
 import RequestTables from "../Helper/Table/RequestTables";
-import { addToDrafts, getMakes, getRejectedMakes, sendToHo } from "../../services/MakeForm";
+import { getRejectedMakes, sendToHo } from "../../services/MakeForm";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AuthContext } from "../../context/AuthContext";
 
@@ -62,7 +57,7 @@ const RejectedMakeFormTable = () => {
   const [date, setDate] = useState(
     new Date(today.setMonth(today.getMonth(), 1))
   );
-  date.setHours(0,0,0,0)
+  date.setHours(0, 0, 0, 0);
   const view: MenuProps["items"] = [
     {
       label: "View",
@@ -111,11 +106,11 @@ const RejectedMakeFormTable = () => {
       },
     },
     {
-      label: "Add to drafts",
+      label: "Edit",
       key: "2",
-      icon: <FileTextOutlined />,
+      icon: <EditOutlined />,
       onClick: async () => {
-        addToDraftsMutation.mutate(modal.id);
+        setEditModal(true);
       },
     },
   ];
@@ -165,6 +160,31 @@ const RejectedMakeFormTable = () => {
         }
       },
     },
+    {
+      title: "Send to HO",
+      dataIndex: "status",
+      render: (_: number, row: allTableDataType) => {
+        console.log("Supposed to be row: ", row);
+        return (
+          <Popconfirm
+            title={"Send to Ho"}
+            onOpenChange={() => {
+              console.log("Row: ", row);
+              setModal(row);
+            }}
+            description="Are you sure You wanna send to Ho?"
+            okText="Yes"
+            cancelText="No"
+            onConfirm={() => {
+              console.log("Modal: ", modal);
+              return sendToHoMutation.mutate(modal.id);
+            }}
+          >
+            <Button>{<SendOutlined />}</Button>
+          </Popconfirm>
+        );
+      },
+    },
   ];
 
   const handleCancel = () => {
@@ -181,40 +201,30 @@ const RejectedMakeFormTable = () => {
     setPageSize(pageSi);
   };
   const { data, isLoading, isError, isSuccess, error } = useQuery({
-    queryKey: ["makes", date, pageNumber, pageSize],
-    queryFn: () => getRejectedMakes(date, USER?.user?.userId, pageSize, pageNumber,),
+    queryKey: ["rejectedMakes", date, pageNumber, pageSize],
+    queryFn: () =>
+      getRejectedMakes(date, USER?.user?.userId, pageSize, pageNumber),
   });
 
   const sendToHoMutation = useMutation({
     mutationFn: (id: number) => sendToHo(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["makes"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["notifications"],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["rejectedMakes"],
+      });
       messageApi.open({
         type: "success",
         content: "Successfully sent to Ho",
       });
     },
     onError: (error) => {
+      console.log(error);
       messageApi.open({
         type: "error",
-        content: error instanceof Error ? error.message : String(error),
-      });
-    },
-  });
-
-  const addToDraftsMutation = useMutation({
-    mutationFn: (id: number) => addToDrafts(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["makes"] });
-      messageApi.open({
-        type: "success",
-        content: "Successfully added to drafts",
-      });
-    },
-    onError: (error) => {
-      messageApi.open({
-        type: "error",
-        content: error instanceof Error ? error.message : String(error),
+        content: error?.response?.data ?? "Something went wrong",
       });
     },
   });
@@ -237,6 +247,7 @@ const RejectedMakeFormTable = () => {
   if (isSuccess && data.data.makes.length === 0) {
     return (
       <>
+      {contextHolder}
         <div
           style={{
             display: "flex",
@@ -253,78 +264,6 @@ const RejectedMakeFormTable = () => {
   }
 
   const res: allTableDataType[] = data.data.makes;
-  const items: TabsProps["items"] = [
-    {
-      key: "1",
-      label: "All Requests",
-      children: (
-        <RequestTables
-          data={res}
-          colums={columns}
-          pageSize={pageSize}
-          pageNumber={pageNumber}
-          total={data.data.total}
-          onChange={onchange}
-        />
-      ),
-    },
-    {
-      key: "2",
-      label: "Drafts",
-      children: (
-        <RequestTables
-          data={res.filter((request) => request.status === 0)}
-          colums={columns}
-          pageSize={pageSize}
-          pageNumber={pageNumber}
-          total={data.data.total}
-          onChange={onchange} 
-          />
-      ),
-    },
-    {
-      key: "3",
-      label: "Pending",
-      children: (
-        <RequestTables
-          data={res.filter((request) => request.status === 1)}
-          colums={columns}
-          pageSize={pageSize}
-          pageNumber={pageNumber}
-          total={data.data.total}
-          onChange={onchange}
-        />
-      ),
-    },
-    {
-      key: "4",
-      label: "Approved",
-      children: (
-        <RequestTables
-          data={res.filter((request) => request.status === 2)}
-          colums={columns}
-          pageSize={pageSize}
-          pageNumber={pageNumber}
-          total={data.data.total}
-          onChange={onchange}
-        />
-      ),
-    },
-    {
-      key: "5",
-      label: "Rejected",
-      children: (
-        <RequestTables
-          data={res.filter((request) => request.status === 3)}
-          colums={columns}
-          pageSize={pageSize}
-          pageNumber={pageNumber}
-          total={data.data.total}
-          onChange={onchange}
-        />
-      ),
-    },
-  ];
 
   return (
     <>

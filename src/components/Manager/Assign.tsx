@@ -29,11 +29,11 @@ const Assign = (modal: assignModal) => {
     getUsers();
   }, [modal.modal.hoId, modal.modal.makeId]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     try {
       console.log(checker);
       console.log(modal.modal.makeId);
-      api.patch(
+      await api.patch(
         "/makeForm/assignChecker",
         {},
         { params: { checker: checker, make: modal.modal.makeId } }
@@ -43,7 +43,7 @@ const Assign = (modal: assignModal) => {
         content: "Assignement made successfully",
       });
       modal.trigger();
-    } catch (e) {
+    } catch (e: any) {
       console.log(e);
       messageApi.open({
         type: "error",

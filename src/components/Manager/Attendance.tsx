@@ -49,7 +49,7 @@ const Attendance = () => {
             {list.map((checker) => (
               <Card style={{ backgroundColor: "#eeeeeeff" }}>
                 <Flex align="center" style={{ width: "500px" }}>
-                  {checker.presentStatus === 0 ? (
+                  {checker.presentStatus == 0 ? (
                     <Tag color="red" style={{ height: "25px" }}>
                       <CloseOutlined />
                     </Tag>
