@@ -89,6 +89,18 @@ const FullLayout = () => {
     // navigate("/");
   };
 
+//  const handleLogout = async () => {
+//  try {
+//    await Logout(); // make sure your Logout() returns a Promise
+//    console.log("Logout API call successful");
+//  } catch (err) {
+//    console.error("Logout failed", err);
+//  } finally {
+//    localStorage.clear(); // clear after API call
+//    navigate("/");         // redirect to login
+//  }
+//};
+
   const User = localStorage.getItem("username") || "User";
   const role = localStorage.getItem("role") || "";
 

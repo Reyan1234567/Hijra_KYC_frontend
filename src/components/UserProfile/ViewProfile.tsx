@@ -1,7 +1,8 @@
+
 import React, { useEffect, useState, useMemo } from 'react';
-import { Table, Tag, Button, Avatar, Space, message } from 'antd';
+import { Table, Tag, Button, Avatar, Space, message, Input, Row, Col } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { EditOutlined, PlusOutlined } from '@ant-design/icons';
+import { EditOutlined, SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/axios'; // use your axios instance
 import { BASE_URL } from '../../services/Constants';
@@ -20,6 +21,7 @@ interface User {
 const ViewProfile: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [searchText, setSearchText] = useState<string>(''); // 🔍 search state
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,6 +44,19 @@ const ViewProfile: React.FC = () => {
     navigate(`/Edit_Profile/${user.id}`);
   };
 
+  // 🔍 Filter users by search text
+  const filteredUsers = useMemo(() => {
+    return users.filter(user => {
+      const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+      return (
+        fullName.includes(searchText.toLowerCase()) ||
+        user.roleName.toLowerCase().includes(searchText.toLowerCase()) ||
+        user.branchAddress.toLowerCase().includes(searchText.toLowerCase()) ||
+        user.phoneNumber.includes(searchText)
+      );
+    });
+  }, [users, searchText]);
+
   const columns: ColumnsType<User> = useMemo(() => [
     {
       title: 'SN',
@@ -49,7 +64,7 @@ const ViewProfile: React.FC = () => {
       width: 70,
     },
     {
-      title: 'user ID',
+      title: 'User ID',
       dataIndex: 'id',
       key: 'userID',
     },
@@ -121,20 +136,24 @@ const ViewProfile: React.FC = () => {
     <div className="container">
       <h2 style={{ margin: '16px 0' }}>List Of Users In KYC Management System</h2>
 
-      {/* <Button
-        type="primary"
-        icon={<PlusOutlined />}
-        style={{ marginBottom: 16 }}
-        onClick={() => navigate('/add-profile')}
-      >
-        Add New
-      </Button> */}
+      {/* 🔍 Search Bar */}
+      <Row justify="end" style={{ marginBottom: 16 }}>
+        <Col>
+          <Input
+            placeholder="Search by name, role, branch, phone..."
+            prefix={<SearchOutlined />}
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            allowClear
+          />
+        </Col>
+      </Row>
 
       <Table<User>
         loading={loading}
-        dataSource={users}
+        dataSource={filteredUsers}  // use filtered list
         columns={columns}
-        rowKey="userID"
+        rowKey="id"
         scroll={{ x: 1000 }}
         pagination={{ 
           pageSize: 10, 
