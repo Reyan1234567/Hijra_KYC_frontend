@@ -96,11 +96,18 @@ const Search = () => {
     setState("loading");
     let makeFormResponse;
     try {
-      makeFormResponse = await axios.get(
+
+      /*makeFormResponse = await axios.get(
         `http://apps.hijrabank.com:8082/api/customerDetail/${
           form.getFieldsValue().AccountNumber
         }`
+      );*/
+
+      makeFormResponse = await api.get(
+          `/api/account/${form.getFieldsValue().AccountNumber}`
       );
+
+
     } catch (e) {
       setState("error");
       messageApi.error("Something went wrong");
