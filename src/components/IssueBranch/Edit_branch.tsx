@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { Form, Input, Button, Typography, message, Space, Switch, Select } from "antd";
 import { useParams, useNavigate } from "react-router-dom";
@@ -7,8 +8,9 @@ const { Title } = Typography;
 const { Option } = Select;
 
 interface District {
-  districtCode: string;
+  id: number;
   districtName: string;
+  districtCode: string;
 }
 
 interface BranchFormValues {
@@ -16,8 +18,7 @@ interface BranchFormValues {
   name: string;
   phone: string;
   place: string;
-  districtCode: string;
-  districtName:string;
+  districtId: number;
   status: boolean;
 }
 
@@ -26,9 +27,8 @@ interface BranchData {
   name: string;
   phone: string;
   place: string;
-  districtCode: string;
+  districtId: number;
   status: number;
-  districtName:string;
 }
 
 const Edit_Branch: React.FC = () => {
@@ -64,8 +64,7 @@ const Edit_Branch: React.FC = () => {
           name: branch.name,
           phone: branch.phone,
           place: branch.place,
-          districtCode: branch.districtCode, // preselect district
-          districtName:branch.districtName,
+          districtId: branch.districtId, // ✅ preselect by id
           status: branch.status === 1,
         });
       } catch (err: any) {
@@ -87,8 +86,7 @@ const Edit_Branch: React.FC = () => {
         name: values.name,
         phone: values.phone,
         place: values.place,
-        districtCode: values.districtCode,
-        districtName:values.districtName,
+        districtId: values.districtId, // ✅ send only id
         status: values.status ? 1 : 0,
       };
 
@@ -148,28 +146,14 @@ const Edit_Branch: React.FC = () => {
         </Form.Item>
 
         <Form.Item
-          label="District Name"
-          name="districtName"
-          rules={[{ required: true, message: "Please enter branch place" }]}
-        >
-          <Select placeholder="Select District Name">
-            {districts.map((d) => (
-              <Option key={d.districtName} value={d.districtName}>
-                 ({d.districtName})
-              </Option>
-            ))}
-          </Select>
-        </Form.Item>
-
-        <Form.Item
           label="District"
-          name="districtCode"
+          name="districtId"
           rules={[{ required: true, message: "Please select district" }]}
         >
-          <Select placeholder="Select District Code">
+          <Select placeholder="Select District">
             {districts.map((d) => (
-              <Option key={d.districtCode} value={d.districtCode}>
-                 ({d.districtCode}) ({d.districtName})
+              <Option key={d.id} value={d.id}>
+                {d.districtName} ({d.districtCode})
               </Option>
             ))}
           </Select>

@@ -20,12 +20,12 @@ const Add_District: React.FC = () => {
     try {
       const payload = {
         districtCode: values.districtCode,
-        name: values.name,
+        districtName: values.name,
       };
 
       await api.post("/api/districts/post-district", payload);
       message.success("District added successfully");
-      navigate("/View_District"); // redirect to district list page
+      navigate("/dashboard"); // redirect to district list page
     } catch (err: any) {
       console.error(err);
       message.error(err?.response?.data?.message || "Failed to add district");

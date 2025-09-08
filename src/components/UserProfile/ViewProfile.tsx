@@ -54,18 +54,6 @@ const ViewProfile: React.FC = () => {
       key: 'userID',
     },
     {
-      title: 'Photo',
-      key: 'photo',
-      width: 80,
-      render: (_: any, record: User) => (
-        <Avatar
-          src={BASE_URL+`/api/user-profiles/user-profile/${record.id}/photo`}
-          alt={`${record.firstName} ${record.lastName}`}
-          size={40}
-        />
-      ),
-    },
-    {
       title: 'Full Name',
       render: (_: any, record: User) => `${record.firstName} ${record.lastName}`,
       sorter: (a: User, b: User) =>
@@ -133,14 +121,14 @@ const ViewProfile: React.FC = () => {
     <div className="container">
       <h2 style={{ margin: '16px 0' }}>List Of Users In KYC Management System</h2>
 
-      <Button
+      {/* <Button
         type="primary"
         icon={<PlusOutlined />}
         style={{ marginBottom: 16 }}
         onClick={() => navigate('/add-profile')}
       >
         Add New
-      </Button>
+      </Button> */}
 
       <Table<User>
         loading={loading}
