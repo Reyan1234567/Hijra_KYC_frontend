@@ -1,11 +1,12 @@
 import { Badge, Card, Flex, Avatar, Typography } from "antd";
 import { userInfo } from "../../types/MessageTypes";
 import { UserOutlined } from "@ant-design/icons";
+import { BASE_URL } from "../../services/Constants";
 
 const Message = (userInfo: userInfo) => {
   const avatar = () => {
     return userInfo.profilePhoto ? (
-      <Avatar shape={"square"} size={48} src={userInfo.profilePhoto} />
+      <Avatar shape={"square"} size={48} src={BASE_URL+"/"+userInfo.profilePhoto} />
     ) : (
       <Avatar shape={"square"} size={48} icon={<UserOutlined />} />
     );

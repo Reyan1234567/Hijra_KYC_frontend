@@ -83,9 +83,11 @@ const Search = () => {
       }
     } catch (e) {
       console.log(e);
+      form.setFieldValue("AccountNumber", "");
+      setState("idle");
       messageApi.open({
         type: "error",
-        content: "Something went wrong",
+        content: e?.response.data ?? "Something went wrong",
       });
     }
   };
@@ -247,7 +249,7 @@ const Search = () => {
               <p>Cif</p>
               <Input value={makeForm.cif} disabled />
             </Flex>
-            {flag && (
+            {flag && USER?.user?.role == "maker" && (
               <Flex style={{ width: "100%", padding: "15px" }} justify="center">
                 <Button onClick={() => setModal(true)}>
                   Create a Make Request

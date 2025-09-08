@@ -29,7 +29,7 @@ const View_Branch: React.FC = () => {
     const fetchData = async () => {
       try {
         const [branchRes, districtRes] = await Promise.all([
-          api.get<Branch[]>("/api/branches"),
+          api.get<Branch[]>("/api/branches/get-all-branches"),
           api.get<District[]>("/api/districts/get-all-districts"),
         ]);
         setBranches(branchRes.data);

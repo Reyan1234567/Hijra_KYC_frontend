@@ -69,18 +69,6 @@ const ViewProfile: React.FC = () => {
       key: 'userID',
     },
     {
-      title: 'Photo',
-      key: 'photo',
-      width: 80,
-      render: (_: any, record: User) => (
-        <Avatar
-          src={BASE_URL+`/api/user-profiles/user-profile/${record.id}/photo`}
-          alt={`${record.firstName} ${record.lastName}`}
-          size={40}
-        />
-      ),
-    },
-    {
       title: 'Full Name',
       render: (_: any, record: User) => `${record.firstName} ${record.lastName}`,
       sorter: (a: User, b: User) =>
