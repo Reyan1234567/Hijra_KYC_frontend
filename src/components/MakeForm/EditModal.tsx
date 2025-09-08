@@ -31,7 +31,7 @@ const EditModal = (editModalParam: editModalParam) => {
       console.log(error)
       messageApi.open({
         type: "error",
-        content: error instanceof Error ? error.name : String(error),
+        content: error?.response?.data ?? "Something went wrong",
       });
     },
   });

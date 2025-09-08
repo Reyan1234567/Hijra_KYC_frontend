@@ -13,7 +13,12 @@ import EditModal from "./EditModal";
 import ViewModal from "../Helper/RequestModals/ViewModal";
 import DropDown from "../Helper/DateDropdown/DropDown";
 import RequestTables from "../Helper/Table/RequestTables";
-import { addToDrafts, getMakes, getPendingMakes, sendToHo } from "../../services/MakeForm";
+import {
+  addToDrafts,
+  getMakes,
+  getPendingMakes,
+  sendToHo,
+} from "../../services/MakeForm";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AuthContext } from "../../context/AuthContext";
 
@@ -62,7 +67,7 @@ const PendingMakeFormTable = () => {
   const [date, setDate] = useState(
     new Date(today.setMonth(today.getMonth(), 1))
   );
-  date.setHours(0,0,0,0)
+  date.setHours(0, 0, 0, 0);
   const view: MenuProps["items"] = [
     {
       label: "View",
@@ -182,7 +187,8 @@ const PendingMakeFormTable = () => {
   };
   const { data, isLoading, isError, isSuccess, error } = useQuery({
     queryKey: ["makes", date, pageNumber, pageSize],
-    queryFn: () => getPendingMakes(date, USER?.user?.userId, pageSize, pageNumber,),
+    queryFn: () =>
+      getPendingMakes(date, USER?.user?.userId, pageSize, pageNumber),
   });
 
   const sendToHoMutation = useMutation({
@@ -197,7 +203,7 @@ const PendingMakeFormTable = () => {
     onError: (error) => {
       messageApi.open({
         type: "error",
-        content: error instanceof Error ? error.message : String(error),
+        content: e?.response.data ?? "Something went wrong",
       });
     },
   });
@@ -214,7 +220,7 @@ const PendingMakeFormTable = () => {
     onError: (error) => {
       messageApi.open({
         type: "error",
-        content: error instanceof Error ? error.message : String(error),
+        content: e?.response.data ?? "Something went wrong",
       });
     },
   });
@@ -237,6 +243,7 @@ const PendingMakeFormTable = () => {
   if (isSuccess && data.data.makes.length === 0) {
     return (
       <>
+        {contextHolder}
         <div
           style={{
             display: "flex",
@@ -253,78 +260,6 @@ const PendingMakeFormTable = () => {
   }
 
   const res: allTableDataType[] = data.data.makes;
-  const items: TabsProps["items"] = [
-    {
-      key: "1",
-      label: "All Requests",
-      children: (
-        <RequestTables
-          data={res}
-          colums={columns}
-          pageSize={pageSize}
-          pageNumber={pageNumber}
-          total={data.data.total}
-          onChange={onchange}
-        />
-      ),
-    },
-    {
-      key: "2",
-      label: "Drafts",
-      children: (
-        <RequestTables
-          data={res.filter((request) => request.status === 0)}
-          colums={columns}
-          pageSize={pageSize}
-          pageNumber={pageNumber}
-          total={data.data.total}
-          onChange={onchange} 
-          />
-      ),
-    },
-    {
-      key: "3",
-      label: "Pending",
-      children: (
-        <RequestTables
-          data={res.filter((request) => request.status === 1)}
-          colums={columns}
-          pageSize={pageSize}
-          pageNumber={pageNumber}
-          total={data.data.total}
-          onChange={onchange}
-        />
-      ),
-    },
-    {
-      key: "4",
-      label: "Approved",
-      children: (
-        <RequestTables
-          data={res.filter((request) => request.status === 2)}
-          colums={columns}
-          pageSize={pageSize}
-          pageNumber={pageNumber}
-          total={data.data.total}
-          onChange={onchange}
-        />
-      ),
-    },
-    {
-      key: "5",
-      label: "Rejected",
-      children: (
-        <RequestTables
-          data={res.filter((request) => request.status === 3)}
-          colums={columns}
-          pageSize={pageSize}
-          pageNumber={pageNumber}
-          total={data.data.total}
-          onChange={onchange}
-        />
-      ),
-    },
-  ];
 
   return (
     <>
