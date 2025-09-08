@@ -5,7 +5,6 @@ import DateDropDown from "../Helper/DateDropdown/DateDropDown";
 import {
   EditOutlined,
   EyeOutlined,
-  FileTextOutlined,
   SendOutlined,
 } from "@ant-design/icons";
 
@@ -14,7 +13,6 @@ import ViewModal from "../Helper/RequestModals/ViewModal";
 import DropDown from "../Helper/DateDropdown/DropDown";
 import RequestTables from "../Helper/Table/RequestTables";
 import {
-  addToDrafts,
   getDraftedMakes,
   sendToHo,
 } from "../../services/MakeForm";
@@ -31,16 +29,6 @@ const DraftsMakeFormTable = () => {
     new Date(today.setMonth(today.getMonth(), 1))
   );
   date.setHours(0, 0, 0, 0);
-  const view: MenuProps["items"] = [
-    {
-      label: "View",
-      key: "1",
-      icon: <EyeOutlined />,
-      onClick: () => {
-        setIsModalOpen(true);
-      },
-    },
-  ];
 
   const draft: MenuProps["items"] = [
     {
@@ -61,24 +49,6 @@ const DraftsMakeFormTable = () => {
     },
   ];
 
-  const rejected: MenuProps["items"] = [
-    {
-      label: "View",
-      key: "1",
-      icon: <EyeOutlined />,
-      onClick: () => {
-        setIsModalOpen(true);
-      },
-    },
-    {
-      label: "Add to drafts",
-      key: "2",
-      icon: <FileTextOutlined />,
-      onClick: async () => {
-        addToDraftsMutation.mutate(modal.id);
-      },
-    },
-  ];
 
   const [modal, setModal] = useState<allTableDataType>({
     id: 0,
@@ -103,38 +73,18 @@ const DraftsMakeFormTable = () => {
     {
       title: "Actions",
       dataIndex: "status",
-      render: (status: number, row: allTableDataType) => {
-        if (status === 0) {
-          return (
-            <Flex justify="center" align="center">
-              <DropDown
-                menu={draft}
-                onChange={() => {
-                  console.log(row);
-                  setModal(row);
-                }}
-              />
-            </Flex>
-          );
-        } else if (status === 3) {
-          return (
-            <Flex justify="center" align="center">
-              <DropDown
-                menu={rejected}
-                onChange={() => {
-                  console.log(row);
-                  setModal(row);
-                }}
-              />
-            </Flex>
-          );
-        } else {
-          return (
-            <Flex justify="center" align="center">
-              <DropDown menu={view} onChange={() => setModal(row)} />
-            </Flex>
-          );
-        }
+      render: (_, row: allTableDataType) => {
+        return (
+          <Flex justify="center" align="center">
+            <DropDown
+              menu={draft}
+              onChange={() => {
+                console.log(row);
+                setModal(row);
+              }}
+            />
+          </Flex>
+        );
       },
     },
     {
@@ -178,15 +128,15 @@ const DraftsMakeFormTable = () => {
     setPageSize(pageSi);
   };
   const { data, isLoading, isError, isSuccess, error } = useQuery({
-    queryKey: ["makes", date, pageNumber, pageSize],
+    queryKey: ["draftMakes", date, pageNumber, pageSize],
     queryFn: () =>
       getDraftedMakes(date, USER?.user?.userId, pageSize, pageNumber),
   });
 
   const sendToHoMutation = useMutation({
     mutationFn: (id: number) => sendToHo(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["makes"] });
+    onSuccess: async() => {
+      await queryClient.invalidateQueries({ queryKey: ["draftMakes"] });
       messageApi.open({
         type: "success",
         content: "Successfully sent to Ho",
@@ -196,23 +146,6 @@ const DraftsMakeFormTable = () => {
       messageApi.open({
         type: "error",
         content: error?.response?.data??"Something went wrong",
-      });
-    },
-  });
-
-  const addToDraftsMutation = useMutation({
-    mutationFn: (id: number) => addToDrafts(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["makes"] });
-      messageApi.open({
-        type: "success",
-        content: "Successfully added to drafts",
-      });
-    },
-    onError: (error) => {
-      messageApi.open({
-        type: "error",
-        content: error instanceof Error ? error.message : String(error),
       });
     },
   });
@@ -235,6 +168,7 @@ const DraftsMakeFormTable = () => {
   if (isSuccess && data.data.makes.length === 0) {
     return (
       <>
+      {contextHolder}
         <div
           style={{
             display: "flex",

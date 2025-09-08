@@ -18,6 +18,7 @@ import { toBase64 } from "../../services/DisplayFunctions";
 import { UserOutlined } from "@ant-design/icons";
 import { api } from "../../services/axios";
 import { AuthContext } from "../../context/AuthContext";
+import { BASE_URL } from "../../services/Constants";
 
 export interface user {
   id: number;
@@ -27,9 +28,9 @@ export interface user {
   branch: string;
   role: string;
   phoneNumber: string;
-  status: number;
-  loginStatus:number;
-  presentStatus:number;
+  status: string;
+  loginStatus: number;
+  presentStatus: number;
   profilePicture: string;
 }
 
@@ -47,16 +48,18 @@ const Profile = () => {
     branch: "",
     role: "",
     phoneNumber: "",
-    status: 0,
-    loginStatus:0,
-    presentStatus:0,
+    status: "0",
+    loginStatus: 0,
+    presentStatus: 0,
     profilePicture: "",
   });
-  const USER=useContext(AuthContext)
+  const USER = useContext(AuthContext);
   useEffect(() => {
     const userProfile = async () => {
       try {
-        const res = await api.get(`/api/user-profiles/get-user/${USER?.user?.userId}`);
+        const res = await api.get(
+          `/api/user-profiles/get-user/${USER?.user?.userId}`
+        );
         setUser(res.data);
       } catch (e) {
         console.log(e);
@@ -129,6 +132,10 @@ const Profile = () => {
       setTrigger((prev) => prev + 1);
     } catch (e) {
       console.log(e);
+      messageApi.open({
+        type: "error",
+        content: e?.response.data ?? "Something went wrong",
+      });
     } finally {
       onModalCancel();
     }
@@ -136,7 +143,9 @@ const Profile = () => {
 
   async function handleDelete() {
     try {
-      await api.patch(`/api/user-profiles/delete-profile/${USER?.user?.userId}`);
+      await api.patch(
+        `/api/user-profiles/delete-profile/${USER?.user?.userId}`
+      );
       messageApi.open({
         type: "success",
         content: "Deleted profile successfully",
@@ -146,7 +155,7 @@ const Profile = () => {
       console.log(e);
       messageApi.open({
         type: "error",
-        content: e.message,
+        content: e?.response.data ?? "Something went wrong",
       });
     }
   }
@@ -172,7 +181,7 @@ const Profile = () => {
             <Flex vertical align="center">
               <p>Profile picture</p>
               <Avatar
-                src={user.profilePicture}
+                src={BASE_URL+"/"+user.profilePicture}
                 shape="square"
                 size={70}
               ></Avatar>
@@ -213,11 +222,11 @@ const Profile = () => {
             <p>Phone Number:</p>
             <p>{user.phoneNumber}</p>
           </Flex>
-          {user.status === 1 ? (
+          {user.status === "1" ? (
             <Flex gap={5} justify="space-between" align="center">
               <p>Status:</p>
               <Tag color="green" style={{ height: "fit-content" }}>
-                Normal
+                Active
               </Tag>
             </Flex>
           ) : (
