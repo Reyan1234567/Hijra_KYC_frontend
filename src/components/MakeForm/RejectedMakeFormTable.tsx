@@ -201,7 +201,7 @@ const RejectedMakeFormTable = () => {
     setPageSize(pageSi);
   };
   const { data, isLoading, isError, isSuccess, error } = useQuery({
-    queryKey: ["rejectedMakes", date, pageNumber, pageSize],
+    queryKey: ["makes", date, pageNumber, pageSize],
     queryFn: () =>
       getRejectedMakes(date, USER?.user?.userId, pageSize, pageNumber),
   });
@@ -213,7 +213,7 @@ const RejectedMakeFormTable = () => {
         queryKey: ["notifications"],
       });
       await queryClient.invalidateQueries({
-        queryKey: ["rejectedMakes"],
+        queryKey: ["makes"],
       });
       messageApi.open({
         type: "success",

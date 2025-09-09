@@ -30,13 +30,17 @@ const SidebarMenu = () => {
   useQuery({
     queryKey: ["notifications"],
     queryFn: async () => {
-      if (USER?.user?.role == "maker") {
-        const resp = await api.get("/makeForm/getRejected");
+      // if (USER?.user?.role == "maker") {
+      //   const resp = await api.get("/makeForm/getRejected");
+      //   USER?.setRejectedCount(resp?.data);
+      // } else if (USER?.user?.role == "HO_Checker") {
+      //   const respo = await api.get("/makeForm/getPending");
+      //   USER?.setPendingCount(respo?.data);
+      // }
+      const resp = await api.get("/makeForm/getRejected");
         USER?.setRejectedCount(resp?.data);
-      } else if (USER?.user?.role == "HO_Checker") {
-        const respo = await api.get("/makeForm/getPending");
+      const respo = await api.get("/makeForm/getPending");
         USER?.setPendingCount(respo?.data);
-      }
       const res = await api.get("/message/unread");
       USER?.setMessageCount(res?.data);
     },

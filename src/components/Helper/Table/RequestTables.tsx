@@ -13,7 +13,7 @@ interface dataSource {
 }
 
 const RequestTables = (dataSource: dataSource) => {
-  const now = new Date();
+  const now = ()=> new Date();
   const columns: TableColumnsType<allTableDataType> = [
     { title: "Cif", dataIndex: "cif" },
     { title: "Customer Account", dataIndex: "customerAccount" },
@@ -29,7 +29,7 @@ const RequestTables = (dataSource: dataSource) => {
       dataIndex: "checkedAt",
       render: (checkedAt) => (
         <Flex justify="center">
-          {new Date(checkedAt) > now || !checkedAt
+          {new Date(checkedAt) > now() || !checkedAt
             ? "---------"
             : ExtractDate(checkedAt)}
         </Flex>

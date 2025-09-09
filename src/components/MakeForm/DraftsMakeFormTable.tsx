@@ -128,7 +128,7 @@ const DraftsMakeFormTable = () => {
     setPageSize(pageSi);
   };
   const { data, isLoading, isError, isSuccess, error } = useQuery({
-    queryKey: ["draftMakes", date, pageNumber, pageSize],
+    queryKey: ["makes", date, pageNumber, pageSize],
     queryFn: () =>
       getDraftedMakes(date, USER?.user?.userId, pageSize, pageNumber),
   });
@@ -136,7 +136,7 @@ const DraftsMakeFormTable = () => {
   const sendToHoMutation = useMutation({
     mutationFn: (id: number) => sendToHo(id),
     onSuccess: async() => {
-      await queryClient.invalidateQueries({ queryKey: ["draftMakes"] });
+      await queryClient.invalidateQueries({ queryKey: ["makes"] });
       messageApi.open({
         type: "success",
         content: "Successfully sent to Ho",
