@@ -4,7 +4,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 // import { config } from "dotenv";
 // config();
 
-const ProtectionRotue = () => {
+const ProtectionRoute = () => {
   const navigate=useNavigate()
   // const user = useContext(AuthContext);
   // console.log(user?.user)
@@ -12,8 +12,11 @@ const ProtectionRotue = () => {
   return localStorage.getItem("username") &&  localStorage.getItem("accessToken") ? (
     <Outlet />
   ) : (
-    navigate("/login")
+      <>
+        {localStorage.clear()}
+        {window.location.reload()}
+      </>
   );
 };
 
-export default ProtectionRotue;
+export default ProtectionRoute;

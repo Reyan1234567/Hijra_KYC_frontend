@@ -3,14 +3,26 @@ import { BrowserRouter } from "react-router-dom";
 import FullLayout from "./components/Layout/FullLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./context/AuthProvider";
+import LoginForm from "./components/LoginForm.tsx";
 
 const queryClient = new QueryClient();
 
 function App() {
+
+    let login = localStorage.getItem("loginStatus");
+
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/app">
       <QueryClientProvider client={queryClient}>
-        <AuthProvider child={<FullLayout />} />
+          {
+              login === "1" ? (
+
+                  <AuthProvider child={<FullLayout />} />
+
+              ) : (
+                  <AuthProvider child={<LoginForm />} />
+              )
+          }
       </QueryClientProvider>
     </BrowserRouter>
   );

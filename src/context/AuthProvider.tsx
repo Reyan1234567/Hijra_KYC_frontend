@@ -40,9 +40,11 @@ export const AuthProvider = (children: prop) => {
       localStorage.setItem("username", response.data.userInfo.username);
       localStorage.setItem("userId", response.data.userInfo.userId.toString());
       localStorage.setItem("role", response.data.userInfo.role);
+      localStorage.setItem("loginStatus", "1");
       await loginLog(response.data.userInfo.userId);
       setUser(response.data.userInfo);
-      navigate("/dashboard");
+      // navigate("/dashboard");
+      window.location.reload();
     } catch (e) {
       console.log(e);
       setUser(null);

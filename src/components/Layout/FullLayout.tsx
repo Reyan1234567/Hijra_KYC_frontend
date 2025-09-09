@@ -35,7 +35,7 @@ import SidebarMenu from "./SidebarMenu.tsx";
 import { useNavigate } from "react-router-dom";
 import MessagesView, { messages } from "../Message/MessagesView.tsx";
 import LoginForm from "../LoginForm.tsx";
-import ProtectionRotue from "../../ProtectionRotue.tsx";
+import ProtectionRoute from "../../ProtectionRoute.tsx";
 import { Logout } from "../../services/axios.ts";
 import { AuthContext } from "../../context/AuthContext.tsx";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -182,11 +182,9 @@ const FullLayout = () => {
     },
   ];
 
-  return pathName === "/login" ? (
-    <LoginForm />
-  ) : (
+  return(
     <Layout style={{ height: "100vh", overflowX: "hidden" }}>
-      <ReactQueryDevtools initialIsOpen={false} />
+      {/*<ReactQueryDevtools initialIsOpen={false} />*/}
       {contextHolder}
       <Sider
         style={{ backgroundColor: "white" }}
@@ -453,7 +451,7 @@ const FullLayout = () => {
               }
             >
               <Routes>
-                <Route element={<ProtectionRotue />}>
+                <Route element={<ProtectionRoute />}>
                   {routes.map(({ path, component }, index) => (
                     <Route path={path} key={index} element={component} />
                   ))}

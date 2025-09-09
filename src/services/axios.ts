@@ -85,6 +85,6 @@ export const Logout = async () => {
     console.error("Error during logout:", err);
   } finally {
     localStorage.clear();
-    window.location.replace("/login");
+    window.location.replace("/");
   }
 };

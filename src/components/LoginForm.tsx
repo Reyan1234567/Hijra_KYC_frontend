@@ -2,6 +2,8 @@ import type { FormProps } from "antd";
 import { Button, Card, Flex, Form, Input, Typography } from "antd";
 import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
+import logo from '../assets/logo.png'
+import kyc from '../assets/kyc-bg.jpg'
 
 
 const LoginForm = () => {
@@ -34,7 +36,7 @@ const LoginForm = () => {
       style={{
         width: "100vw",
         height: "100vh",
-        backgroundImage: "url('src/assets/gettyimages-1322047961-1.jpg')", 
+        backgroundImage: `url(${kyc})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
@@ -50,7 +52,7 @@ const LoginForm = () => {
       >
         {/* Logo */}
         <img
-          src="src\assets\logo.png"
+          src={logo}
           alt="logo"
           style={{ width: 90, marginBottom: 10 }}
         />
