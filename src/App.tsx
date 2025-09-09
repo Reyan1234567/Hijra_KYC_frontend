@@ -20,7 +20,10 @@ function App() {
                   <AuthProvider child={<FullLayout />} />
 
               ) : (
+                  <>
+                      {localStorage.clear()}
                   <AuthProvider child={<LoginForm />} />
+                  </>
               )
           }
       </QueryClientProvider>
