@@ -1,3 +1,21 @@
+  /*
+ * HIJRA KYC FRONTEND - DISPLAY UTILITY FUNCTIONS
+ * 
+ * FILE TYPE: Utility/Helper Functions
+ * PURPOSE: Common display formatting and file conversion utilities
+ * 
+ * FUNCTIONALITY:
+ * - Date formatting for display in UI components
+ * - File to Base64 conversion for image handling
+ * - Standardized display formats across the application
+ * 
+ * EXPORTED FUNCTIONS:
+ * - ExtractDate: Formats Date objects to readable string format
+ * - toBase64: Converts File objects to Base64 strings for image display
+ * 
+ * USED BY: Multiple components for consistent date/image display
+ */
+
   export const ExtractDate = (date: Date) => {
     if (date === null) return "-----------";
     else {

@@ -1,3 +1,76 @@
+/**
+ * MESSAGES VIEW COMPONENT
+ * 
+ * TYPE: Page Component (All Roles)
+ * PURPOSE: Real-time chat interface for one-on-one messaging between users
+ * 
+ * FUNCTIONALITY:
+ * - Real-time chat conversation display with message history
+ * - Message sending with Enter key and send button
+ * - Automatic message read status updates
+ * - Auto-scroll to latest messages
+ * - Back navigation with query invalidation
+ * - Loading, success, error, and empty states
+ * - Message alignment based on sender/receiver
+ * 
+ * API INTERACTIONS:
+ * - GET /message/getConvo: Fetches conversation history between two users
+ * - PATCH /message/updateSeen: Marks messages as read when opening conversation
+ * - POST /message: Sends new message to recipient
+ * - Query invalidation for real-time updates on navigation
+ * 
+ * USER INTERACTIONS:
+ * - Header with back button, avatar, and contact name
+ * - Scrollable message history with sender/receiver alignment
+ * - Input field with Enter key and send button functionality
+ * - Automatic scroll to bottom on new messages
+ * - Visual distinction between sent and received messages
+ * 
+ * STATE MANAGEMENT:
+ * - messages: Array of conversation messages
+ * - messageBox: Current input text
+ * - state: Loading/success/error/empty status
+ * - AuthContext for current user information
+ * - Query client for cache invalidation
+ * - URL search params for profile photo handling
+ * 
+ * REAL-TIME FEATURES:
+ * - Auto-scroll to bottom on message updates
+ * - Query invalidation on conversation exit
+ * - Immediate message display on send
+ * - Read status updates on conversation open
+ * - Notification count updates via query invalidation
+ * 
+ * MESSAGE LAYOUT:
+ * - Received messages: Left-aligned with sender styling
+ * - Sent messages: Right-aligned with different styling
+ * - Card-based message bubbles with responsive width
+ * - Maximum 40% width for message bubbles
+ * - Proper spacing and padding for readability
+ * 
+ * LIFECYCLE:
+ * - useEffect for auto-scroll on message changes
+ * - useEffect for fetching conversation history
+ * - Message read status update on component mount
+ * - Query invalidation on component unmount/navigation
+ * 
+ * ERROR HANDLING:
+ * - Try-catch blocks for all API calls
+ * - User-friendly error messages via Ant Design message API
+ * - Console logging for debugging
+ * - Graceful fallback states for different scenarios
+ * 
+ * USAGE:
+ * - Used as drawer content when chat is selected from MessagesPage
+ * - Part of real-time messaging system with WebSocket integration
+ * - Provides complete chat experience within the application
+ * 
+ * ROLE-BASED ACCESS:
+ * - Available to all authenticated users
+ * - Messages filtered by user permissions
+ * - Supports organizational communication needs
+ */
+
 import { Avatar, Card, Flex, Input, message } from "antd";
 import { ChevronLeft } from "lucide-react";
 import { useContext, useEffect, useRef, useState } from "react";

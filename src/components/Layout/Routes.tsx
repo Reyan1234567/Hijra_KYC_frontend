@@ -1,3 +1,57 @@
+/*
+ * HIJRA KYC FRONTEND - APPLICATION ROUTES CONFIGURATION
+ * 
+ * FILE TYPE: Routing Configuration
+ * PURPOSE: Defines all application routes and their corresponding components
+ * 
+ * FUNCTIONALITY:
+ * - Lazy loads all page components for better performance
+ * - Maps URL paths to React components
+ * - Supports parameterized routes (e.g., /Edit_Role/:roleId)
+ * - Organizes routes by functional areas (make forms, checker tables, etc.)
+ * 
+ * ROUTE CATEGORIES:
+ * 1. DASHBOARD & MAIN PAGES:
+ *    - "/" & "/dashboard": Dashboard (main landing page)
+ *    - "/profile" & "/userProfiel": User Profile
+ *    - "/search": Search functionality
+ * 
+ * 2. MAKE FORM PAGES (Maker Role):
+ *    - "/makeForm": All make forms table
+ *    - "makeTable/drafts": Draft forms
+ *    - "makeTable/pending": Pending forms  
+ *    - "makeTable/approved": Approved forms
+ *    - "makeTable/rejected": Rejected forms
+ * 
+ * 3. CHECKER PAGES (Checker Role):
+ *    - "/checkerTable": All checker forms
+ *    - "checkTable/pending": Pending checker forms
+ *    - "checkTable/approved": Approved checker forms
+ *    - "checkTable/rejected": Rejected checker forms
+ * 
+ * 4. MANAGER PAGES (Manager Role):
+ *    - "/manager": Manager table view
+ *    - "manager/pending": Pending manager forms
+ *    - "manager/approved": Approved manager forms
+ *    - "manager/rejected": Rejected manager forms
+ *    - "/attendance": Attendance management
+ *    - "/distribute": Form distribution
+ *    - "View_Login": Login activity view
+ * 
+ * 5. ADMIN PAGES:
+ *    - "/AddRole", "/Edit_Role/:roleId", "/View_Role": Role management
+ *    - "/Add_Branch", "/Edit_branch/:id", "/View_Branch": Branch management
+ *    - "/Add_District": District management
+ *    - "/Edit_Profile/:id", "/ViewProfile": Profile management
+ * 
+ * 6. REPORTS:
+ *    - "reports/detail": Detailed reports
+ *    - "reports/summary": Summary reports
+ *    - "reports/checker": Checker reports
+ * 
+ * USED BY: FullLayout.tsx for rendering appropriate components based on current route
+ */
+
 import { JSX, lazy } from "react";
 import Attendance from "../Manager/Attendance.tsx";
 

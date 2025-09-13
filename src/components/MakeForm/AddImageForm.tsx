@@ -1,3 +1,40 @@
+/**
+ * ADD IMAGE FORM COMPONENT
+ * 
+ * TYPE: Form Component (MakeForm Module)
+ * PURPOSE: Provides a dynamic form for adding multiple images with descriptions to KYC forms
+ * 
+ * FUNCTIONALITY:
+ * - Dynamic form with add/remove image functionality
+ * - File upload with Base64 encoding for API submission
+ * - Image preview with URL.createObjectURL for immediate feedback
+ * - Description input for each image with validation
+ * - useReducer pattern for complex state management
+ * - Form validation with required field rules
+ * - Automatic form reset after successful submission
+ * 
+ * STATE MANAGEMENT:
+ * - Uses useReducer with custom actions for image array management
+ * - Actions: ADD_IMAGE, REMOVE_IMAGE, SET_DESCRIPTION, SET_FILE, CLEAR_IMAGES
+ * - Maintains separate state for form fields and image data
+ * 
+ * USER INTERACTIONS:
+ * - Add new image slots with Plus button
+ * - Remove individual images with Delete button
+ * - File selection with image preview
+ * - Description input for each image
+ * - Save button (disabled when no images)
+ * - Form submission with validation
+ * 
+ * DATA FLOW:
+ * - Converts selected files to Base64 using toBase64 utility
+ * - Creates preview URLs with URL.createObjectURL
+ * - Calls parent onFinish callback with makeId and images array
+ * - Triggers modal closure via setEditModal callback
+ * 
+ * USAGE: Used by EditModal and Search components for image management
+ */
+
 import { useForm } from "antd/es/form/Form";
 import { DeleteOutlined } from "@ant-design/icons";
 import { Button, Flex, Form, Input, Image, Card, message } from "antd";

@@ -1,3 +1,30 @@
+/*
+ * HIJRA KYC FRONTEND - AXIOS HTTP CLIENT CONFIGURATION
+ * 
+ * FILE TYPE: Service/HTTP Client
+ * PURPOSE: Centralized HTTP client with authentication and token management
+ * 
+ * FUNCTIONALITY:
+ * - Creates configured axios instance with BASE_URL and 5s timeout
+ * - Automatically adds Bearer token to all requests via request interceptor
+ * - Handles token refresh on 401/403 responses via response interceptor
+ * - Provides logout functionality with cleanup
+ * - Manages localStorage token operations
+ * 
+ * AUTHENTICATION FLOW:
+ * 1. Request interceptor adds Authorization header with access token
+ * 2. Response interceptor catches 401/403 errors
+ * 3. Attempts token refresh using refresh token
+ * 4. Retries original request with new access token
+ * 5. If refresh fails, triggers logout and redirects
+ * 
+ * EXPORTED FUNCTIONS:
+ * - api: Configured axios instance for all API calls
+ * - Logout: Clears storage, logs logout, redirects to login
+ * 
+ * USED BY: All service files for API communication
+ */
+
 import axios from "axios";
 import { logOutLog } from "./Authentication";
 import { BASE_URL } from "./Constants";

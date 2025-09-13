@@ -1,3 +1,53 @@
+/**
+ * USER PROFILE COMPONENT
+ * 
+ * PURPOSE:
+ * User profile management interface allowing users to view their personal information
+ * and manage their profile picture. Provides comprehensive user data display with
+ * profile image upload, update, and deletion capabilities.
+ * 
+ * FUNCTIONALITY:
+ * - Displays user information (name, username, branch, role, phone, status)
+ * - Profile picture management with upload, update, and delete operations
+ * - Image validation and Base64 encoding for API submission
+ * - Status visualization with colored tags (Active/Blocked)
+ * - Modal-based profile picture upload with drag-and-drop support
+ * - Real-time profile updates with trigger-based re-fetching
+ * - Confirmation dialogs for destructive operations
+ * 
+ * API INTERACTIONS:
+ * - GET /api/user-profiles/get-user/{userId}: Fetches current user profile data
+ * - PATCH /api/user-profiles/change-profile: Updates profile picture with Base64 data
+ * - PATCH /api/user-profiles/delete-profile/{userId}: Removes profile picture
+ * - Uses AuthContext for current user identification
+ * - Comprehensive error handling with user feedback
+ * 
+ * USER INTERACTIONS:
+ * - View personal profile information in card format
+ * - Add/update profile picture via modal upload interface
+ * - Delete existing profile picture with confirmation
+ * - Drag-and-drop or click to select image files
+ * - Preview selected image before saving
+ * - Real-time status updates and success/error messages
+ * 
+ * STATE MANAGEMENT:
+ * - User profile data state with complete user interface
+ * - File upload state with UploadFile array management
+ * - Base64 encoded image state for API submission
+ * - Modal visibility state for upload interface
+ * - Trigger state for forcing profile data refresh
+ * - Message API integration for user notifications
+ * 
+ * IMAGE HANDLING:
+ * - File type validation (images only)
+ * - Base64 encoding via toBase64 utility function
+ * - Image preview with URL.createObjectURL
+ * - Profile picture display from BASE_URL + path
+ * - Single file upload with maxCount: 1 restriction
+ * 
+ * USAGE: Personal profile page for authenticated users to manage their profile information
+ */
+
 import {
   //   Typography,
   Avatar,

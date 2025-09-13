@@ -1,3 +1,45 @@
+/**
+ * CHECKER EDIT MODAL COMPONENT
+ * 
+ * TYPE: Modal Component (Checker Role)
+ * PURPOSE: Provides approve/reject functionality for pending KYC forms with reason input
+ * 
+ * FUNCTIONALITY:
+ * - Displays KYC form details in read-only format using DisplayInfo component
+ * - Shows rejection history via BackReason component
+ * - Two-step rejection process: click Reject → enter reason → confirm
+ * - One-click approval process with immediate status update
+ * - Real-time query invalidation for notifications and pending lists
+ * - Success/error feedback via message notifications
+ * 
+ * DATA OPERATIONS:
+ * - API: PATCH /makeForm/updateStatus/{id}?status=2 - approves KYC form (status 2 = approved)
+ * - API: POST /makeForm/reject-request - rejects KYC form with comment (status 3 = rejected)
+ * - Invalidates React Query caches: ["notifications"], ["pending"]
+ * - Triggers parent component re-render via triggerRender callback
+ * 
+ * USER INTERACTIONS:
+ * - View form details and rejection history
+ * - Click "Approve" for immediate approval
+ * - Click "Reject" to show reason input field
+ * - Enter rejection reason and confirm or cancel
+ * - Modal closes automatically on successful action
+ * 
+ * STATE MANAGEMENT:
+ * - InputBox: boolean - controls visibility of rejection reason input
+ * - InputBoxValue: string - stores rejection reason text
+ * - Uses React Query client for cache invalidation
+ * 
+ * LIFECYCLE:
+ * - Opens with form data passed as props
+ * - Resets input state on successful action
+ * - Closes modal and shows success/error messages
+ * - Parent component handles modal open/close state
+ * 
+ * ROLE PERMISSIONS: Checker users only
+ * USAGE: Called from CheckerPendingTable and similar checker components
+ */
+
 import { Button, Flex, Input,  Modal } from "antd";
 import DisplayInfo from "../Helper/RequestModals/DisplayInfo";
 import { api } from "../../services/axios";

@@ -1,3 +1,49 @@
+/**
+ * APPROVED MAKE FORM TABLE COMPONENT
+ * 
+ * TYPE: Page Component (Maker Role)
+ * PURPOSE: Displays approved KYC forms created by the current maker user
+ * 
+ * FUNCTIONALITY:
+ * - Fetches approved KYC forms (status 2) created by the current maker
+ * - Provides date filtering for approved requests (defaults to current month)
+ * - View-only actions for approved forms (no editing allowed)
+ * - Pagination support with React Query caching
+ * - Loading, error, empty, and success states
+ * - Real-time data updates via React Query
+ * 
+ * DATA FETCHING:
+ * - API: GET /makeForm/getApproved - fetches approved KYC forms by maker with status 2
+ * - Service: getApprovedMakes(date, userId, pageSize, pageNumber)
+ * - Parameters: date (filter), makerId (current user), pageSize, pageNumber
+ * - Returns: pageableReturn with makes array and total count
+ * - Uses React Query with cache key ["makes", date, pageNumber, pageSize]
+ * 
+ * USER INTERACTIONS:
+ * - Date selection via DateDropDown component
+ * - View action in dropdown menu per table row
+ * - Modal interactions:
+ *   - ViewModal: Read-only form details display
+ *   - EditModal: Present but not accessible for approved forms
+ * - Pagination controls for navigating through results
+ * 
+ * STATE MANAGEMENT:
+ * - modal: allTableDataType - stores selected row data for modals
+ * - isModalOpen: boolean - controls ViewModal visibility
+ * - editModal: boolean - controls EditModal visibility (unused for approved)
+ * - pageSize/pageNumber: pagination state
+ * - Uses React Query for data fetching and caching
+ * 
+ * LIFECYCLE:
+ * - Mounts with current month date filter
+ * - React Query handles data fetching, caching, and refetching
+ * - Updates automatically when date or pagination changes
+ * - Provides historical view of maker's approved work
+ * 
+ * ROLE PERMISSIONS: Maker users only
+ * ROUTING: Accessed via /approvedMakeFormTable route
+ */
+
 import { useContext, useState } from "react";
 import { Flex, message, Spin, Table } from "antd";
 import type { MenuProps, TableColumnsType } from "antd";

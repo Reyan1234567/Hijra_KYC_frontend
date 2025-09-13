@@ -1,3 +1,45 @@
+/*
+ * HIJRA KYC FRONTEND - DASHBOARD PAGE
+ * 
+ * FILE TYPE: Page Component (Standalone)
+ * PURPOSE: Main dashboard displaying KYC form statistics and metrics
+ * 
+ * FUNCTIONALITY:
+ * - Displays role-specific dashboard metrics
+ * - Shows different statistics based on user role (maker, HO_Checker, HO_Manager, District)
+ * - Provides date filtering for statistics
+ * - Real-time data fetching with React Query
+ * 
+ * DATA FETCHING:
+ * - API: GET /makeForm/dashboard/{id} (via getDashboard service)
+ * - Uses React Query for caching and state management
+ * - Fetches data based on user ID and selected date
+ * - Auto-refetches when date changes
+ * 
+ * ROLE-BASED DISPLAY:
+ * - MAKER: Shows drafts, accepted, rejected, pending, total
+ * - HO_CHECKER: Shows accepted, rejected, pending, total
+ * - HO_MANAGER: Shows accepted, rejected, pending, total
+ * - DISTRICT: Shows accepted, rejected, pending, total
+ * 
+ * USER INTERACTIONS:
+ * - Date selection via DateDropDown component
+ * - Statistics cards display counts for each status
+ * 
+ * COMPONENTS USED:
+ * - DashboardCard: Displays individual metrics
+ * - DateDropDown: Date selection control
+ * 
+ * LIFECYCLE:
+ * 1. Component mounts with current date (set to 1st of month)
+ * 2. useQuery fetches dashboard data for user and date
+ * 3. Loading/error states handled
+ * 4. Role-specific dashboard rendered
+ * 5. Date changes trigger new data fetch
+ * 
+ * USED BY: Routes.tsx as main dashboard page ("/", "/dashboard")
+ */
+
 import { Flex, Spin } from "antd";
 import DashboardCard from "./DashboardCard";
 import DateDropDown from "../Helper/DateDropdown/DateDropDown";

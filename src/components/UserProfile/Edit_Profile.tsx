@@ -1,3 +1,59 @@
+/**
+ * EDIT PROFILE COMPONENT
+ * 
+ * PURPOSE:
+ * Administrative interface for editing user profiles with comprehensive form validation,
+ * role and branch management, and status control. Allows authorized users to modify
+ * user account details, assignments, and activation status.
+ * 
+ * FUNCTIONALITY:
+ * - Pre-populated form with existing user data
+ * - Role and branch dropdown selection with dynamic loading
+ * - User status toggle (Active/Blocked) via switch component
+ * - Form validation with required field enforcement
+ * - Navigation controls with back button functionality
+ * - Real-time data fetching and form initialization
+ * - Multipart form data submission for potential file uploads
+ * 
+ * API INTERACTIONS:
+ * - GET /api/roles: Fetches all available user roles for dropdown
+ * - GET /api/branches/get-all-branches: Fetches all branches for assignment
+ * - GET /api/user-profiles/get-user/{id}: Retrieves current user profile data
+ * - PUT /api/user-profiles/{id}: Updates user profile with FormData
+ * - Supports multipart/form-data for future photo upload functionality
+ * - Comprehensive error handling with user feedback
+ * 
+ * USER INTERACTIONS:
+ * - Form fields for personal information (firstName, lastName, gender, phone)
+ * - Role selection dropdown with dynamic options
+ * - Branch assignment dropdown with all available branches
+ * - Status toggle switch for account activation/deactivation
+ * - Back navigation button and form submission
+ * - Loading states during data fetch and form submission
+ * 
+ * STATE MANAGEMENT:
+ * - Form state managed by Ant Design Form hooks
+ * - Roles and branches state from API responses
+ * - Loading and initialization states for UX feedback
+ * - File list state for future photo upload feature
+ * - Navigation state via React Router hooks
+ * 
+ * DATA HANDLING:
+ * - Parallel API calls for efficient data loading
+ * - Form field mapping from API response to form values
+ * - Status normalization between string and boolean values
+ * - FormData construction for multipart submission
+ * - Flexible data structure handling with fallback values
+ * 
+ * ROLE-BASED ACCESS:
+ * - Typically restricted to Admin/Manager roles
+ * - Allows modification of user roles and branch assignments
+ * - Critical for user management and organizational structure
+ * - Supports user lifecycle management (activation/deactivation)
+ * 
+ * USAGE: Administrative user profile editing page for user management operations
+ */
+
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {

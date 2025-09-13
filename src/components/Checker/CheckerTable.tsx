@@ -1,3 +1,50 @@
+/**
+ * CHECKER TABLE COMPONENT
+ * 
+ * TYPE: Page Component (Checker Role)
+ * PURPOSE: Main checker dashboard displaying all KYC forms assigned to the current checker
+ * 
+ * FUNCTIONALITY:
+ * - Fetches all KYC forms assigned to the current Head Office (HO) user
+ * - Provides date filtering for assigned requests (defaults to current month)
+ * - Status-based action menus:
+ *   - Status 1 (pending): View and Edit (approve/reject) actions
+ *   - Status 2/3 (approved/rejected): View only
+ * - Pagination support with configurable page size
+ * - Real-time updates via trigger mechanism
+ * - Loading, empty, error, and success states
+ * 
+ * DATA FETCHING:
+ * - API: GET /makeForm/getHo - fetches all KYC forms assigned to HO user (all statuses)
+ * - Parameters: hoUserId (current user), date (filter), pageNumber, pageSize
+ * - Returns: pageableReturn with makes array and total count
+ * - Refetches on trigger, date, user, or pagination changes
+ * 
+ * USER INTERACTIONS:
+ * - Date selection via DateDropDown component
+ * - Action dropdown menus per table row (view/edit based on status)
+ * - Modal interactions:
+ *   - ViewModal: Read-only form details
+ *   - CheckerEditModal: Approve/reject with reason input for pending forms
+ * - Pagination controls for navigating through results
+ * 
+ * STATE MANAGEMENT:
+ * - trigger: number - forces re-fetch when incremented
+ * - viewModal/editModal: boolean - controls modal visibility
+ * - modal: allTableDataType - stores selected row data for modals
+ * - makeRequests: pageableReturn - stores fetched data and total count
+ * - state: loading/empty/success/error - manages UI state
+ * 
+ * LIFECYCLE:
+ * - Mounts with loading state and current month date
+ * - Fetches all assigned forms on mount and dependency changes
+ * - Updates state based on API response
+ * - Provides comprehensive view of checker workload
+ * 
+ * ROLE PERMISSIONS: Checker/HO users only
+ * ROUTING: Accessed via /checkerTable route (main checker dashboard)
+ */
+
 import { Flex, MenuProps, message, Spin, Table, TableColumnsType } from "antd";
 import RequestTables from "../Helper/Table/RequestTables";
 import { useContext, useEffect, useState } from "react";

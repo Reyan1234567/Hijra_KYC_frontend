@@ -1,3 +1,60 @@
+/**
+ * KYC MANAGER APPROVED TABLE COMPONENT
+ * 
+ * PURPOSE:
+ * Manager interface for viewing and managing approved KYC requests with date filtering,
+ * pagination, and HO assignment editing capabilities. Provides comprehensive oversight
+ * of approved forms requiring Head Office assignment or review.
+ * 
+ * FUNCTIONALITY:
+ * - Displays approved KYC requests in paginated table format
+ * - Date-based filtering with month selection dropdown
+ * - Status-based action menus (view for approved/rejected, edit for pending)
+ * - HO assignment editing for pending requests (status 1)
+ * - View-only access for completed requests (status 2/3)
+ * - Real-time data refresh with trigger-based re-fetching
+ * - Loading, empty, error, and success state management
+ * 
+ * API INTERACTIONS:
+ * - GET /makeForm/manager/approved: Fetches approved requests with pagination
+ *   * date: Selected month filter
+ *   * pageNumber, pageSize: Pagination parameters
+ * - Uses AuthContext for user identification and access control
+ * - Automatic error handling with state management
+ * 
+ * USER INTERACTIONS:
+ * - Date dropdown for month-based filtering
+ * - Action dropdown menus with view and edit options
+ * - View modal for detailed KYC form inspection
+ * - Manager edit modal for HO assignment modification
+ * - Pagination controls for large datasets
+ * - Loading states during API operations
+ * 
+ * STATE MANAGEMENT:
+ * - Make requests state with pageable return structure
+ * - Modal states for view and edit operations
+ * - Selected modal data for form operations
+ * - Page size and number for pagination control
+ * - Date state for filtering with default current month
+ * - Component state (loading/empty/success/error)
+ * - Trigger state for forcing data refresh
+ * 
+ * TABLE FEATURES:
+ * - Maker name column display
+ * - Status-based action column with conditional rendering
+ * - Integrated with RequestTables helper component
+ * - Pagination with customizable page sizes
+ * - Total count display from API response
+ * 
+ * ROLE-BASED ACCESS:
+ * - Manager role required for access
+ * - Provides oversight of approved KYC processing pipeline
+ * - Critical for HO assignment and workflow management
+ * - Supports quality assurance and process monitoring
+ * 
+ * USAGE: Manager dashboard page for approved KYC request management and HO assignment
+ */
+
 import { Flex, MenuProps, Spin, Table, TableColumnsType } from "antd";
 import RequestTables from "../Helper/Table/RequestTables";
 import { useContext, useEffect, useState } from "react";

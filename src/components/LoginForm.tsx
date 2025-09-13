@@ -1,3 +1,37 @@
+/*
+ * HIJRA KYC FRONTEND - LOGIN FORM COMPONENT
+ * 
+ * FILE TYPE: Page Component (Standalone)
+ * PURPOSE: User authentication interface - login page
+ * 
+ * FUNCTIONALITY:
+ * - Renders login form with username/password fields
+ * - Handles form submission and validation
+ * - Integrates with AuthContext for authentication
+ * - Displays loading state during login process
+ * - Shows branded UI with logo and background image
+ * 
+ * DATA FETCHING:
+ * - No direct API calls (uses AuthContext.login)
+ * - AuthContext handles loginFetch service call
+ * - Form validation handled by Ant Design Form component
+ * 
+ * USER INTERACTIONS:
+ * - Username/password input with validation
+ * - Submit button with loading state
+ * - Form validation error messages
+ * 
+ * LIFECYCLE:
+ * 1. User enters credentials
+ * 2. Form validates required fields
+ * 3. onFinish calls USER.login() from AuthContext
+ * 4. Loading state shown during authentication
+ * 5. On success: AuthProvider handles redirect
+ * 6. On error: Error message shown via AuthProvider
+ * 
+ * USED BY: App.tsx when user is not authenticated
+ */
+
 import type { FormProps } from "antd";
 import { Button, Card, Flex, Form, Input, Typography } from "antd";
 import { useContext, useState } from "react";

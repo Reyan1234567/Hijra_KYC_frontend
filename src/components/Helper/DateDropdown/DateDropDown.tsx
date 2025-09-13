@@ -1,3 +1,45 @@
+/**
+ * DATE DROPDOWN COMPONENT
+ * 
+ * TYPE: Helper Component (All Roles)
+ * PURPOSE: Provides contextual date filtering options based on current month and fiscal year patterns
+ * 
+ * FUNCTIONALITY:
+ * - Dynamic date filtering menu that adapts to current month
+ * - Provides relevant historical date ranges (1-12 months back)
+ * - Month-specific menu options with increasing historical depth as year progresses
+ * - Sets date to first day of selected month with time normalized to 00:00:00
+ * - Fiscal year aware with special handling for June transitions
+ * 
+ * USER INTERACTIONS:
+ * - Dropdown menu with month-relative options ("This month", "Last month", etc.)
+ * - Click handlers that update parent component's date state
+ * - Contextual options that grow throughout the year (more history available later)
+ * - Consistent "Select Date" title across all dropdown instances
+ * 
+ * STATE MANAGEMENT:
+ * - Receives date state and setter function as props from parent
+ * - Updates parent date state via setDate callback
+ * - No internal state - purely controlled component
+ * - Normalizes all dates to first day of month at midnight
+ * 
+ * MONTH-SPECIFIC BEHAVIOR:
+ * - July-August: Only current month available
+ * - August-September: Current + 1 month back
+ * - September: Current + 1-2 months back
+ * - October-November: Current + 1, 4 months back
+ * - November: Current + 1, 4 months back
+ * - December-January: Current + 1, 4, 6 months back
+ * - January: Current + 1, 4, 7 months back
+ * - February: Current + 1, 4, 6, 8 months back
+ * - March: Current + 1, 4, 6, 9 months back
+ * - April: Current + 1, 4, 6, 8, 10 months back
+ * - May: Current + 1, 4, 6, 8, 11 months back
+ * - June: Current + 1, 4, 6, 8, 10, 12 months back (full year)
+ * 
+ * USAGE: Used across all table components for date-based filtering
+ */
+
 import { MenuProps } from "antd";
 import React from "react";
 import DropDown from "./DropDown";

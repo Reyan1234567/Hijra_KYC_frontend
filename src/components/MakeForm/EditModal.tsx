@@ -1,3 +1,38 @@
+/**
+ * EDIT MODAL COMPONENT
+ * 
+ * TYPE: Modal Component (MakeForm Module)
+ * PURPOSE: Provides a modal interface for editing existing KYC form requests
+ * 
+ * FUNCTIONALITY:
+ * - Modal overlay for editing KYC form details and images
+ * - Displays read-only form information via MakeInfo component
+ * - Shows existing images with ImageEdit component for management
+ * - Allows adding new images via AddImageForm component
+ * - Handles image creation with React Query mutation
+ * - Provides success/error feedback for image operations
+ * - Closes modal and refreshes data on successful operations
+ * 
+ * DATA FETCHING:
+ * - Uses createImage mutation from MakeForm service
+ * - Invalidates "makes" query cache on successful image creation
+ * - Handles API errors with user-friendly messages
+ * 
+ * USER INTERACTIONS:
+ * - Modal open/close via handleCancel prop
+ * - Image upload through AddImageForm component
+ * - Image management through ImageEdit component
+ * - Form submission with automatic modal closure
+ * 
+ * LIFECYCLE:
+ * - Opens when editModal prop is true
+ * - Displays form data passed via modal prop
+ * - Closes on successful operations or user cancellation
+ * - Triggers parent component re-render via editModalOff callback
+ * 
+ * USAGE: Used by AllMakeFormTable for editing draft and rejected forms
+ */
+
 import { Divider, Modal, message } from "antd";
 import { allTableDataType, egami } from "./AllMakeFormTable";
 import MakeInfo from "../Helper/RequestModals/MakeInfo";

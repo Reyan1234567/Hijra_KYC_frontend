@@ -1,3 +1,51 @@
+/**
+ * MAKE INFO COMPONENT
+ * 
+ * TYPE: Helper Component (All Roles)
+ * PURPOSE: Displays detailed KYC form information including customer, request, and checker details
+ * 
+ * FUNCTIONALITY:
+ * - Two-column layout displaying customer and request information
+ * - Customer section: CIF, name, account number, phone
+ * - Request section: Maker ID, creation date, assignment date, validation date, status
+ * - Date formatting using ExtractDate utility function
+ * - Status mapping from numeric codes to readable text
+ * - Conditional display for unassigned/unchecked forms
+ * 
+ * USER INTERACTIONS:
+ * - Read-only information display
+ * - Clear visual separation between sections with dividers
+ * - Responsive two-column layout (40% width each)
+ * - Bold highlighting for important fields (CIF, Status)
+ * 
+ * STATE MANAGEMENT:
+ * - Stateless component - receives all data via props
+ * - Uses allTableDataType interface for type safety
+ * - Date comparison logic for conditional rendering
+ * - Console logging for debugging (should be removed in production)
+ * 
+ * DATE HANDLING:
+ * - Uses ExtractDate() for consistent date formatting
+ * - Compares dates with current time to show appropriate messages
+ * - Shows "-" for unassigned forms
+ * - Shows "Not checked yet" for pending validation
+ * 
+ * STATUS MAPPING:
+ * - Status 1: "Pending"
+ * - Status 2: "Approved"
+ * - Status 3: "Rejected"
+ * 
+ * USAGE:
+ * - Core component used in DisplayInfo for complete form views
+ * - Essential for all modal-based form detail displays
+ * - Provides standardized information layout across the application
+ * 
+ * ROLE-BASED ACCESS:
+ * - Visible to all roles for form information viewing
+ * - Critical for checkers to see assignment and validation history
+ * - Helps makers track form progress through the system
+ */
+
 import { Divider, Flex } from "antd";
 import { allTableDataType } from "../../MakeForm/AllMakeFormTable";
 import { ExtractDate } from "../../../services/DisplayFunctions";
@@ -48,6 +96,8 @@ const MakeInfo = (modal: allTableDataType) => {
         <Title level={3}>Checker Info</Title>
         <Flex justify="space-between">
           <p>Assigned At:</p>
+          // if assignedAt returned from the db is null, the backend will calculate new Date() and adds one day
+          // if a future date is returned, it will show "-"
           <p>
             {new Date(modal?.assignedAt) > now || !modal.assignedAt
               ? "-"
@@ -56,6 +106,8 @@ const MakeInfo = (modal: allTableDataType) => {
         </Flex>
         <Flex justify="space-between">
           <p>Validated At:</p>
+          // if validatedAt returned from the db is null, the backend will calculate new Date() and adds one day
+          // if a future date is returned, it will show "Not checked yet"
           <p>
             {new Date(modal?.checkedAt) > now || !modal.checkedAt
               ? "Not checked yet"

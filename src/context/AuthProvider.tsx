@@ -1,3 +1,35 @@
+/*
+ * HIJRA KYC FRONTEND - AUTHENTICATION PROVIDER
+ * 
+ * FILE TYPE: React Context Provider Component
+ * PURPOSE: Provides authentication state and functions throughout the application
+ * 
+ * FUNCTIONALITY:
+ * - Manages global authentication state
+ * - Handles login/logout operations
+ * - Persists user session via localStorage
+ * - Provides message/notification counts
+ * - Auto-restores user session on app reload
+ * 
+ * STATE MANAGED:
+ * - user: Current authenticated user information
+ * - messageUnreadCount: Count of unread messages
+ * - rejectedCount: Count of rejected forms
+ * - pendingCount: Count of pending forms
+ * 
+ * FUNCTIONS PROVIDED:
+ * - login: Authenticates user with credentials
+ * - logout: Logs out user and clears session
+ * - Various count setters for notifications
+ * 
+ * LIFECYCLE:
+ * 1. useLayoutEffect restores user from localStorage on mount
+ * 2. login function calls Authentication service and stores tokens
+ * 3. logout function calls Logout service and clears state
+ * 
+ * USED BY: App.tsx wraps entire application with this provider
+ */
+
 import { ReactNode, useLayoutEffect, useState } from "react";
 import { userInfo } from "../types/ContextFiles";
 import { LoginRequest } from "../types/LoginRequest";

@@ -1,3 +1,52 @@
+/**
+ * ADD ROLE COMPONENT
+ * 
+ * PURPOSE:
+ * Administrative interface for creating new user roles in the KYC management system.
+ * Provides form-based role creation with validation, success feedback, and navigation
+ * back to the roles listing page.
+ * 
+ * FUNCTIONALITY:
+ * - Simple form with role name input and validation
+ * - Automatic record status setting to active (1)
+ * - Form reset after successful submission
+ * - Success alert with auto-dismiss functionality
+ * - Navigation back to View_Role page
+ * - Loading states during API submission
+ * - Comprehensive error handling with user feedback
+ * 
+ * API INTERACTIONS:
+ * - POST /api/roles: Creates new role with roleName and recordStatus
+ * - Sends payload with roleName and default recordStatus: 1 (Active)
+ * - Error handling with detailed error message display
+ * - Success confirmation with message notification
+ * 
+ * USER INTERACTIONS:
+ * - Role name input field with required validation
+ * - Save button with loading state during submission
+ * - Back navigation button to View_Role page
+ * - Success alert display with 4-second auto-dismiss
+ * - Form reset after successful role creation
+ * 
+ * STATE MANAGEMENT:
+ * - Form state managed by Ant Design Form hooks
+ * - Success state for alert display control
+ * - Loading state for button and form submission feedback
+ * - Navigation state via React Router hooks
+ * 
+ * VALIDATION:
+ * - Required field validation for role name
+ * - Form submission prevention until validation passes
+ * - User-friendly validation error messages
+ * 
+ * ROLE-BASED ACCESS:
+ * - Typically restricted to Admin roles
+ * - Critical for system role management and user assignment
+ * - Supports organizational structure definition
+ * 
+ * USAGE: Administrative role creation page for system role management
+ */
+
 import React, { useState } from "react";
 import { Form, Input, Button, Typography, Alert, message } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";

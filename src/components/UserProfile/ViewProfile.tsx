@@ -1,4 +1,65 @@
 
+/**
+ * VIEW PROFILE COMPONENT
+ * 
+ * PURPOSE:
+ * Administrative interface for viewing and managing all user profiles in the KYC system.
+ * Provides comprehensive user listing with search, filtering, sorting, and edit capabilities
+ * for user management operations.
+ * 
+ * FUNCTIONALITY:
+ * - Displays all users in paginated table format
+ * - Real-time search across name, role, branch, and phone number
+ * - Status filtering (Active/Blocked) with colored tags
+ * - Sortable columns with full name sorting capability
+ * - Edit navigation to individual user profile editing
+ * - Responsive table with horizontal scrolling
+ * - Loading states and error handling with user feedback
+ * 
+ * API INTERACTIONS:
+ * - GET /api/user-profiles/get-all-users: Fetches all user profiles
+ * - Comprehensive error handling with detailed error messages
+ * - Loading states during API calls for better UX
+ * 
+ * USER INTERACTIONS:
+ * - Search input with clear functionality for filtering users
+ * - Status filter dropdown for Active/Blocked users
+ * - Edit button navigation to Edit_Profile component
+ * - Sortable table columns for data organization
+ * - Pagination controls with customizable page sizes
+ * - Total user count display in pagination
+ * 
+ * STATE MANAGEMENT:
+ * - Users array state from API response
+ * - Loading state for API call feedback
+ * - Search text state for real-time filtering
+ * - Memoized filtered users for performance optimization
+ * - Navigation state via React Router hooks
+ * 
+ * DATA PROCESSING:
+ * - Real-time search filtering across multiple fields
+ * - Full name concatenation for display and sorting
+ * - Status-based filtering with predefined filter options
+ * - Memoized columns definition for performance
+ * - Case-insensitive search implementation
+ * 
+ * TABLE FEATURES:
+ * - Serial number column with automatic indexing
+ * - User ID, full name, role, branch, gender, phone display
+ * - Status visualization with colored tags (green/red)
+ * - Fixed action column with edit functionality
+ * - Responsive design with horizontal scroll
+ * - Custom empty state messages
+ * 
+ * ROLE-BASED ACCESS:
+ * - Typically restricted to Admin/Manager roles
+ * - Provides overview of all system users
+ * - Critical for user management and system administration
+ * - Supports user lifecycle monitoring and maintenance
+ * 
+ * USAGE: Administrative user management page for viewing and accessing user profiles
+ */
+
 import React, { useEffect, useState, useMemo } from 'react';
 import { Table, Tag, Button, Avatar, Space, message, Input, Row, Col } from 'antd';
 import type { ColumnsType } from 'antd/es/table';

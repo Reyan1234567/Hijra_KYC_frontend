@@ -1,3 +1,43 @@
+/**
+ * ATTENDANCE COMPONENT
+ * 
+ * TYPE: Page Component (Manager Role)
+ * PURPOSE: Displays attendance status of all checker users with visual indicators
+ * 
+ * FUNCTIONALITY:
+ * - Fetches all checker users and their current attendance status
+ * - Displays attendance status with color-coded tags (green=present, red=absent)
+ * - Provides "Change Attendance" button to modify attendance records
+ * - Card-based layout for easy visual scanning of attendance
+ * - Real-time data fetching with React Query caching
+ * 
+ * DATA FETCHING:
+ * - API: GET /kycManager/getCheckerUsers - fetches all checker users with attendance status
+ * - Service: getCheckers() - returns array of checker user objects
+ * - Returns: user objects with id, name, presentStatus (0=absent, 1=present)
+ * - Uses React Query with cache key ["Attendance"]
+ * 
+ * USER INTERACTIONS:
+ * - Visual attendance status display with icons and colors
+ * - "Change Attendance" button opens ChangeAttendance modal
+ * - Card hover and visual feedback for better UX
+ * - Responsive flex layout for different screen sizes
+ * 
+ * STATE MANAGEMENT:
+ * - open: boolean - controls ChangeAttendance modal visibility
+ * - Uses React Query for data fetching and caching
+ * - Passes user list to ChangeAttendance component for editing
+ * 
+ * LIFECYCLE:
+ * - Mounts and fetches checker data immediately
+ * - React Query handles loading, error, and success states
+ * - Console logging for debugging different states
+ * - Automatic refetching and caching management
+ * 
+ * ROLE PERMISSIONS: Manager users only
+ * ROUTING: Accessed via /attendance route
+ */
+
 import { Button, Card, Flex, Spin, Tag, Typography } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { getCheckers } from "../../services/KycManager";

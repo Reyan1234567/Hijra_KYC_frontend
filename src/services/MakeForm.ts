@@ -1,3 +1,33 @@
+/*
+ * HIJRA KYC FRONTEND - MAKE FORM SERVICE
+ * 
+ * FILE TYPE: Service/API Layer
+ * PURPOSE: Handles all KYC form creation, management, and image operations
+ * 
+ * FUNCTIONALITY:
+ * - CRUD operations for KYC forms (create, read, update status)
+ * - Image management (create, edit, disassociate)
+ * - Form status transitions (drafts, pending, approved, rejected)
+ * - Customer account search integration
+ * - Paginated data retrieval for different form states
+ * 
+ * API ENDPOINTS USED:
+ * - PATCH /makeForm/toDrafts/{id} - Move form to drafts
+ * - PATCH /makeForm/send-ToHo/{id} - Send form to head office
+ * - GET /makeForm - Get all forms with pagination
+ * - GET /makeForm/draft - Get draft forms
+ * - GET /makeForm/pending - Get pending forms
+ * - GET /makeForm/approved - Get approved forms
+ * - GET /makeForm/rejected - Get rejected forms
+ * - POST /makeForm - Create new form
+ * - POST /image/create-Images/{makeId} - Create images for form
+ * - PATCH /image/disassociate/{imageId} - Remove image association
+ * - PATCH /image/description - Update image description
+ * - GET /api/customerDetail/{account} - Search customer by account
+ * 
+ * USED BY: All MakeForm components, Search component
+ */
+
 import {
   egami,
   imageReturn,

@@ -1,3 +1,67 @@
+/**
+ * MESSAGES PAGE COMPONENT
+ * 
+ * TYPE: Page Component (All Roles)
+ * PURPOSE: Main messaging interface displaying user contacts with search and real-time updates
+ * 
+ * FUNCTIONALITY:
+ * - User contact list with search functionality
+ * - Real-time message count updates via React Query
+ * - Unread message badge aggregation for parent drawer
+ * - User filtering by name, branch, and role
+ * - Chat initiation through user selection
+ * - Loading states and error handling
+ * - Query invalidation for real-time updates
+ * 
+ * API INTERACTIONS:
+ * - GET /message/getAll: Fetches user contacts with unread counts
+ * - Uses receiverId parameter for current user's contacts
+ * - React Query caching with "messageContacts" key
+ * - Automatic query invalidation on chat selection
+ * 
+ * USER INTERACTIONS:
+ * - Search input for filtering contacts (name, branch, role)
+ * - Click on user cards to initiate chat
+ * - Real-time badge updates in parent drawer
+ * - Loading spinner during data fetch
+ * - Error message display on API failures
+ * 
+ * STATE MANAGEMENT:
+ * - filteredUsers: Local filtered user list based on search
+ * - search: Search input value with lowercase conversion
+ * - React Query for server state management
+ * - AuthContext for current user information
+ * - Props communication with parent drawer component
+ * 
+ * REAL-TIME FEATURES:
+ * - Automatic unread count aggregation and badge updates
+ * - Query invalidation on user selection for fresh data
+ * - useEffect dependencies for reactive filtering
+ * - Badge count calculation from all user unread counts
+ * 
+ * SEARCH FUNCTIONALITY:
+ * - Case-insensitive search across fullName, branchName, role
+ * - Real-time filtering with useEffect
+ * - Empty search shows all users
+ * - Filtered results update immediately on input change
+ * 
+ * LIFECYCLE:
+ * - Query enabled only when user is authenticated
+ * - Badge calculation on user data changes
+ * - Search filtering on search term or user data changes
+ * - Query invalidation triggers on chat selection
+ * 
+ * USAGE:
+ * - Used as drawer content in FullLayout messaging system
+ * - Provides contact selection for MessagesView chat interface
+ * - Part of real-time messaging system with WebSocket integration
+ * 
+ * ROLE-BASED ACCESS:
+ * - Available to all authenticated users
+ * - Shows contacts based on user's messaging permissions
+ * - Displays organizational context (role, branch) for each contact
+ */
+
 import { Input, Spin, Typography } from "antd";
 import Message from "./Message";
 import { userInfo } from "../../types/MessageTypes";

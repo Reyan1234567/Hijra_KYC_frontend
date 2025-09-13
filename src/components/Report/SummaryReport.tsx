@@ -1,5 +1,71 @@
 
-import React, { useState, useEffect } from "react";
+/**
+ * SUMMARY REPORT COMPONENT
+ * 
+ * PURPOSE:
+ * Aggregated reporting interface for KYC form statistics by branch with comprehensive
+ * filtering, role-based data access, and export capabilities. Provides high-level
+ * overview of KYC processing performance across organizational branches.
+ * 
+ * FUNCTIONALITY:
+ * - Date range filtering with required date selection
+ * - Role-based branch access (District users see only their branches)
+ * - Branch-specific filtering with client-side name matching
+ * - Automatic status count aggregation (Pending, Approved, Rejected, Saved)
+ * - Real-time totals calculation with summary statistics
+ * - Excel and PDF export with formatted data
+ * - Paginated table with summary row totals
+ * - Number formatting with locale-specific separators
+ * 
+ * API INTERACTIONS:
+ * - GET /api/branches/get-all-branches: Fetches all branches for non-District roles
+ * - GET /api/branches/get-my-branches: Fetches user's assigned branches for District role
+ * - GET /api/summary-report: Retrieves aggregated KYC statistics with parameters:
+ *   * fromDate, toDate: Date range filter (required)
+ *   * branchId: Always set to 0 for all branches, client-side filtering applied
+ * - Automatic logout on 401 authentication errors
+ * - Comprehensive error handling with user-friendly messages
+ * 
+ * DATA TRANSFORMATION:
+ * - Handles multiple backend response formats (array or nested items)
+ * - Maps various field name variations to consistent SummaryReportDto interface
+ * - Normalizes numeric values with fallback to 0
+ * - Calculates total records from individual status counts when not provided
+ * - Client-side branch filtering by name matching for enhanced accuracy
+ * - Aggregates totals across all filtered branches for summary display
+ * 
+ * USER INTERACTIONS:
+ * - Date range selection (required field)
+ * - Branch dropdown selection with role-based options
+ * - Search button to trigger report generation
+ * - Export buttons for Excel and PDF (disabled when no data)
+ * - Summary statistics cards showing aggregated totals
+ * - Paginated table view with 10 items per page
+ * - Table summary row with bold totals
+ * 
+ * STATE MANAGEMENT:
+ * - Form state managed by Ant Design Form hooks
+ * - Loading states for branches fetch and report generation
+ * - Report data state with transformed SummaryReportDto array
+ * - Totals state for aggregated statistics display
+ * - Role-based branch fetching logic in useEffect
+ * 
+ * ROLE-BASED ACCESS:
+ * - District role: Limited to assigned branches via /get-my-branches endpoint
+ * - Other roles: Access to all branches via /get-all-branches endpoint
+ * - Provides appropriate data scope based on user permissions
+ * - Critical for organizational hierarchy and data security
+ * 
+ * EXPORT FEATURES:
+ * - Excel export using XLSX library with branch statistics
+ * - PDF export using jsPDF with autoTable for formatted display
+ * - Timestamped file names for export organization
+ * - Data validation before export to prevent empty file generation
+ * 
+ * USAGE: Standalone summary reporting page for high-level KYC processing analytics
+ */
+
+import { useState, useEffect } from "react";
 import {
   Card,
   Form,

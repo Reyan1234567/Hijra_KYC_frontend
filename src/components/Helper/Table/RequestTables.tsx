@@ -1,3 +1,41 @@
+/**
+ * REQUEST TABLES COMPONENT
+ * 
+ * TYPE: Reusable Helper Component
+ * PURPOSE: Provides a standardized table for displaying KYC form requests with pagination
+ * 
+ * FUNCTIONALITY:
+ * - Reusable table component for KYC form data display
+ * - Standard columns: CIF, Customer Account, Name, Phone, Made At, Checked At, Checker Name, Status
+ * - Status rendering with colored tags (Draft/Pending/Accepted/Rejected)
+ * - Date formatting using ExtractDate utility function
+ * - Conditional rendering for empty checker names and dates
+ * - Pagination support with configurable page size
+ * - Custom column injection via colums prop
+ * 
+ * DATA HANDLING:
+ * - Accepts allTableDataType[] array as data source
+ * - Merges standard columns with optional custom columns
+ * - Handles pagination state and callbacks
+ * - Date validation and formatting for display
+ * 
+ * USER INTERACTIONS:
+ * - Pagination controls (page navigation and size change)
+ * - Custom action columns can be injected
+ * - Sortable columns (inherited from Ant Design Table)
+ * 
+ * USAGE:
+ * - Used by AllMakeFormTable, CheckerApprovedTable, and other table pages
+ * - Provides consistent table styling and behavior across the app
+ * - Reduces code duplication for common table functionality
+ * 
+ * PROPS:
+ * - data: Array of KYC form records
+ * - colums: Optional additional columns (typically action columns)
+ * - pageSize, pageNumber, total: Pagination configuration
+ * - onChange: Callback for pagination changes
+ */
+
 import { Flex, Table, TableColumnsType, Tag } from "antd";
 import { allTableDataType } from "../../MakeForm/AllMakeFormTable";
 import { ExtractDate } from "../../../services/DisplayFunctions";

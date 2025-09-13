@@ -1,3 +1,47 @@
+/**
+ * IMAGE EDIT COMPONENT
+ * 
+ * TYPE: Helper Component (Form Module)
+ * PURPOSE: Provides image management functionality for KYC forms - edit descriptions and delete images
+ * 
+ * FUNCTIONALITY:
+ * - Displays images associated with a KYC form in a grid layout
+ * - Edit image descriptions with real-time input and save confirmation
+ * - Delete images with confirmation dialog
+ * - Real-time local state updates with server synchronization
+ * - Success/error feedback via message notifications
+ * - Optimistic UI updates with rollback on error
+ * 
+ * DATA OPERATIONS:
+ * - API: PUT /makeForm/image/editDescription - updates image description
+ * - API: DELETE /makeForm/image/dissassociate/{id} - removes image from form
+ * - Service: editDescription(image) - updates image description
+ * - Service: dissassociate(id) - deletes image association
+ * - Invalidates React Query cache ["makes"] on successful operations
+ * 
+ * USER INTERACTIONS:
+ * - View images in grid layout with descriptions
+ * - Edit description inline with input field
+ * - Save button (enabled only when description changes and is not empty)
+ * - Delete button with confirmation dialog
+ * - Real-time description editing with local state management
+ * 
+ * STATE MANAGEMENT:
+ * - Images: imageReturn[] - local copy of images for optimistic updates
+ * - Syncs with parent props via useEffect when images.images changes
+ * - Uses React Query mutations for server operations
+ * - Local state updates immediately, server sync follows
+ * 
+ * LIFECYCLE:
+ * - Receives images array as props from parent component
+ * - Creates local copy for optimistic updates
+ * - Resets local state when parent props change
+ * - Handles mutation success/error states
+ * 
+ * USAGE: Used within EditModal and other form editing components
+ * ROLE PERMISSIONS: Maker users (for their own forms)
+ */
+
 import {
   DeleteOutlined,
   QuestionCircleOutlined,

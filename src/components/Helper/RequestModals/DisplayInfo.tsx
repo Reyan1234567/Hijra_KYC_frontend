@@ -1,3 +1,45 @@
+/**
+ * DISPLAY INFO COMPONENT
+ * 
+ * TYPE: Helper Component (All Roles)
+ * PURPOSE: Comprehensive KYC form information display with images and rejection reasons
+ * 
+ * FUNCTIONALITY:
+ * - Combines MakeInfo, image gallery, and BackReason components
+ * - Displays KYC form images with descriptions in a responsive grid
+ * - Shows rejection reasons when applicable
+ * - Handles empty image state with fallback message
+ * - Uses BASE_URL for proper image URL construction
+ * 
+ * USER INTERACTIONS:
+ * - Image viewing with Ant Design Image component (zoom, preview)
+ * - Read-only form data display
+ * - Disabled input fields showing image descriptions
+ * - Responsive layout adapts to different screen sizes
+ * 
+ * STATE MANAGEMENT:
+ * - Stateless component - receives all data via props
+ * - Uses allTableDataType interface for type safety
+ * - Conditional rendering for images and rejection reasons
+ * 
+ * IMAGE HANDLING:
+ * - Maps through images array to display each image
+ * - Constructs full image URLs using BASE_URL + image.url
+ * - Fixed height (200px) for consistent layout
+ * - Bordered containers for visual separation
+ * - Centered alignment for professional appearance
+ * 
+ * USAGE:
+ * - Primary component for ViewModal content
+ * - Used in form detail views across different roles
+ * - Combines multiple helper components for complete form display
+ * 
+ * ROLE-BASED ACCESS:
+ * - Visible to all roles for form viewing
+ * - Critical for checkers reviewing KYC submissions
+ * - Helps makers understand rejection feedback
+ */
+
 import { Divider, Flex, Input, Image } from "antd";
 import { allTableDataType } from "../../MakeForm/AllMakeFormTable";
 import { Typography } from "antd";

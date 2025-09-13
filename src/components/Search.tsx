@@ -1,3 +1,41 @@
+/**
+ * SEARCH COMPONENT
+ * 
+ * TYPE: Page Component (Maker Role)
+ * PURPOSE: Allows makers to search for customer accounts and create KYC form requests
+ * 
+ * FUNCTIONALITY:
+ * - Account number search with validation (minimum 10 digits)
+ * - Fetches customer details from /api/account/{accountNumber} endpoint
+ * - Checks if account already has pending KYC request via /makeForm/accountCheck
+ * - Displays customer information in read-only form fields
+ * - Allows creation of new KYC form requests with image attachments
+ * - Handles form submission with image upload workflow
+ * 
+ * DATA FETCHING:
+ * - API: GET /api/account/{accountNumber} - fetches customer account details
+ * - API: GET /makeForm/accountCheck - checks for existing KYC requests
+ * - API: createMakeForm() - creates new KYC form
+ * - API: createImage() - uploads images for the form
+ * 
+ * USER INTERACTIONS:
+ * - Account number input with form validation
+ * - Search button to fetch customer details
+ * - "Create a Make Request" button (only shown if no existing request)
+ * - Modal for image upload with AddImageForm component
+ * - Form submission with success/error feedback
+ * 
+ * LIFECYCLE:
+ * - Starts in idle state
+ * - Loading state during account search
+ * - Success state displays customer details and create button
+ * - Error state shows error message
+ * - Returns to idle after successful form creation
+ * 
+ * ROLE PERMISSIONS: Maker users only
+ * ROUTING: Accessed via /search route
+ */
+
 import {
   Button,
   Card,

@@ -1,5 +1,75 @@
 
-import React, { useState, useEffect } from "react";
+/**
+ * DETAIL REPORT COMPONENT
+ * 
+ * PURPOSE:
+ * Comprehensive reporting interface for detailed KYC form information with advanced filtering,
+ * data transformation, and export capabilities. Provides granular view of individual KYC requests
+ * with customer details, processing timeline, and user assignments.
+ * 
+ * FUNCTIONALITY:
+ * - Date range filtering with required date selection
+ * - Branch-based filtering (all branches or specific branch)
+ * - Status filtering (All, Pending, Approved, Rejected, Saved)
+ * - Multi-format backend response handling with robust data transformation
+ * - Client-side branch name filtering for enhanced accuracy
+ * - Excel and PDF export with formatted data
+ * - Detailed customer information display in table format
+ * - Real-time date formatting with relative time display
+ * - Status visualization with colored tags
+ * - Comment display for rejected/approved requests
+ * 
+ * API INTERACTIONS:
+ * - GET /api/branches/get-all-branches: Fetches all available branches for filtering
+ * - GET /api/detail-report: Retrieves detailed KYC report data with parameters:
+ *   * fromDate, toDate: Date range filter (required)
+ *   * status: Status filter (optional, defaults to all)
+ *   * branchId: Always set to 0 for all branches, client-side filtering applied
+ * - Automatic logout on 401 authentication errors
+ * - Comprehensive error handling with user-friendly messages
+ * 
+ * DATA TRANSFORMATION:
+ * - Handles multiple backend response formats:
+ *   * Array of arrays (indexed data)
+ *   * Array of objects with numeric keys
+ *   * Array of objects with named properties
+ *   * Nested response with items array
+ * - Normalizes timestamp formats to ISO strings
+ * - Maps various field name variations to consistent interface
+ * - Client-side branch filtering by name matching
+ * - Status normalization and tag generation
+ * 
+ * USER INTERACTIONS:
+ * - Date range selection (required field)
+ * - Branch dropdown selection with loading states
+ * - Status dropdown selection with predefined options
+ * - Search button to trigger report generation
+ * - Export buttons for Excel and PDF (disabled when no data)
+ * - Paginated table view with 10 items per page
+ * - Horizontal scroll for responsive table display
+ * 
+ * STATE MANAGEMENT:
+ * - Form state managed by Ant Design Form hooks
+ * - Loading states for branches fetch and report generation
+ * - Report data state with transformed DetailReportDto array
+ * - Error handling with automatic cleanup and user feedback
+ * 
+ * EXPORT FEATURES:
+ * - Excel export using XLSX library with flattened data structure
+ * - PDF export using jsPDF with autoTable for formatted tables
+ * - Timestamped file names for export organization
+ * - Data validation before export to prevent empty file generation
+ * 
+ * ROLE-BASED ACCESS:
+ * - Typically restricted to Manager/Admin roles
+ * - Provides detailed oversight of KYC processing pipeline
+ * - Critical for audit trails and compliance reporting
+ * - Supports operational analysis and quality assurance
+ * 
+ * USAGE: Standalone detailed reporting page for comprehensive KYC form analysis and export
+ */
+
+import { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";

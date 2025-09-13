@@ -1,3 +1,52 @@
+/**
+ * KYC MANAGER TABLE COMPONENT
+ * 
+ * TYPE: Page Component (Manager Role)
+ * PURPOSE: Main manager dashboard displaying all KYC forms requiring manager oversight and assignment
+ * 
+ * FUNCTIONALITY:
+ * - Fetches all KYC forms visible to managers with date filtering
+ * - Displays forms with status-based action menus
+ * - Provides HO assignment management for pending forms (status 1)
+ * - View-only access for processed forms (status 2, 3)
+ * - Manual state management with loading, success, error, and empty states
+ * - Pagination support with configurable page size
+ * 
+ * DATA FETCHING:
+ * - API: GET /makeForm/manager - fetches KYC forms for manager oversight
+ * - Parameters: date (filter), pageNumber, pageSize
+ * - Returns: pageableReturn with makes array and total count
+ * - Manual API calls with axios instead of React Query
+ * - Refetches on trigger state changes for real-time updates
+ * 
+ * USER INTERACTIONS:
+ * - Date selection via DateDropDown component
+ * - Status-based dropdown menus:
+ *   - Status 1 (pending): View, Edit HO Assignment actions
+ *   - Status 2/3 (processed): View only
+ * - Modal interactions:
+ *   - ViewModal: Read-only form details display
+ *   - ManagerEdit: HO assignment interface with Assign component
+ * - Pagination controls for navigating through results
+ * 
+ * STATE MANAGEMENT:
+ * - makeRequests: pageableReturn - stores fetched form data
+ * - modal: allTableDataType - selected row data for modals
+ * - viewModal/editModal: boolean - modal visibility controls
+ * - trigger: number - incremented to force data refetch
+ * - state: "loading" | "success" | "error" | "empty" - manual state management
+ * - pageSize/pageNumber: pagination state
+ * 
+ * LIFECYCLE:
+ * - useEffect triggers on trigger, date, userId, pageNumber, pageSize changes
+ * - Manual API error handling with try-catch blocks
+ * - Console logging for debugging API responses
+ * - State-based conditional rendering for different UI states
+ * 
+ * ROLE PERMISSIONS: Manager users only
+ * ROUTING: Accessed via /kycManagerTable route
+ */
+
 import { Flex, MenuProps, Spin, Table, TableColumnsType } from "antd";
 import RequestTables from "../Helper/Table/RequestTables";
 import { useContext, useEffect, useState } from "react";

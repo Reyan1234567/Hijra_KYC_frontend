@@ -1,3 +1,58 @@
+/**
+ * PENDING MAKE FORM TABLE COMPONENT
+ * 
+ * TYPE: Page Component (Maker Role)
+ * PURPOSE: Displays KYC forms in pending status (submitted to HO but not yet processed)
+ * 
+ * FUNCTIONALITY:
+ * - Fetches pending KYC forms (status 1) created by the current maker
+ * - Provides date filtering for pending requests (defaults to current month)
+ * - Status-based action menus:
+ *   - Status 0 (draft): Edit, View, Send to HO actions
+ *   - Status 1 (pending): View only (awaiting HO processing)
+ *   - Status 3 (rejected): View, Add to drafts (for resubmission)
+ * - Pagination support with React Query caching
+ * - Real-time data updates via React Query mutations
+ * 
+ * DATA FETCHING:
+ * - API: GET /makeForm/getPending - fetches pending KYC forms by maker with status 1
+ * - Service: getPendingMakes(date, userId, pageSize, pageNumber)
+ * - Parameters: date (filter), makerId (current user), pageSize, pageNumber
+ * - Returns: pageableReturn with makes array and total count
+ * - Uses React Query with cache key ["makes", date, pageNumber, pageSize]
+ * 
+ * DATA MUTATIONS:
+ * - API: PUT /makeForm/sendToHo/{id} - submits form to Head Office (status 0 → 1)
+ * - API: PUT /makeForm/addToDrafts/{id} - moves rejected form back to drafts (status 3 → 0)
+ * - Service: sendToHo(id) - changes form status from draft to pending
+ * - Service: addToDrafts(id) - changes rejected form back to draft for editing
+ * - Invalidates React Query cache on success to refresh data
+ * 
+ * USER INTERACTIONS:
+ * - Date selection via DateDropDown component
+ * - Status-specific action dropdown menus per table row
+ * - Modal interactions:
+ *   - ViewModal: Read-only form details display
+ *   - EditModal: Edit form details and images (for drafts only)
+ * - Pagination controls for navigating through results
+ * 
+ * STATE MANAGEMENT:
+ * - modal: allTableDataType - stores selected row data for modals
+ * - isModalOpen: boolean - controls ViewModal visibility
+ * - editModal: boolean - controls EditModal visibility
+ * - pageSize/pageNumber: pagination state
+ * - Uses React Query for data fetching, caching, and mutations
+ * 
+ * LIFECYCLE:
+ * - Mounts with current month date filter
+ * - React Query handles data fetching, caching, and refetching
+ * - Updates automatically when date or pagination changes
+ * - Mutations trigger cache invalidation and UI updates
+ * 
+ * ROLE PERMISSIONS: Maker users only
+ * ROUTING: Accessed via /pendingMakeFormTable route
+ */
+
 import { useContext, useState } from "react";
 import { Flex, message, Spin, Table } from "antd";
 import type { MenuProps, TableColumnsType, TabsProps } from "antd";

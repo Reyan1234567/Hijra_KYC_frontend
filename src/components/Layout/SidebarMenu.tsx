@@ -1,3 +1,43 @@
+/**
+ * SIDEBAR MENU COMPONENT
+ * 
+ * TYPE: Navigation Component (Layout Module)
+ * PURPOSE: Provides role-based sidebar navigation with real-time notification badges
+ * 
+ * FUNCTIONALITY:
+ * - Role-based menu rendering (Maker, Checker, Manager, District)
+ * - Real-time notification badges for pending/rejected counts
+ * - Automatic data fetching with React Query (1-minute intervals)
+ * - Navigation handling with React Router
+ * - Dynamic menu items based on user permissions
+ * - Badge counts for rejected forms (makers) and pending forms (checkers)
+ * 
+ * DATA FETCHING:
+ * - API: GET /makeForm/getRejected - gets rejected count for badges
+ * - API: GET /makeForm/getPending - gets pending count for badges  
+ * - API: GET /message/unread - gets unread message count
+ * - Updates AuthContext state with notification counts
+ * - Refetches every 60 seconds for real-time updates
+ * 
+ * USER INTERACTIONS:
+ * - Menu item clicks navigate to corresponding routes
+ * - Expandable menu groups (Make Form, Check Form, etc.)
+ * - Badge indicators show notification counts
+ * - Role-specific menu visibility
+ * 
+ * ROLE MENUS:
+ * - Maker: Dashboard, Make Form (with sub-items), Search
+ * - Checker: Dashboard, Check Form (with sub-items), Search
+ * - Manager: Dashboard, KYC Manager, Attendance, Distribute, Search, Reports
+ * - District: Dashboard, Reports (Summary only)
+ * 
+ * LIFECYCLE:
+ * - Mounts with role detection from localStorage
+ * - Starts notification polling on mount
+ * - Updates badge counts in real-time
+ * - Renders appropriate menu based on user role
+ */
+
 import {
   BookOutlined,
   CheckCircleOutlined,

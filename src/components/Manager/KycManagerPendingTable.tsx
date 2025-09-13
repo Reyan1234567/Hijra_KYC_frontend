@@ -1,3 +1,60 @@
+/**
+ * KYC MANAGER PENDING TABLE COMPONENT
+ * 
+ * PURPOSE:
+ * Manager interface for viewing and managing pending KYC requests requiring Head Office
+ * assignment or review. Provides comprehensive oversight of requests awaiting HO checker
+ * assignment with date filtering and pagination capabilities.
+ * 
+ * FUNCTIONALITY:
+ * - Displays pending KYC requests in paginated table format
+ * - Date-based filtering with month selection dropdown
+ * - Status-based action menus (view for completed, edit for pending assignment)
+ * - HO assignment editing for pending requests (status 1)
+ * - View-only access for completed requests (status 2/3)
+ * - Real-time data refresh with trigger-based re-fetching
+ * - Loading, empty, error, and success state management
+ * 
+ * API INTERACTIONS:
+ * - GET /makeForm/manager/pending: Fetches pending requests with pagination
+ *   * date: Selected month filter
+ *   * pageNumber, pageSize: Pagination parameters
+ * - Uses AuthContext for user identification and access control
+ * - Automatic error handling with state management
+ * 
+ * USER INTERACTIONS:
+ * - Date dropdown for month-based filtering
+ * - Action dropdown menus with view and edit options
+ * - View modal for detailed KYC form inspection
+ * - Manager edit modal for HO assignment modification
+ * - Pagination controls for large datasets
+ * - Loading states during API operations
+ * 
+ * STATE MANAGEMENT:
+ * - Make requests state with pageable return structure
+ * - Modal states for view and edit operations
+ * - Selected modal data for form operations
+ * - Page size and number for pagination control
+ * - Date state for filtering with default current month
+ * - Component state (loading/empty/success/error)
+ * - Trigger state for forcing data refresh
+ * 
+ * TABLE FEATURES:
+ * - Maker name column display
+ * - Status-based action column with conditional rendering
+ * - Integrated with RequestTables helper component
+ * - Pagination with customizable page sizes
+ * - Total count display from API response
+ * 
+ * ROLE-BASED ACCESS:
+ * - Manager role required for access
+ * - Critical for HO assignment workflow management
+ * - Provides oversight of pending KYC processing pipeline
+ * - Supports workload distribution and quality assurance
+ * 
+ * USAGE: Manager dashboard page for pending KYC request management and HO assignment
+ */
+
 import { Flex, MenuProps, Spin, Table, TableColumnsType } from "antd";
 import RequestTables from "../Helper/Table/RequestTables";
 import { useContext, useEffect, useState } from "react";

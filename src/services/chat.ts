@@ -1,3 +1,27 @@
+/*
+ * HIJRA KYC FRONTEND - WEBSOCKET CHAT SERVICE
+ * 
+ * FILE TYPE: Service/WebSocket Client
+ * PURPOSE: Real-time messaging and chat functionality
+ * 
+ * FUNCTIONALITY:
+ * - WebSocket connection using STOMP protocol over SockJS
+ * - Real-time private messaging between users
+ * - Message subscription and publishing
+ * - Auto-reconnection on connection loss
+ * 
+ * WEBSOCKET ENDPOINTS:
+ * - Connection: ws://localhost:8080/ws
+ * - Subscribe: /user/queue/messages (private messages)
+ * - Publish: /app/private (send private messages)
+ * 
+ * EXPORTED FUNCTIONS:
+ * - client: STOMP client instance for WebSocket connection
+ * - sendPrivate: Send private message to specific user
+ * 
+ * USED BY: Chat.tsx component for real-time messaging
+ */
+
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 

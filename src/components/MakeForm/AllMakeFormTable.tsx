@@ -1,3 +1,42 @@
+/**
+ * ALL MAKE FORM TABLE COMPONENT
+ * 
+ * TYPE: Page Component (Maker Role)
+ * PURPOSE: Displays all KYC forms created by the current maker user with status-based actions
+ * 
+ * FUNCTIONALITY:
+ * - Fetches maker's KYC forms using React Query from getMakes service
+ * - Provides date filtering for form submissions
+ * - Shows different action menus based on form status:
+ *   - Status 0 (draft): Edit, View, Send to HO actions
+ *   - Status 3 (rejected): View and Edit actions
+ *   - Other statuses: View only
+ * - Supports pagination with configurable page size
+ * - Real-time updates via React Query cache invalidation
+ * 
+ * DATA FETCHING:
+ * - Uses React Query useQuery hook with key ["makes", date, pageNumber, pageSize]
+ * - API: getMakes(date, userId, pageSize, pageNumber)
+ * - Returns: pageableReturn with makes array and total count
+ * - Automatic refetching on dependency changes
+ * 
+ * USER INTERACTIONS:
+ * - Date selection via DateDropDown component
+ * - Action dropdown menus (edit/view/send) per table row
+ * - Modal interactions for viewing and editing forms
+ * - Pagination controls for navigating through results
+ * - Send to HO mutation for submitting draft forms
+ * 
+ * LIFECYCLE:
+ * - Mounts with React Query loading state
+ * - Shows loading spinner during data fetch
+ * - Renders empty table if no data
+ * - Updates automatically when query dependencies change
+ * 
+ * ROLE PERMISSIONS: Maker users only
+ * ROUTING: Accessed via /allMakeFormTable route
+ */
+
 import { useContext, useState } from "react";
 import { Flex, message, Spin, Table } from "antd";
 import type { MenuProps, TableColumnsType } from "antd";

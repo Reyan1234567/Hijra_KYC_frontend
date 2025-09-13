@@ -1,3 +1,62 @@
+/**
+ * REJECTED MAKE FORM TABLE COMPONENT
+ * 
+ * TYPE: Page Component (Maker Role)
+ * PURPOSE: Displays KYC forms that have been rejected by checkers, allowing makers to edit and resubmit
+ * 
+ * FUNCTIONALITY:
+ * - Fetches rejected KYC forms (status 3) created by the current maker
+ * - Provides date filtering for rejected requests (defaults to current month)
+ * - Status-based action menus:
+ *   - Status 0 (draft): Edit, View, Send to HO actions
+ *   - Status 3 (rejected): View, Edit actions for resubmission
+ *   - Other statuses: View only
+ * - Dual submission methods:
+ *   - Action dropdown menu with "Send to HO" option
+ *   - Dedicated "Send to HO" column with confirmation popover
+ * - Pagination support with React Query caching
+ * - Real-time data updates via React Query mutations
+ * 
+ * DATA FETCHING:
+ * - API: GET /makeForm/getRejected - fetches rejected KYC forms by maker with status 3
+ * - Service: getRejectedMakes(date, userId, pageSize, pageNumber)
+ * - Parameters: date (filter), makerId (current user), pageSize, pageNumber
+ * - Returns: pageableReturn with makes array and total count
+ * - Uses React Query with cache key ["makes", date, pageNumber, pageSize]
+ * 
+ * DATA MUTATIONS:
+ * - API: PUT /makeForm/sendToHo/{id} - resubmits edited form to Head Office (status 3 → 1)
+ * - Service: sendToHo(id) - changes form status from rejected to pending
+ * - Invalidates both ["makes"] and ["notifications"] queries on success
+ * - Updates notification badges in sidebar automatically
+ * 
+ * USER INTERACTIONS:
+ * - Date selection via DateDropDown component
+ * - Status-specific action dropdown menus per table row
+ * - Confirmation popover for "Send to HO" actions to prevent accidental submissions
+ * - Modal interactions:
+ *   - ViewModal: Read-only form details display with rejection reason
+ *   - EditModal: Edit form details and images before resubmission
+ * - Pagination controls for navigating through results
+ * 
+ * STATE MANAGEMENT:
+ * - modal: allTableDataType - stores selected row data for modals and mutations
+ * - isModalOpen: boolean - controls ViewModal visibility
+ * - editModal: boolean - controls EditModal visibility
+ * - pageSize/pageNumber: pagination state
+ * - Uses React Query for data fetching, caching, and mutations
+ * 
+ * LIFECYCLE:
+ * - Mounts with current month date filter
+ * - React Query handles data fetching, caching, and refetching
+ * - Updates automatically when date or pagination changes
+ * - Mutations trigger cache invalidation and UI updates
+ * - Console logging for debugging modal state in popover interactions
+ * 
+ * ROLE PERMISSIONS: Maker users only
+ * ROUTING: Accessed via /rejectedMakeFormTable route
+ */
+
 import { useContext, useState } from "react";
 import { Button, Flex, message, Popconfirm, Spin, Table } from "antd";
 import type { MenuProps, TableColumnsType } from "antd";

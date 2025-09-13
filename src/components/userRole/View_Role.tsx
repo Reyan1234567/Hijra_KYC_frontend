@@ -1,3 +1,68 @@
+/**
+ * VIEW ROLE COMPONENT
+ * 
+ * PURPOSE:
+ * Administrative interface for viewing and managing all user roles in the KYC system.
+ * Provides comprehensive role listing with search, edit, delete capabilities, and
+ * protection for predefined system roles.
+ * 
+ * FUNCTIONALITY:
+ * - Displays all roles in paginated table format
+ * - Real-time search filtering by role name
+ * - Status visualization with colored tags (Active/Blocked)
+ * - Edit navigation to individual role editing
+ * - Delete functionality with confirmation dialogs
+ * - Protection for predefined system roles (maker, HO_Checker, HO_Manager)
+ * - Add new role navigation button
+ * - Loading states and error handling with user feedback
+ * 
+ * API INTERACTIONS:
+ * - GET /api/roles: Fetches all user roles from the system
+ * - DELETE /api/roles/{id}: Deletes specific role (protected roles excluded)
+ * - Comprehensive error handling with detailed error messages
+ * - Loading states during API calls for better UX
+ * 
+ * USER INTERACTIONS:
+ * - Search input with clear functionality for filtering roles
+ * - Add Role button navigation to AddRole component
+ * - Edit button navigation to Edit_Role component with role ID
+ * - Delete button with confirmation dialog (hidden for protected roles)
+ * - Sortable role name column for data organization
+ * - Pagination controls with 5 items per page
+ * 
+ * STATE MANAGEMENT:
+ * - Roles array state from API response
+ * - Loading state for API call feedback
+ * - Search text state for real-time filtering
+ * - Navigation state via React Router hooks
+ * 
+ * DATA PROCESSING:
+ * - Real-time search filtering by role name (case-insensitive)
+ * - Status conversion from number (1/0) to display text (Active/Blocked)
+ * - Predefined roles protection logic
+ * - Serial number generation for table display
+ * 
+ * TABLE FEATURES:
+ * - Serial number column with automatic indexing
+ * - Role name column with sorting capability
+ * - Status column with colored tag visualization
+ * - Actions column with conditional delete button
+ * - Custom empty state message
+ * - Loading spinner overlay during data operations
+ * 
+ * ROLE PROTECTION:
+ * - Predefined roles (maker, HO_Checker, HO_Manager) cannot be deleted
+ * - Edit functionality available for all roles
+ * - System role integrity preservation
+ * 
+ * ROLE-BASED ACCESS:
+ * - Typically restricted to Admin roles
+ * - Critical for system role management and user assignment
+ * - Supports organizational structure definition and maintenance
+ * 
+ * USAGE: Administrative role management page for viewing and managing system roles
+ */
+
 import React, { useState, useEffect } from "react";
 import {
   Layout,

@@ -1,3 +1,60 @@
+/**
+ * KYC MANAGER REJECTED TABLE COMPONENT
+ * 
+ * PURPOSE:
+ * Manager interface for viewing and managing rejected KYC requests with date filtering,
+ * pagination, and comprehensive oversight capabilities. Provides detailed access to
+ * rejected forms for analysis, review, and potential reassignment or correction.
+ * 
+ * FUNCTIONALITY:
+ * - Displays rejected KYC requests in paginated table format
+ * - Date-based filtering with month selection dropdown
+ * - Status-based action menus (view for rejected/approved, edit for pending)
+ * - View-only access for completed rejected requests (status 2/3)
+ * - HO assignment editing for pending requests (status 1)
+ * - Real-time data refresh with trigger-based re-fetching
+ * - Loading, empty, error, and success state management
+ * 
+ * API INTERACTIONS:
+ * - GET /makeForm/manager/rejected: Fetches rejected requests with pagination
+ *   * date: Selected month filter
+ *   * pageNumber, pageSize: Pagination parameters
+ * - Uses AuthContext for user identification and access control
+ * - Automatic error handling with state management
+ * 
+ * USER INTERACTIONS:
+ * - Date dropdown for month-based filtering
+ * - Action dropdown menus with view and edit options
+ * - View modal for detailed KYC form inspection with rejection reasons
+ * - Manager edit modal for HO assignment modification (if applicable)
+ * - Pagination controls for large datasets
+ * - Loading states during API operations
+ * 
+ * STATE MANAGEMENT:
+ * - Make requests state with pageable return structure
+ * - Modal states for view and edit operations
+ * - Selected modal data for form operations
+ * - Page size and number for pagination control
+ * - Date state for filtering with default current month
+ * - Component state (loading/empty/success/error)
+ * - Trigger state for forcing data refresh
+ * 
+ * TABLE FEATURES:
+ * - Maker name column display
+ * - Status-based action column with conditional rendering
+ * - Integrated with RequestTables helper component
+ * - Pagination with customizable page sizes
+ * - Total count display from API response
+ * 
+ * ROLE-BASED ACCESS:
+ * - Manager role required for access
+ * - Provides oversight of rejected KYC processing pipeline
+ * - Critical for quality assurance and process improvement
+ * - Supports analysis of rejection patterns and training needs
+ * 
+ * USAGE: Manager dashboard page for rejected KYC request analysis and management
+ */
+
 import { Flex, MenuProps, Spin, Table, TableColumnsType } from "antd";
 import RequestTables from "../Helper/Table/RequestTables";
 import { useContext, useEffect, useState } from "react";

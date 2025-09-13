@@ -1,3 +1,40 @@
+/**
+ * CHECKER APPROVED TABLE COMPONENT
+ * 
+ * TYPE: Page Component (Checker Role)
+ * PURPOSE: Displays a paginated table of approved KYC forms assigned to the current Head Office (HO) user
+ * 
+ * FUNCTIONALITY:
+ * - Fetches approved KYC forms from /makeForm/getHo/approved endpoint
+ * - Provides date filtering for approved requests
+ * - Shows different action menus based on form status:
+ *   - Status 1 (pending): Edit and View actions
+ *   - Status 2/3 (approved/rejected): View only
+ * - Supports pagination with configurable page size
+ * - Real-time updates via trigger state changes
+ * 
+ * DATA FETCHING:
+ * - API: GET /makeForm/getHo/approved
+ * - Parameters: hoUserId, date, pageNumber, pageSize
+ * - Returns: pageableReturn with makes array and total count
+ * - Uses manual useEffect with dependency array for data fetching
+ * 
+ * USER INTERACTIONS:
+ * - Date selection via DateDropDown component
+ * - Action dropdown menus (view/edit) per table row
+ * - Modal interactions for viewing and editing forms
+ * - Pagination controls for navigating through results
+ * 
+ * LIFECYCLE:
+ * - Mounts with loading state
+ * - Fetches data on mount and when dependencies change
+ * - Updates state based on API response (empty/success/error)
+ * - Re-renders when trigger, date, user, or pagination changes
+ * 
+ * ROLE PERMISSIONS: Checker/HO users only
+ * ROUTING: Accessed via /checkerApprovedTable route
+ */
+
 import { Flex, MenuProps, message, Spin, Table, TableColumnsType } from "antd";
 import RequestTables from "../Helper/Table/RequestTables";
 import { useContext, useEffect, useState } from "react";

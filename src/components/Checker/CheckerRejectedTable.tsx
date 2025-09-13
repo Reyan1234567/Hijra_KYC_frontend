@@ -1,3 +1,50 @@
+/**
+ * CHECKER REJECTED TABLE COMPONENT
+ * 
+ * TYPE: Page Component (Checker Role)
+ * PURPOSE: Displays KYC forms that have been rejected by the current checker
+ * 
+ * FUNCTIONALITY:
+ * - Fetches rejected KYC forms assigned to the current Head Office (HO) user
+ * - Provides date filtering for rejected requests (defaults to current month)
+ * - Status-based action menus:
+ *   - Status 3 (rejected): View only (no edit capability)
+ *   - Status 1 (pending): View and Edit actions (should not appear in rejected list)
+ * - Pagination support with configurable page size
+ * - Real-time updates via trigger mechanism
+ * - Loading, empty, error, and success states
+ * 
+ * DATA FETCHING:
+ * - API: GET /makeForm/getHo/rejected - fetches KYC forms assigned to HO user with status 3 (rejected)
+ * - Parameters: hoUserId (current user), date (filter), pageNumber, pageSize
+ * - Returns: pageableReturn with makes array and total count
+ * - Refetches on trigger, date, user, or pagination changes
+ * 
+ * USER INTERACTIONS:
+ * - Date selection via DateDropDown component
+ * - Action dropdown menus per table row (view only for rejected forms)
+ * - Modal interactions:
+ *   - ViewModal: Read-only form details with rejection reason
+ *   - CheckerEditModal: Not typically used for rejected forms
+ * - Pagination controls for navigating through results
+ * 
+ * STATE MANAGEMENT:
+ * - trigger: number - forces re-fetch when incremented
+ * - viewModal/editModal: boolean - controls modal visibility
+ * - modal: allTableDataType - stores selected row data for modals
+ * - makeRequests: pageableReturn - stores fetched data and total count
+ * - state: loading/empty/success/error - manages UI state
+ * 
+ * LIFECYCLE:
+ * - Mounts with loading state and current month date
+ * - Fetches rejected forms on mount and dependency changes
+ * - Updates state based on API response
+ * - Provides historical view of rejected forms
+ * 
+ * ROLE PERMISSIONS: Checker/HO users only
+ * ROUTING: Accessed via /checkerRejectedTable route
+ */
+
 import { Flex, MenuProps, message, Spin, Table, TableColumnsType } from "antd";
 import RequestTables from "../Helper/Table/RequestTables";
 import { useContext, useEffect, useState } from "react";

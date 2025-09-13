@@ -1,3 +1,42 @@
+/**
+ * FULL LAYOUT COMPONENT
+ * 
+ * TYPE: Layout Component (Main Application Shell)
+ * PURPOSE: Provides the main authenticated application layout with sidebar, header, content area, and messaging
+ * 
+ * FUNCTIONALITY:
+ * - Main application layout with Ant Design Layout components
+ * - Collapsible sidebar with logo and navigation menu (SidebarMenu component)
+ * - Header with bank branding, user dropdown, and message notifications
+ * - Role-based menu overlay for HO_Manager users with quick access buttons
+ * - Content area with lazy-loaded routes using React Router
+ * - Message drawer system with real-time notifications
+ * - Dual drawer setup: main messages list and individual chat view
+ * - Footer with bank branding and copyright
+ * 
+ * DATA FETCHING:
+ * - Uses React Query client for cache management
+ * - Invalidates notification queries when message drawer closes
+ * - Message count from AuthContext for badge display
+ * 
+ * USER INTERACTIONS:
+ * - Sidebar navigation via SidebarMenu component
+ * - User dropdown with profile and logout options
+ * - Message badge click opens messages drawer
+ * - HO_Manager menu overlay with categorized admin functions
+ * - Route-based content rendering with protection
+ * - Logout functionality with API call and navigation
+ * 
+ * LIFECYCLE:
+ * - Mounts with layout structure
+ * - Manages drawer states for messaging system
+ * - Handles responsive sidebar collapse
+ * - Suspense fallback for lazy-loaded routes
+ * 
+ * ROLE PERMISSIONS: All authenticated users (layout adapts based on role)
+ * ROUTING: Container for all authenticated routes
+ */
+
 import { Suspense, useContext, useState } from "react";
 import {
   Avatar,

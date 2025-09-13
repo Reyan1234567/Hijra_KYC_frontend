@@ -1,3 +1,33 @@
+/*
+ * HIJRA KYC FRONTEND - AUTHENTICATION SERVICE
+ * 
+ * FILE TYPE: Service/API Layer
+ * PURPOSE: Handles user authentication and session logging
+ * 
+ * FUNCTIONALITY:
+ * - User login with credentials
+ * - Login/logout activity logging
+ * - Token management integration
+ * 
+ * API ENDPOINTS USED:
+ * - POST /auth/login - User authentication
+ * - POST /api/system-logs/add-new-login-log - Log user login
+ * - POST /api/system-logs/add-new-logout-log - Log user logout
+ * 
+ * EXPORTED FUNCTIONS:
+ * - loginFetch: Authenticates user and returns tokens + user info
+ * - loginLog: Records login activity for audit trail
+ * - logOutLog: Records logout activity for audit trail
+ * 
+ * DATA FLOW:
+ * 1. loginFetch called with username/password
+ * 2. Returns userInfo, accessToken, refreshToken
+ * 3. Used by AuthProvider for login process
+ * 4. Login/logout logs called for audit tracking
+ * 
+ * USED BY: AuthProvider.tsx for authentication flow
+ */
+
 import { LoginRequest } from "../types/LoginRequest";
 import { userInfo } from "../types/ContextFiles";
 import axios from "axios";

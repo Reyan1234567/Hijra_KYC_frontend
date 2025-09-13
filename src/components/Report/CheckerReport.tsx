@@ -1,5 +1,73 @@
+/**
+ * CHECKER REPORT COMPONENT
+ * 
+ * TYPE: Page Component (Manager/Admin Role)
+ * PURPOSE: Comprehensive reporting interface for checker performance and KYC processing statistics
+ * 
+ * FUNCTIONALITY:
+ * - Date range-based report generation for checker activities
+ * - Aggregated statistics by checker username (Pending, Approved, Rejected, Total)
+ * - Excel and PDF export capabilities
+ * - Summary statistics with totals row
+ * - Robust data parsing with multiple field name variations
+ * - Status code normalization and mapping
+ * - Loading states and error handling with authentication retry
+ * 
+ * API INTERACTIONS:
+ * - GET /api/checker-report: Fetches checker performance data by date range
+ * - Parameters: fromDate, toDate (YYYY-MM-DD format)
+ * - Bearer token authentication with automatic logout on 401
+ * - Handles both aggregated and raw data formats from backend
+ * 
+ * USER INTERACTIONS:
+ * - Date range picker (required field) for report period selection
+ * - Search button to generate report with loading state
+ * - Export buttons for Excel and PDF downloads
+ * - Paginated table view with summary row
+ * - Statistics cards showing totals for each status
+ * 
+ * STATE MANAGEMENT:
+ * - reportData: Array of CheckerReportDto with username and counts
+ * - totals: Aggregated totals across all checkers
+ * - loading: Form submission and API call state
+ * - Form state managed by Ant Design Form hooks
+ * 
+ * DATA PROCESSING:
+ * - Flexible field name mapping for different backend response formats
+ * - Status normalization (string/numeric to standard categories)
+ * - Automatic aggregation when raw transaction data is received
+ * - Number formatting with locale-specific separators
+ * - Robust error handling for malformed data
+ * 
+ * EXPORT FEATURES:
+ * - Excel export using XLSX library with timestamped filenames
+ * - PDF export using jsPDF with autoTable for formatted tables
+ * - Data validation before export (prevents empty exports)
+ * - Consistent column headers across export formats
+ * 
+ * STATUS MAPPING:
+ * - Pending: status = 1 or contains "pending"
+ * - Approved: status = 2 or contains "approve"
+ * - Rejected: status = 3 or contains "reject"
+ * - Unknown statuses default to Pending category
+ * 
+ * TABLE FEATURES:
+ * - Index column with auto-numbering
+ * - Username, Pending, Approved, Rejected, Total columns
+ * - Number formatting with toLocaleString()
+ * - Summary row with totals
+ * - Horizontal scroll for responsive design
+ * - 10 items per page pagination
+ * 
+ * ROLE-BASED ACCESS:
+ * - Typically restricted to Manager/Admin roles
+ * - Provides oversight of checker performance
+ * - Critical for KYC processing monitoring and quality assurance
+ * 
+ * USAGE: Standalone reporting page for checker performance analysis and export
+ */
 
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Card,
   Form,
