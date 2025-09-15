@@ -3,6 +3,7 @@
  * 
  * TYPE: Helper Component (All Roles)
  * PURPOSE: Comprehensive KYC form information display with images and rejection reasons
+ * CALLS: MakeInfo, BackReason
  * 
  * FUNCTIONALITY:
  * - Combines MakeInfo, image gallery, and BackReason components
@@ -29,10 +30,17 @@
  * - Bordered containers for visual separation
  * - Centered alignment for professional appearance
  * 
+ * USED BY:
+ * - ViewModal: Primary content component for all view modals
+ * - CheckerEditModal: Display form info in edit modals
+ * - ManagerEdit: Manager edit modal content
+ * - ManagerView: Manager view modal content
+ *
  * USAGE:
- * - Primary component for ViewModal content
+ * - Primary component for ViewModal content across all roles
  * - Used in form detail views across different roles
  * - Combines multiple helper components for complete form display
+ * - Central component that orchestrates MakeInfo, images, and BackReason display
  * 
  * ROLE-BASED ACCESS:
  * - Visible to all roles for form viewing

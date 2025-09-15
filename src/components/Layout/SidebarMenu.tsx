@@ -7,7 +7,7 @@
  * FUNCTIONALITY:
  * - Role-based menu rendering (Maker, Checker, Manager, District)
  * - Real-time notification badges for pending/rejected counts
- * - Automatic data fetching with React Query (1-minute intervals)
+ * - Automatic data fetching with React Query
  * - Navigation handling with React Router
  * - Dynamic menu items based on user permissions
  * - Badge counts for rejected forms (makers) and pending forms (checkers)
@@ -17,18 +17,17 @@
  * - API: GET /makeForm/getPending - gets pending count for badges  
  * - API: GET /message/unread - gets unread message count
  * - Updates AuthContext state with notification counts
- * - Refetches every 60 seconds for real-time updates
  * 
  * USER INTERACTIONS:
  * - Menu item clicks navigate to corresponding routes
  * - Expandable menu groups (Make Form, Check Form, etc.)
- * - Badge indicators show notification counts
+ * - Badge indicators show notification counts rejected amount for a maker and pending amount for a checker
  * - Role-specific menu visibility
  * 
  * ROLE MENUS:
  * - Maker: Dashboard, Make Form (with sub-items), Search
  * - Checker: Dashboard, Check Form (with sub-items), Search
- * - Manager: Dashboard, KYC Manager, Attendance, Distribute, Search, Reports
+ * - Manager: Dashboard, KYC Manager, Attendance, Distribute, Search, Reports(with sub-items)
  * - District: Dashboard, Reports (Summary only)
  * 
  * LIFECYCLE:
@@ -84,7 +83,6 @@ const SidebarMenu = () => {
       const res = await api.get("/message/unread");
       USER?.setMessageCount(res?.data);
     },
-    refetchInterval: 1000 * 60,
   });
 
   // --- Define menus ---

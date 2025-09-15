@@ -10,12 +10,15 @@
  * - Header with bank branding, user dropdown, and message notifications
  * - Role-based menu overlay for HO_Manager users with quick access buttons
  * - Content area with lazy-loaded routes using React Router
- * - Message drawer system with real-time notifications
- * - Dual drawer setup: main messages list and individual chat view
- * - Footer with bank branding and copyright
+ * - Message drawer system with real-time notifications and dual drawer setup
+ * - MessagesPage: First drawer with contact list with search, unread counts, and user selection
+ * - MessagesView: Second drawer with chat interface with message history and send functionality
  * 
  * DATA FETCHING:
- * - Uses React Query client for cache management
+ * - Uses React Query client for cache management — related to updating unread Messages,
+ *      if the unread message is now read, which happens when the message's drawer is opened, 
+ *      the notification queries (these include all notification counts(unreadMessages, rejectedCount/pendingCount)) are invalidated
+ *      they are first called in the sideBarMenu component, then refetched on reload or tab-switch
  * - Invalidates notification queries when message drawer closes
  * - Message count from AuthContext for badge display
  * 
@@ -73,11 +76,9 @@ import MessagesPage from "../Message/MessagesPage.tsx";
 import SidebarMenu from "./SidebarMenu.tsx";
 import { useNavigate } from "react-router-dom";
 import MessagesView, { messages } from "../Message/MessagesView.tsx";
-import LoginForm from "../LoginForm.tsx";
 import ProtectionRoute from "../../ProtectionRoute.tsx";
 import { Logout } from "../../services/axios.ts";
 import { AuthContext } from "../../context/AuthContext.tsx";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import useMessage from "antd/es/message/useMessage";
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -91,7 +92,6 @@ interface MenuItemType {
 }
 
 const FullLayout = () => {
-  const pathName = window.location.pathname;
   const USER = useContext(AuthContext);
   const navigate = useNavigate();
   const [_, contextHolder]=useMessage()

@@ -55,7 +55,7 @@
  * USAGE: Manager dashboard page for pending KYC request management and HO assignment
  */
 
-import { Flex, MenuProps, Spin, Table, TableColumnsType } from "antd";
+import { Flex, MenuProps, Spin, Table, TableColumnsType, message } from "antd";
 import RequestTables from "../Helper/Table/RequestTables";
 import { useContext, useEffect, useState } from "react";
 import { api } from "../../services/axios";
@@ -68,7 +68,7 @@ import { AuthContext } from "../../context/AuthContext";
 import ManagerEdit from "./ManagerEdit";
 
 const KycManagerPendingTable = () => {
-  // const [ /*messageApi*/ contextHolder] = message.useMessage();
+  const [messageApi, contextHolder] = message.useMessage();
   const today = new Date();
   const [trigger, setTrigger] = useState(0);
   const [viewModal, setViewModal] = useState(false);
@@ -135,18 +135,7 @@ const KycManagerPendingTable = () => {
     getRequestsAssignedToMe();
   }, [trigger, date, USER?.user?.userId, pageNumber, pageSize]);
 
-  const view: MenuProps["items"] = [
-    {
-      label: "view",
-      key: "1",
-      icon: <EyeOutlined />,
-      onClick: () => {
-        setViewModal(true);
-      },
-    },
-  ];
-
-  const assign: MenuProps["items"] = [
+  const pendingActions: MenuProps["items"] = [
     {
       label: "view",
       key: "1",
@@ -172,30 +161,17 @@ const KycManagerPendingTable = () => {
     {
       title: "Action",
       dataIndex: "status",
-      render: (status: number, row: allTableDataType) => {
-        if (status === 3 || status === 2) {
-          return (
-            <Flex justify="center">
-              <DropDown
-                menu={view}
-                onChange={() => {
-                  setModal(row);
-                }}
-              />
-            </Flex>
-          );
-        } else if (status === 1) {
-          return (
-            <Flex justify="center">
-              <DropDown
-                menu={assign}
-                onChange={() => {
-                  setModal(row);
-                }}
-              />
-            </Flex>
-          );
-        }
+      render: (_, row: allTableDataType) => {
+        return (
+          <Flex justify="center">
+            <DropDown
+              menu={pendingActions}
+              onChange={() => {
+                setModal(row);
+              }}
+            />
+          </Flex>
+        );
       },
     },
   ];
@@ -226,7 +202,7 @@ const KycManagerPendingTable = () => {
       {state === "error" && <p>Something wrong happened</p>}
       {state === "success" && (
         <>
-          {/* {contextHolder} */}
+          {contextHolder}
           <div
             style={{
               display: "flex",
@@ -250,6 +226,7 @@ const KycManagerPendingTable = () => {
             open={editModal}
             onCancel={() => setEditModal(false)}
             triggerRender={() => setTrigger((prev) => prev + 1)}
+            messageApi={messageApi}
           />
           <ViewModal
             modal={modal}

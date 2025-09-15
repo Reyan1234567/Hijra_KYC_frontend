@@ -1,60 +1,34 @@
 /**
- * REJECTED MAKE FORM TABLE COMPONENT
+ * RejectedMakeFormTable - Manage rejected KYC forms for resubmission
  * 
- * TYPE: Page Component (Maker Role)
- * PURPOSE: Displays KYC forms that have been rejected by checkers, allowing makers to edit and resubmit
+ * Displays rejected KYC forms with edit and resubmission functionality.
  * 
  * FUNCTIONALITY:
- * - Fetches rejected KYC forms (status 3) created by the current maker
- * - Provides date filtering for rejected requests (defaults to current month)
- * - Status-based action menus:
- *   - Status 0 (draft): Edit, View, Send to HO actions
- *   - Status 3 (rejected): View, Edit actions for resubmission
- *   - Other statuses: View only
- * - Dual submission methods:
- *   - Action dropdown menu with "Send to HO" option
- *   - Dedicated "Send to HO" column with confirmation popover
- * - Pagination support with React Query caching
- * - Real-time data updates via React Query mutations
+ * - Fetches rejected KYC forms via getRejectedMakes API
+ * - Date filtering (defaults to current month)
+ * - Unified actions for all rows: View and Edit
+ * - Dedicated "Send to HO" column with confirmation popover
+ * - Pagination with React Query caching
  * 
- * DATA FETCHING:
- * - API: GET /makeForm/getRejected - fetches rejected KYC forms by maker with status 3
- * - Service: getRejectedMakes(date, userId, pageSize, pageNumber)
- * - Parameters: date (filter), makerId (current user), pageSize, pageNumber
+ * DATA FLOW:
+ * - API: GET /makeForm/getRejected → getRejectedMakes(date, userId, pageSize, pageNumber)
+ * - Mutation: PUT /makeForm/sendToHo/{id} → resubmits form (status 3 → 1)
  * - Returns: pageableReturn with makes array and total count
- * - Uses React Query with cache key ["makes", date, pageNumber, pageSize]
+ * - Query key: ["makes", date, pageNumber, pageSize]
+ * - Invalidates ["makes"] and ["notifications"] on successful resubmission
  * 
- * DATA MUTATIONS:
- * - API: PUT /makeForm/sendToHo/{id} - resubmits edited form to Head Office (status 3 → 1)
- * - Service: sendToHo(id) - changes form status from rejected to pending
- * - Invalidates both ["makes"] and ["notifications"] queries on success
- * - Updates notification badges in sidebar automatically
- * 
- * USER INTERACTIONS:
- * - Date selection via DateDropDown component
- * - Status-specific action dropdown menus per table row
- * - Confirmation popover for "Send to HO" actions to prevent accidental submissions
- * - Modal interactions:
- *   - ViewModal: Read-only form details display with rejection reason
- *   - EditModal: Edit form details and images before resubmission
- * - Pagination controls for navigating through results
- * 
- * STATE MANAGEMENT:
- * - modal: allTableDataType - stores selected row data for modals and mutations
- * - isModalOpen: boolean - controls ViewModal visibility
- * - editModal: boolean - controls EditModal visibility
+ * STATE:
+ * - modal: allTableDataType - selected row data for modals and mutations
+ * - isModalOpen: boolean - ViewModal visibility
+ * - editModal: boolean - EditModal visibility  
+ * - date: Date - filter for rejected requests
  * - pageSize/pageNumber: pagination state
- * - Uses React Query for data fetching, caching, and mutations
  * 
- * LIFECYCLE:
- * - Mounts with current month date filter
- * - React Query handles data fetching, caching, and refetching
- * - Updates automatically when date or pagination changes
- * - Mutations trigger cache invalidation and UI updates
- * - Console logging for debugging modal state in popover interactions
- * 
- * ROLE PERMISSIONS: Maker users only
- * ROUTING: Accessed via /rejectedMakeFormTable route
+ * INTERACTIONS:
+ * - Date selection via DateDropDown
+ * - Actions dropdown: View (ViewModal) and Edit (EditModal)
+ * - Send to HO column: Popconfirm → sendToHoMutation
+ * - Console logging for debugging modal state
  */
 
 import { useContext, useState } from "react";
@@ -117,43 +91,6 @@ const RejectedMakeFormTable = () => {
     new Date(today.setMonth(today.getMonth(), 1))
   );
   date.setHours(0, 0, 0, 0);
-  const view: MenuProps["items"] = [
-    {
-      label: "View",
-      key: "1",
-      icon: <EyeOutlined />,
-      onClick: () => {
-        setIsModalOpen(true);
-      },
-    },
-  ];
-
-  const draft: MenuProps["items"] = [
-    {
-      label: "Edit",
-      key: "1",
-      icon: <EditOutlined />,
-      onClick: () => {
-        setEditModal(true);
-      },
-    },
-    {
-      label: "View",
-      key: "2",
-      icon: <EyeOutlined />,
-      onClick: () => {
-        setIsModalOpen(true);
-      },
-    },
-    {
-      label: "Send to HO",
-      key: "3",
-      icon: <SendOutlined />,
-      onClick: () => {
-        sendToHoMutation.mutate(modal.id);
-      },
-    },
-  ];
 
   const rejected: MenuProps["items"] = [
     {
@@ -197,26 +134,12 @@ const RejectedMakeFormTable = () => {
     {
       title: "Actions",
       dataIndex: "status",
-      render: (status: number, row: allTableDataType) => {
-        if (status === 0) {
-          return (
-            <Flex justify="center" align="center">
-              <DropDown menu={draft} onChange={() => setModal(row)} />
-            </Flex>
-          );
-        } else if (status === 3) {
+      render: (_, row: allTableDataType) => {
           return (
             <Flex justify="center" align="center">
               <DropDown menu={rejected} onChange={() => setModal(row)} />
             </Flex>
           );
-        } else {
-          return (
-            <Flex justify="center" align="center">
-              <DropDown menu={view} onChange={() => setModal(row)} />
-            </Flex>
-          );
-        }
       },
     },
     {

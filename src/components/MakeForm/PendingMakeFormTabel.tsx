@@ -1,80 +1,45 @@
 /**
- * PENDING MAKE FORM TABLE COMPONENT
+ * PendingMakeFormTable - Read-only display of pending KYC forms
  * 
- * TYPE: Page Component (Maker Role)
- * PURPOSE: Displays KYC forms in pending status (submitted to HO but not yet processed)
+ * Displays pending KYC forms created by current maker with view-only functionality.
  * 
  * FUNCTIONALITY:
- * - Fetches pending KYC forms (status 1) created by the current maker
- * - Provides date filtering for pending requests (defaults to current month)
- * - Status-based action menus:
- *   - Status 0 (draft): Edit, View, Send to HO actions
- *   - Status 1 (pending): View only (awaiting HO processing)
- *   - Status 3 (rejected): View, Add to drafts (for resubmission)
- * - Pagination support with React Query caching
- * - Real-time data updates via React Query mutations
+ * - Fetches pending KYC forms via getPendingMakes API
+ * - Date filtering (defaults to current month)
+ * - Single action: View form details in modal
+ * - Pagination with React Query caching
  * 
- * DATA FETCHING:
- * - API: GET /makeForm/getPending - fetches pending KYC forms by maker with status 1
- * - Service: getPendingMakes(date, userId, pageSize, pageNumber)
- * - Parameters: date (filter), makerId (current user), pageSize, pageNumber
+ * DATA FLOW:
+ * - API: GET /makeForm/getPending → getPendingMakes(date, userId, pageSize, pageNumber)
  * - Returns: pageableReturn with makes array and total count
- * - Uses React Query with cache key ["makes", date, pageNumber, pageSize]
+ * - Query key: ["makes", date, pageNumber, pageSize]
  * 
- * DATA MUTATIONS:
- * - API: PUT /makeForm/sendToHo/{id} - submits form to Head Office (status 0 → 1)
- * - API: PUT /makeForm/addToDrafts/{id} - moves rejected form back to drafts (status 3 → 0)
- * - Service: sendToHo(id) - changes form status from draft to pending
- * - Service: addToDrafts(id) - changes rejected form back to draft for editing
- * - Invalidates React Query cache on success to refresh data
- * 
- * USER INTERACTIONS:
- * - Date selection via DateDropDown component
- * - Status-specific action dropdown menus per table row
- * - Modal interactions:
- *   - ViewModal: Read-only form details display
- *   - EditModal: Edit form details and images (for drafts only)
- * - Pagination controls for navigating through results
- * 
- * STATE MANAGEMENT:
- * - modal: allTableDataType - stores selected row data for modals
- * - isModalOpen: boolean - controls ViewModal visibility
- * - editModal: boolean - controls EditModal visibility
+ * STATE:
+ * - modal: allTableDataType - selected row data for ViewModal
+ * - isModalOpen: boolean - ViewModal visibility
+ * - date: Date - filter for pending requests
  * - pageSize/pageNumber: pagination state
- * - Uses React Query for data fetching, caching, and mutations
  * 
- * LIFECYCLE:
- * - Mounts with current month date filter
- * - React Query handles data fetching, caching, and refetching
- * - Updates automatically when date or pagination changes
- * - Mutations trigger cache invalidation and UI updates
- * 
- * ROLE PERMISSIONS: Maker users only
- * ROUTING: Accessed via /pendingMakeFormTable route
+ * INTERACTIONS:
+ * - Date selection via DateDropDown
+ * - View action opens ViewModal with form details
+ * - Pagination controls for navigation
  */
 
 import { useContext, useState } from "react";
-import { Flex, message, Spin, Table } from "antd";
-import type { MenuProps, TableColumnsType, TabsProps } from "antd";
+import { Flex, Spin, Table } from "antd";
+import type { MenuProps, TableColumnsType } from "antd";
 import DateDropDown from "../Helper/DateDropdown/DateDropDown";
 import {
-  EditOutlined,
   EyeOutlined,
-  FileTextOutlined,
-  SendOutlined,
 } from "@ant-design/icons";
-
-import EditModal from "./EditModal";
 import ViewModal from "../Helper/RequestModals/ViewModal";
 import DropDown from "../Helper/DateDropdown/DropDown";
 import RequestTables from "../Helper/Table/RequestTables";
 import {
-  addToDrafts,
-  getMakes,
   getPendingMakes,
-  sendToHo,
 } from "../../services/MakeForm";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { AuthContext } from "../../context/AuthContext";
 
 export interface imageReturn {
@@ -115,10 +80,7 @@ export interface pageableReturn {
   total: number;
 }
 const PendingMakeFormTable = () => {
-  const queryClient = useQueryClient();
   const today = new Date();
-  const [messageApi, contextHolder] = message.useMessage();
-  const [editModal, setEditModal] = useState(false);
   const [date, setDate] = useState(
     new Date(today.setMonth(today.getMonth(), 1))
   );
@@ -130,52 +92,6 @@ const PendingMakeFormTable = () => {
       icon: <EyeOutlined />,
       onClick: () => {
         setIsModalOpen(true);
-      },
-    },
-  ];
-
-  const draft: MenuProps["items"] = [
-    {
-      label: "Edit",
-      key: "1",
-      icon: <EditOutlined />,
-      onClick: () => {
-        setEditModal(true);
-      },
-    },
-    {
-      label: "View",
-      key: "2",
-      icon: <EyeOutlined />,
-      onClick: () => {
-        setIsModalOpen(true);
-      },
-    },
-    {
-      label: "Send to HO",
-      key: "3",
-      icon: <SendOutlined />,
-      onClick: () => {
-        sendToHoMutation.mutate(modal.id);
-      },
-    },
-  ];
-
-  const rejected: MenuProps["items"] = [
-    {
-      label: "View",
-      key: "1",
-      icon: <EyeOutlined />,
-      onClick: () => {
-        setIsModalOpen(true);
-      },
-    },
-    {
-      label: "Add to drafts",
-      key: "2",
-      icon: <FileTextOutlined />,
-      onClick: async () => {
-        addToDraftsMutation.mutate(modal.id);
       },
     },
   ];
@@ -203,33 +119,18 @@ const PendingMakeFormTable = () => {
     {
       title: "Actions",
       dataIndex: "status",
-      render: (status: number, row: allTableDataType) => {
-        if (status === 0) {
-          return (
-            <Flex justify="center" align="center">
-              <DropDown menu={draft} onChange={() => setModal(row)} />
-            </Flex>
-          );
-        } else if (status === 3) {
-          return (
-            <Flex justify="center" align="center">
-              <DropDown menu={rejected} onChange={() => setModal(row)} />
-            </Flex>
-          );
-        } else {
+      render: (_, row: allTableDataType) => {
           return (
             <Flex justify="center" align="center">
               <DropDown menu={view} onChange={() => setModal(row)} />
             </Flex>
           );
-        }
       },
     },
   ];
 
   const handleCancel = () => {
     setIsModalOpen(false);
-    setEditModal(false);
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -244,40 +145,6 @@ const PendingMakeFormTable = () => {
     queryKey: ["makes", date, pageNumber, pageSize],
     queryFn: () =>
       getPendingMakes(date, USER?.user?.userId, pageSize, pageNumber),
-  });
-
-  const sendToHoMutation = useMutation({
-    mutationFn: (id: number) => sendToHo(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["makes"] });
-      messageApi.open({
-        type: "success",
-        content: "Successfully sent to Ho",
-      });
-    },
-    onError: (error) => {
-      messageApi.open({
-        type: "error",
-        content: e?.response.data ?? "Something went wrong",
-      });
-    },
-  });
-
-  const addToDraftsMutation = useMutation({
-    mutationFn: (id: number) => addToDrafts(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["makes"] });
-      messageApi.open({
-        type: "success",
-        content: "Successfully added to drafts",
-      });
-    },
-    onError: (error) => {
-      messageApi.open({
-        type: "error",
-        content: e?.response.data ?? "Something went wrong",
-      });
-    },
   });
 
   if (isLoading) {
@@ -298,7 +165,6 @@ const PendingMakeFormTable = () => {
   if (isSuccess && data.data.makes.length === 0) {
     return (
       <>
-        {contextHolder}
         <div
           style={{
             display: "flex",
@@ -318,7 +184,6 @@ const PendingMakeFormTable = () => {
 
   return (
     <>
-      {contextHolder}
       <div
         style={{
           display: "flex",
@@ -344,14 +209,6 @@ const PendingMakeFormTable = () => {
         handleCancel={handleCancel}
         isModalOpen={isModalOpen}
         modal={modal}
-      />
-      <EditModal
-        handleCancel={handleCancel}
-        editModal={editModal}
-        modal={modal}
-        editModalOff={() => {
-          setEditModal(false);
-        }}
       />
     </>
   );

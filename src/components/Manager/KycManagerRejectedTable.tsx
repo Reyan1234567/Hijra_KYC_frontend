@@ -62,17 +62,15 @@ import { api } from "../../services/axios";
 import DateDropDown from "../Helper/DateDropdown/DateDropDown";
 import { allTableDataType, pageableReturn } from "../MakeForm/AllMakeFormTable";
 import DropDown from "../Helper/DateDropdown/DropDown";
-import { BookOutlined, EyeOutlined } from "@ant-design/icons";
+import { EyeOutlined } from "@ant-design/icons";
 import ViewModal from "../Helper/RequestModals/ViewModal";
 import { AuthContext } from "../../context/AuthContext";
-import ManagerEdit from "./ManagerEdit";
 
 const KycManagerRejectedTable = () => {
   // const [ /*messageApi*/ contextHolder] = message.useMessage();
   const today = new Date();
   const [trigger, setTrigger] = useState(0);
   const [viewModal, setViewModal] = useState(false);
-  const [editModal, setEditModal] = useState(false);
   const [date, setDate] = useState(
     new Date(today.setMonth(today.getMonth(), 1))
   );
@@ -135,32 +133,13 @@ const KycManagerRejectedTable = () => {
     getRequestsAssignedToMe();
   }, [trigger, date, USER?.user?.userId, pageNumber, pageSize]);
 
-  const view: MenuProps["items"] = [
+  const rejectedActions: MenuProps["items"] = [
     {
       label: "view",
       key: "1",
       icon: <EyeOutlined />,
       onClick: () => {
         setViewModal(true);
-      },
-    },
-  ];
-
-  const assign: MenuProps["items"] = [
-    {
-      label: "view",
-      key: "1",
-      icon: <EyeOutlined />,
-      onClick: () => {
-        setViewModal(true);
-      },
-    },
-    {
-      label: "Edit HO Assignment",
-      key: "2",
-      icon: <BookOutlined />,
-      onClick: () => {
-        setEditModal(true);
       },
     },
   ];
@@ -172,30 +151,18 @@ const KycManagerRejectedTable = () => {
     {
       title: "Action",
       dataIndex: "status",
-      render: (status: number, row: allTableDataType) => {
-        if (status === 3 || status === 2) {
-          return (
-            <Flex justify="center">
-              <DropDown
-                menu={view}
-                onChange={() => {
-                  setModal(row);
-                }}
-              />
-            </Flex>
-          );
-        } else if (status === 1) {
-          return (
-            <Flex justify="center">
-              <DropDown
-                menu={assign}
-                onChange={() => {
-                  setModal(row);
-                }}
-              />
-            </Flex>
-          );
-        }
+      render: (_, row: allTableDataType) => {
+        // Only status 3 (rejected) forms are fetched, so we can simplify this
+        return (
+          <Flex justify="center">
+            <DropDown
+              menu={rejectedActions}
+              onChange={() => {
+                setModal(row);
+              }}
+            />
+          </Flex>
+        );
       },
     },
   ];
@@ -245,12 +212,6 @@ const KycManagerRejectedTable = () => {
             total={makeRequests.total} 
             onChange={onchange}        
             />
-          <ManagerEdit
-            modal={modal}
-            open={editModal}
-            onCancel={() => setEditModal(false)}
-            triggerRender={() => setTrigger((prev) => prev + 1)}
-          />
           <ViewModal
             modal={modal}
             isModalOpen={viewModal}

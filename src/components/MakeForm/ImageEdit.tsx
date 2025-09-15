@@ -26,11 +26,41 @@
  * - Delete button with confirmation dialog
  * - Real-time description editing with local state management
  * 
- * STATE MANAGEMENT:
- * - Images: imageReturn[] - local copy of images for optimistic updates
- * - Syncs with parent props via useEffect when images.images changes
- * - Uses React Query mutations for server operations
- * - Local state updates immediately, server sync follows
+ * STATE MANAGEMENT ARCHITECTURE:
+ * 
+ * 1. PROP-DRIVEN STATE (Parent → Child):
+ *    - images.images: imageReturn[] - Source of truth from parent component
+ *    - Contains: id, url, description, descriptionCopy fields
+ *    - Parent manages overall form state, child manages local editing
+ * 
+ * 2. LOCAL STATE (useState):
+ *    - Images: imageReturn[] - Local copy for optimistic UI updates
+ *    - Deep cloned via JSON.parse(JSON.stringify()) to prevent reference issues
+ *    - Updates immediately on user interaction (typing, delete)
+ *    - Independent of server state until mutation completes
+ * 
+ * 3. SYNCHRONIZATION MECHANISM (useEffect):
+ *    - Watches images.images prop changes
+ *    - Resets local state when parent prop updates
+ *    - Ensures child state stays in sync with parent after server operations
+ * 
+ * 4. SERVER STATE (React Query Mutations):
+ *    - editDescriptionMutation: Updates description on server
+ *    - dissassociationMutation: Deletes image association on server
+ *    - Invalidates ["makes"] query cache on success
+ *    - Triggers parent component re-fetch and prop update
+ * 
+ * 5. OPTIMISTIC UPDATE PATTERN:
+ *    - User action → Immediate local state update → Server mutation → Cache invalidation → Parent re-fetch
+ *    - UI responds instantly, server sync happens in background
+ *    - Error handling reverts optimistic changes if mutation fails
+ * 
+ * STATE FLOW EXAMPLE (Edit Description):
+ *    1. User types → onChange updates local Images state
+ *    2. Save button enabled when description !== descriptionCopy
+ *    3. User clicks save → Mutation sent to server
+ *    4. Success → descriptionCopy updated to match description
+ *    5. Cache invalidated → Parent refetches → Props update → useEffect syncs local state
  * 
  * LIFECYCLE:
  * - Receives images array as props from parent component

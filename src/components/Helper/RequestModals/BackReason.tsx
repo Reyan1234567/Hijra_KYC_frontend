@@ -3,6 +3,7 @@
  * 
  * TYPE: Helper Component (All Roles)
  * PURPOSE: Displays rejection reason for KYC forms in modal contexts
+ * CALLS: None (leaf component)
  * 
  * FUNCTIONALITY:
  * - Conditional rendering based on backReason presence
@@ -20,10 +21,15 @@
  * - Uses allTableDataType interface for type safety
  * - Conditional rendering prevents empty state display
  * 
+ * USED BY:
+ * - DisplayInfo: Embedded in form display to show rejection reasons
+ * - CheckerEditModal: Shows rejection reasons in edit modals
+ *
  * USAGE:
- * - Embedded in ViewModal and other form detail modals
+ * - Embedded in DisplayInfo and other form detail modals
  * - Shows rejection feedback from checkers to makers
  * - Part of the KYC form review and feedback system
+ * - Conditional component that only renders when backReason exists
  * 
  * ROLE-BASED ACCESS:
  * - Visible to all roles when viewing rejected forms

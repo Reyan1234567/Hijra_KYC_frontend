@@ -1,5 +1,5 @@
 /**
- * ALL MAKE FORM TABLE COMPONENT
+ * ALL MAKE FORM TABLE COMPONENT (NOT USED)
  * 
  * TYPE: Page Component (Maker Role)
  * PURPOSE: Displays all KYC forms created by the current maker user with status-based actions
@@ -88,6 +88,7 @@ export interface pageableReturn {
   makes: allTableDataType[];
   total: number;
 }
+
 const AllMakeFormTable = () => {
   const queryClient = useQueryClient();
   const today = new Date();

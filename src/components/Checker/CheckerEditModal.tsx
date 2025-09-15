@@ -15,7 +15,7 @@
  * DATA OPERATIONS:
  * - API: PATCH /makeForm/updateStatus/{id}?status=2 - approves KYC form (status 2 = approved)
  * - API: POST /makeForm/reject-request - rejects KYC form with comment (status 3 = rejected)
- * - Invalidates React Query caches: ["notifications"], ["pending"]
+ * - Invalidates React Query caches: ["notifications"], ["pending"] — related to the notifications showing in the sideBar of a checker
  * - Triggers parent component re-render via triggerRender callback
  * 
  * USER INTERACTIONS:
@@ -28,7 +28,10 @@
  * STATE MANAGEMENT:
  * - InputBox: boolean - controls visibility of rejection reason input
  * - InputBoxValue: string - stores rejection reason text
- * - Uses React Query client for cache invalidation
+ * - Uses React Query client for cache invalidation — used react-query because it make it easier to trigger a refetch without 
+ *    passing a manual trigger variable between components, just by using queryClient.invalidateQueries({
+                        queryKey: ["the queryKey: notifications in our case"],
+                      })
  * 
  * LIFECYCLE:
  * - Opens with form data passed as props
@@ -40,7 +43,7 @@
  * USAGE: Called from CheckerPendingTable and similar checker components
  */
 
-import { Button, Flex, Input,  Modal } from "antd";
+import { Button, Flex, Input, Modal } from "antd";
 import DisplayInfo from "../Helper/RequestModals/DisplayInfo";
 import { api } from "../../services/axios";
 import { useState } from "react";
@@ -112,7 +115,7 @@ const CheckerEditModal = (checkerEditModal: checkerViewModal) => {
                       console.log(e);
                       checkerEditModal.messageApi.open({
                         type: "error",
-                        content: e.message,
+                        content: e?.response.data ?? "Something went wrong",
                       });
                     } finally {
                       setInputBoxValue("");
@@ -122,7 +125,6 @@ const CheckerEditModal = (checkerEditModal: checkerViewModal) => {
                 >
                   Send
                 </Button>
-                {/* exiting out with a message if status is good if not then send a bad response message and don't exit */}
               </Flex>
             </Flex>
           </>

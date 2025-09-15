@@ -231,14 +231,6 @@ const ApprovedMakeFormTable = () => {
         isModalOpen={isModalOpen}
         modal={modal}
       />
-      <EditModal
-        handleCancel={handleCancel}
-        editModal={editModal}
-        modal={modal}
-        editModalOff={() => {
-          setEditModal(false);
-        }}
-      />
     </>
   );
 };

@@ -11,18 +11,18 @@
  * - Date formatting using ExtractDate utility function
  * - Conditional rendering for empty checker names and dates
  * - Pagination support with configurable page size
- * - Custom column injection via colums prop
+ * - Custom column injection via colums prop, so that we can inject action columns
  * 
  * DATA HANDLING:
  * - Accepts allTableDataType[] array as data source
  * - Merges standard columns with optional custom columns
  * - Handles pagination state and callbacks
- * - Date validation and formatting for display
+ * - Date validation and formatting for display — if checkedAt is null or checkedAt is greater than current date, it will display "---------"
  * 
  * USER INTERACTIONS:
  * - Pagination controls (page navigation and size change)
  * - Custom action columns can be injected
- * - Sortable columns (inherited from Ant Design Table)
+ * - Sortable columns based on the madeAt column
  * 
  * USAGE:
  * - Used by AllMakeFormTable, CheckerApprovedTable, and other table pages
@@ -47,7 +47,6 @@ interface dataSource {
   pageNumber: number;
   total: number;
   onChange: (pageNo: number, pageSi: number) => void;
-  // onSizeChange: (current:number, size:number)=>void;
 }
 
 const RequestTables = (dataSource: dataSource) => {
@@ -61,6 +60,9 @@ const RequestTables = (dataSource: dataSource) => {
       title: "Made At",
       dataIndex: "madeAt",
       render: (madeAt) => <Flex justify="center">{ExtractDate(madeAt)}</Flex>,
+      sorter: (a, b) => new Date(a.madeAt).getTime() - new Date(b.madeAt).getTime(),
+      sortDirections: ['descend', 'ascend'],
+      defaultSortOrder: 'descend',
     },
     {
       title: "Checked At",
@@ -115,9 +117,6 @@ const RequestTables = (dataSource: dataSource) => {
         onChange: (page: number, pageSize: number) => {
           dataSource.onChange(page, pageSize);
         },
-        // onShowSizeChange:(current:number, size:number)=>{
-        //   dataSource.onSizeChange(size, current)
-        // }
       }}
     />
   );

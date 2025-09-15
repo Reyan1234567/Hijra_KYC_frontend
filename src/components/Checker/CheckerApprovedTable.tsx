@@ -1,58 +1,66 @@
 /**
  * CHECKER APPROVED TABLE COMPONENT
- * 
+ *
  * TYPE: Page Component (Checker Role)
  * PURPOSE: Displays a paginated table of approved KYC forms assigned to the current Head Office (HO) user
- * 
+ *
  * FUNCTIONALITY:
  * - Fetches approved KYC forms from /makeForm/getHo/approved endpoint
  * - Provides date filtering for approved requests
- * - Shows different action menus based on form status:
- *   - Status 1 (pending): Edit and View actions
- *   - Status 2/3 (approved/rejected): View only
+ * - Here values can have a view action, which enables them to what the details about the form
  * - Supports pagination with configurable page size
- * - Real-time updates via trigger state changes
- * 
+ *
  * DATA FETCHING:
  * - API: GET /makeForm/getHo/approved
  * - Parameters: hoUserId, date, pageNumber, pageSize
  * - Returns: pageableReturn with makes array and total count
  * - Uses manual useEffect with dependency array for data fetching
- * 
+ *
  * USER INTERACTIONS:
  * - Date selection via DateDropDown component
- * - Action dropdown menus (view/edit) per table row
- * - Modal interactions for viewing and editing forms
+ * - Action dropdown menu (view) per table row
+ * - Modal interactions for viewing forms using the ViewModal component that have a param of type
+ *    allTableDataType, modal in this page's case, which represents a makeFormDisplayDto from the backend. when Actions for 
+ *    some row is clicked the modal state changes to whatever row is clicked and when clicking view a information about that
+ *    specific form request is displayed including the images
  * - Pagination controls for navigating through results
- * 
+ *
  * LIFECYCLE:
  * - Mounts with loading state
  * - Fetches data on mount and when dependencies change
  * - Updates state based on API response (empty/success/error)
- * - Re-renders when trigger, date, user, or pagination changes
- * 
+ * - Re-renders when trigger, date, user, or pagination(pageNumber, pageSize) changes
+ * - The trigger variable is made for the page to update, when some thing is fetched or
+ *   some value is changed, it is set to a different value manually in the code, so a re-render
+ *   can happen
+ *
+ * PAGINATION:
+ * - when hit with the api /makeForm/getHo/approved, it gives a sub list based on the default
+ *    params given the first 10 values, b/c pageSize is defaulted to 10 and pageNumber is defaulted to 1
+ *    but in the 1st page is technically the 2nd because the page number is 0 indexed, but 1 indexed here,
+ *    so that is managed in the backend. So the return will be of type pageableReturn, the total number is needed
+ *    for display reasons(how much pages are left). Then RequestTable is called, which is a component made for most tables in this app.
+ *    It has params the following params the total number in the whole list, the page size, the page number and the changing function — that sets the state in this page
+ *    so a fetch is triggered. We call it and give it those params and as easy as that pagination is done.
+ *
  * ROLE PERMISSIONS: Checker/HO users only
  * ROUTING: Accessed via /checkerApprovedTable route
  */
 
-import { Flex, MenuProps, message, Spin, Table, TableColumnsType } from "antd";
+import { Flex, MenuProps, Spin, Table, TableColumnsType } from "antd";
 import RequestTables from "../Helper/Table/RequestTables";
 import { useContext, useEffect, useState } from "react";
 import { api } from "../../services/axios";
 import DateDropDown from "../Helper/DateDropdown/DateDropDown";
 import { allTableDataType, pageableReturn } from "../MakeForm/AllMakeFormTable";
 import DropDown from "../Helper/DateDropdown/DropDown";
-import { EditOutlined, EyeOutlined } from "@ant-design/icons";
-import CheckerEditModal from "./CheckerEditModal";
+import { EyeOutlined } from "@ant-design/icons";
 import ViewModal from "../Helper/RequestModals/ViewModal";
 import { AuthContext } from "../../context/AuthContext";
 
 const CheckerApprovedTable = () => {
-  const [messageApi, contextHolder] = message.useMessage();
   const today = new Date();
-  const [trigger, setTrigger] = useState(0);
   const [viewModal, setViewModal] = useState(false);
-  const [editModal, setEditModal] = useState(false);
   const [date, setDate] = useState(
     new Date(today.setMonth(today.getMonth(), 1))
   );
@@ -81,6 +89,7 @@ const CheckerApprovedTable = () => {
     makes: [],
     total: 0,
   });
+
   const [pageSize, setPageSize] = useState(10);
   const [pageNumber, setPageNumber] = useState(1);
   const onchange = (pageNo: number, pageSi: number) => {
@@ -117,7 +126,7 @@ const CheckerApprovedTable = () => {
     };
 
     getRequestsAssignedToMe();
-  }, [trigger, date, USER?.user?.userId, pageNumber, pageSize]);
+  }, [date, USER?.user?.userId, pageNumber, pageSize]);
 
   const view: MenuProps["items"] = [
     {
@@ -130,52 +139,21 @@ const CheckerApprovedTable = () => {
     },
   ];
 
-  const edit: MenuProps["items"] = [
-    {
-      label: "view",
-      key: "1",
-      icon: <EyeOutlined />,
-      onClick: () => {
-        setViewModal(true);
-      },
-    },
-    {
-      label: "Edit",
-      key: "2",
-      icon: <EditOutlined />,
-      onClick: () => {
-        setEditModal(true);
-      },
-    },
-  ];
   const columns: TableColumnsType<allTableDataType> = [
     {
       title: "Action",
       dataIndex: "status",
-      render: (status: number, row: allTableDataType) => {
-        if (status === 3 || status === 2) {
-          return (
-            <Flex justify="center">
-              <DropDown
-                menu={view}
-                onChange={() => {
-                  setModal(row);
-                }}
-              />
-            </Flex>
-          );
-        } else if (status === 1) {
-          return (
-            <Flex justify="center">
-              <DropDown
-                menu={edit}
-                onChange={() => {
-                  setModal(row);
-                }}
-              />
-            </Flex>
-          );
-        }
+      render: (_, row: allTableDataType) => {
+        return (
+          <Flex justify="center">
+            <DropDown
+              menu={view}
+              onChange={() => {
+                setModal(row);
+              }}
+            />
+          </Flex>
+        );
       },
     },
   ];
@@ -190,7 +168,6 @@ const CheckerApprovedTable = () => {
       )}
       {state === "empty" && (
         <>
-          {contextHolder}
           <div
             style={{
               display: "flex",
@@ -207,7 +184,6 @@ const CheckerApprovedTable = () => {
       {state === "error" && <p>Something wrong happened</p>}
       {state === "success" && (
         <>
-          {contextHolder}
           <div
             style={{
               display: "flex",
@@ -225,13 +201,6 @@ const CheckerApprovedTable = () => {
             pageNumber={pageNumber}
             total={makeRequests.total}
             onChange={onchange}
-          />
-          <CheckerEditModal
-            modal={modal}
-            open={editModal}
-            onCancel={() => setEditModal(false)}
-            triggerRender={() => setTrigger((prev) => prev + 1)}
-            messageApi={messageApi}
           />
           <ViewModal
             modal={modal}

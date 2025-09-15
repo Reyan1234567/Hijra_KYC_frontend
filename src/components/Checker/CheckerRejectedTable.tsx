@@ -1,68 +1,72 @@
 /**
  * CHECKER REJECTED TABLE COMPONENT
- * 
+ *
  * TYPE: Page Component (Checker Role)
  * PURPOSE: Displays KYC forms that have been rejected by the current checker
- * 
+ *
  * FUNCTIONALITY:
  * - Fetches rejected KYC forms assigned to the current Head Office (HO) user
  * - Provides date filtering for rejected requests (defaults to current month)
- * - Status-based action menus:
- *   - Status 3 (rejected): View only (no edit capability)
- *   - Status 1 (pending): View and Edit actions (should not appear in rejected list)
- * - Pagination support with configurable page size
- * - Real-time updates via trigger mechanism
+ * - View-only action menu: Only "View" action available for all rejected forms
+ * - Pagination support with configurable page size (default: 10)
+ * - Updates on date, user, or pagination changes
  * - Loading, empty, error, and success states
- * 
+ *
  * DATA FETCHING:
- * - API: GET /makeForm/getHo/rejected - fetches KYC forms assigned to HO user with status 3 (rejected)
+ * - API: GET /makeForm/getHo/rejected - fetches KYC forms assigned to HO user with rejected status
  * - Parameters: hoUserId (current user), date (filter), pageNumber, pageSize
  * - Returns: pageableReturn with makes array and total count
- * - Refetches on trigger, date, user, or pagination changes
- * 
+ * - Refetches on date, user, or pagination changes
+ *
  * USER INTERACTIONS:
  * - Date selection via DateDropDown component
  * - Action dropdown menus per table row (view only for rejected forms)
- * - Modal interactions:
- *   - ViewModal: Read-only form details with rejection reason
- *   - CheckerEditModal: Not typically used for rejected forms
+ * - Modal interactions for viewing forms using the ViewModal component that have a param of type
+ *    allTableDataType, modal in this page's case, which represents a makeFormDisplayDto from the backend. when Actions for
+ *    some row is clicked the modal state changes to whatever row is clicked and when clicking view a information about that
+ *    specific form request is displayed including the images
  * - Pagination controls for navigating through results
- * 
+ *
  * STATE MANAGEMENT:
- * - trigger: number - forces re-fetch when incremented
- * - viewModal/editModal: boolean - controls modal visibility
+ * - viewModal: boolean - controls ViewModal visibility
  * - modal: allTableDataType - stores selected row data for modals
  * - makeRequests: pageableReturn - stores fetched data and total count
  * - state: loading/empty/success/error - manages UI state
- * 
+ * - pageSize/pageNumber: pagination state
+ *
  * LIFECYCLE:
  * - Mounts with loading state and current month date
  * - Fetches rejected forms on mount and dependency changes
  * - Updates state based on API response
  * - Provides historical view of rejected forms
- * 
+ *
+ *  * PAGINATION:
+ * - when hit with the api /makeForm/getHo/rejected, it gives a sub list based on the default
+ *    params given the first 10 values, b/c pageSize is defaulted to 10 and pageNumber is defaulted to 1
+ *    but in the 1st page is technically the 2nd because the page number is 0 indexed, but 1 indexed here,
+ *    so that is managed in the backend. So the return will be of type pageableReturn, the total number is needed
+ *    for display reasons(how much pages are left). Then RequestTable is called, which is a component made for most tables in this app.
+ *    It has params the following params the total number in the whole list, the page size, the page number and the changing function — that sets the state in this page
+ *    so a fetch is triggered. We call it and give it those params and as easy as that pagination is done.
+ *
  * ROLE PERMISSIONS: Checker/HO users only
  * ROUTING: Accessed via /checkerRejectedTable route
  */
 
-import { Flex, MenuProps, message, Spin, Table, TableColumnsType } from "antd";
+import { Flex, MenuProps, Spin, Table, TableColumnsType } from "antd";
 import RequestTables from "../Helper/Table/RequestTables";
 import { useContext, useEffect, useState } from "react";
 import { api } from "../../services/axios";
 import DateDropDown from "../Helper/DateDropdown/DateDropDown";
 import { allTableDataType, pageableReturn } from "../MakeForm/AllMakeFormTable";
 import DropDown from "../Helper/DateDropdown/DropDown";
-import { EditOutlined, EyeOutlined } from "@ant-design/icons";
-import CheckerEditModal from "./CheckerEditModal";
+import { EyeOutlined } from "@ant-design/icons";
 import ViewModal from "../Helper/RequestModals/ViewModal";
 import { AuthContext } from "../../context/AuthContext";
 
 const CheckerRejectedTable = () => {
-  const [messageApi, contextHolder] = message.useMessage();
   const today = new Date();
-  const [trigger, setTrigger] = useState(0);
   const [viewModal, setViewModal] = useState(false);
-  const [editModal, setEditModal] = useState(false);
   const [date, setDate] = useState(
     new Date(today.setMonth(today.getMonth(), 1))
   );
@@ -127,7 +131,7 @@ const CheckerRejectedTable = () => {
     };
 
     getRequestsAssignedToMe();
-  }, [trigger, date, USER?.user?.userId, pageNumber, pageSize]);
+  }, [date, USER?.user?.userId, pageNumber, pageSize]);
 
   const view: MenuProps["items"] = [
     {
@@ -140,52 +144,21 @@ const CheckerRejectedTable = () => {
     },
   ];
 
-  const edit: MenuProps["items"] = [
-    {
-      label: "view",
-      key: "1",
-      icon: <EyeOutlined />,
-      onClick: () => {
-        setViewModal(true);
-      },
-    },
-    {
-      label: "Edit",
-      key: "2",
-      icon: <EditOutlined />,
-      onClick: () => {
-        setEditModal(true);
-      },
-    },
-  ];
   const columns: TableColumnsType<allTableDataType> = [
     {
       title: "Action",
       dataIndex: "status",
-      render: (status: number, row: allTableDataType) => {
-        if (status === 3 || status === 2) {
-          return (
-            <Flex justify="center">
-              <DropDown
-                menu={view}
-                onChange={() => {
-                  setModal(row);
-                }}
-              />
-            </Flex>
-          );
-        } else if (status === 1) {
-          return (
-            <Flex justify="center">
-              <DropDown
-                menu={edit}
-                onChange={() => {
-                  setModal(row);
-                }}
-              />
-            </Flex>
-          );
-        }
+      render: (_: number, row: allTableDataType) => {
+        return (
+          <Flex justify="center">
+            <DropDown
+              menu={view}
+              onChange={() => {
+                setModal(row);
+              }}
+            />
+          </Flex>
+        );
       },
     },
   ];
@@ -199,7 +172,6 @@ const CheckerRejectedTable = () => {
       )}
       {state === "empty" && (
         <>
-          {contextHolder}
           <div
             style={{
               display: "flex",
@@ -216,7 +188,6 @@ const CheckerRejectedTable = () => {
       {state === "error" && <p>Something wrong happened</p>}
       {state === "success" && (
         <>
-          {contextHolder}
           <div
             style={{
               display: "flex",
@@ -234,13 +205,6 @@ const CheckerRejectedTable = () => {
             pageNumber={pageNumber}
             total={makeRequests.total}
             onChange={onchange}
-          />
-          <CheckerEditModal
-            modal={modal}
-            open={editModal}
-            onCancel={() => setEditModal(false)}
-            triggerRender={() => setTrigger((prev) => prev + 1)}
-            messageApi={messageApi}
           />
           <ViewModal
             modal={modal}

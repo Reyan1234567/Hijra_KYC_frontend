@@ -1,46 +1,54 @@
 /**
  * CHECKER PENDING TABLE COMPONENT
- * 
+ *
  * TYPE: Page Component (Checker Role)
  * PURPOSE: Displays pending KYC forms assigned to the current checker for approval/rejection
- * 
+ *
  * FUNCTIONALITY:
  * - Fetches pending KYC forms assigned to the current Head Office (HO) user
  * - Provides date filtering for pending requests (defaults to current month)
- * - Status-based action menus:
- *   - Status 1 (pending): View and Edit (approve/reject) actions
- *   - Status 2/3 (approved/rejected): View only
- * - Pagination support with configurable page size
+ * - Unified action menu for all pending items: View and Edit actions available for all rows
+ * - Pagination support with configurable page size (default: 10)
  * - Real-time updates via trigger mechanism
  * - Loading, empty, error, and success states
- * 
+ *
  * DATA FETCHING:
- * - API: GET /makeForm/getHo/pending - fetches KYC forms assigned to HO user with status 1 (pending)
+ * - API: GET /makeForm/getHo/pending - fetches KYC forms assigned to HO user with pending status
  * - Parameters: hoUserId (current user), date (filter), pageNumber, pageSize
  * - Returns: pageableReturn with makes array and total count
  * - Refetches on trigger, date, user, or pagination changes
- * 
+ *
  * USER INTERACTIONS:
  * - Date selection via DateDropDown component
- * - Action dropdown menus per table row (view/edit based on status)
+ * - Action dropdown menus per table row (view/edit for all pending items)
  * - Modal interactions:
- *   - ViewModal: Read-only form details
- *   - CheckerEditModal: Approve/reject with reason input
+ *   - ViewModal: Read-only form details — view only modal triggered when view is clicked in the actions dropdown
+ *   - CheckerEditModal: Approve/reject with reason input — edit modal triggered when edit is clicked in the actions dropdown.
  * - Pagination controls for navigating through results
- * 
+ *
  * STATE MANAGEMENT:
  * - trigger: number - forces re-fetch when incremented
  * - viewModal/editModal: boolean - controls modal visibility
  * - modal: allTableDataType - stores selected row data for modals
  * - makeRequests: pageableReturn - stores fetched data and total count
  * - state: loading/empty/success/error - manages UI state
- * 
+ * - pageSize/pageNumber: pagination state
+ *
  * LIFECYCLE:
  * - Mounts with loading state and current month date
  * - Fetches data on mount and dependency changes
  * - Updates state based on API response
  * - Triggers re-render when actions complete
- * 
+ *
+ *  * PAGINATION:
+ * - when hit with the api /makeForm/getHo/pending, it gives a sub list based on the default
+ *    params given the first 10 values, b/c pageSize is defaulted to 10 and pageNumber is defaulted to 1
+ *    but in the 1st page is technically the 2nd because the page number is 0 indexed, but 1 indexed here,
+ *    so that is managed in the backend. So the return will be of type pageableReturn, the total number is needed
+ *    for display reasons(how much pages are left). Then RequestTable is called, which is a component made for most tables in this app.
+ *    It has params the following params the total number in the whole list, the page size, the page number and the changing function — that sets the state in this page
+ *    so a fetch is triggered. We call it and give it those params and as easy as that pagination is done.
+ *
  * ROLE PERMISSIONS: Checker/HO users only
  * ROUTING: Accessed via /checkerPendingTable route
  */
@@ -126,16 +134,6 @@ const CheckerPendingTable = () => {
     getRequestsAssignedToMe();
   }, [trigger, date, USER?.user?.userId, pageNumber, pageSize]);
 
-  const view: MenuProps["items"] = [
-    {
-      label: "view",
-      key: "1",
-      icon: <EyeOutlined />,
-      onClick: () => {
-        setViewModal(true);
-      },
-    },
-  ];
 
   const edit: MenuProps["items"] = [
     {
@@ -159,19 +157,7 @@ const CheckerPendingTable = () => {
     {
       title: "Action",
       dataIndex: "status",
-      render: (status: number, row: allTableDataType) => {
-        if (status === 3 || status === 2) {
-          return (
-            <Flex justify="center">
-              <DropDown
-                menu={view}
-                onChange={() => {
-                  setModal(row);
-                }}
-              />
-            </Flex>
-          );
-        } else if (status === 1) {
+      render: (_, row: allTableDataType) => {
           return (
             <Flex justify="center">
               <DropDown
@@ -182,7 +168,6 @@ const CheckerPendingTable = () => {
               />
             </Flex>
           );
-        }
       },
     },
   ];
@@ -236,7 +221,9 @@ const CheckerPendingTable = () => {
             modal={modal}
             open={editModal}
             onCancel={() => setEditModal(false)}
-            triggerRender={() => setTrigger((prev) => prev + 1)} messageApi={messageApi}          />
+            triggerRender={() => setTrigger((prev) => prev + 1)}
+            messageApi={messageApi}
+          />
           <ViewModal
             modal={modal}
             isModalOpen={viewModal}

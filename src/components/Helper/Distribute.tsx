@@ -20,7 +20,6 @@
  * - Single "Distribute" button click to trigger redistribution
  * - Success message: "Distributed successfully"
  * - Error message: Server response or "Something went wrong"
- * - No confirmation dialog - immediate action
  * 
  * STATE MANAGEMENT:
  * - No internal state - purely action-based component

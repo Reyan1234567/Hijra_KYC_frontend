@@ -3,6 +3,7 @@
  * 
  * TYPE: Helper Component (All Roles)
  * PURPOSE: Displays detailed KYC form information including customer, request, and checker details
+ * CALLS: None (leaf component)
  * 
  * FUNCTIONALITY:
  * - Two-column layout displaying customer and request information
@@ -35,10 +36,15 @@
  * - Status 2: "Approved"
  * - Status 3: "Rejected"
  * 
+ * USED BY:
+ * - DisplayInfo: Core component for form information display
+ * - EditModal: Shows form info in maker edit modals
+ *
  * USAGE:
  * - Core component used in DisplayInfo for complete form views
  * - Essential for all modal-based form detail displays
  * - Provides standardized information layout across the application
+ * - Foundation component that displays customer and request details
  * 
  * ROLE-BASED ACCESS:
  * - Visible to all roles for form information viewing

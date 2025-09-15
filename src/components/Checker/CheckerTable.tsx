@@ -1,5 +1,5 @@
 /**
- * CHECKER TABLE COMPONENT
+ * CHECKER TABLE COMPONENT( UNUSED, NOT FOUNT IN THE SIDEBAR OF A CHECKER)
  * 
  * TYPE: Page Component (Checker Role)
  * PURPOSE: Main checker dashboard displaying all KYC forms assigned to the current checker

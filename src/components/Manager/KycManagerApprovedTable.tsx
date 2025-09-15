@@ -1,58 +1,28 @@
 /**
- * KYC MANAGER APPROVED TABLE COMPONENT
+ * KycManagerApprovedTable - Read-only approved KYC requests display
  * 
- * PURPOSE:
- * Manager interface for viewing and managing approved KYC requests with date filtering,
- * pagination, and HO assignment editing capabilities. Provides comprehensive oversight
- * of approved forms requiring Head Office assignment or review.
+ * Simple table showing approved KYC requests with view-only access for managers.
  * 
  * FUNCTIONALITY:
- * - Displays approved KYC requests in paginated table format
- * - Date-based filtering with month selection dropdown
- * - Status-based action menus (view for approved/rejected, edit for pending)
- * - HO assignment editing for pending requests (status 1)
- * - View-only access for completed requests (status 2/3)
- * - Real-time data refresh with trigger-based re-fetching
- * - Loading, empty, error, and success state management
- * 
- * API INTERACTIONS:
- * - GET /makeForm/manager/approved: Fetches approved requests with pagination
- *   * date: Selected month filter
- *   * pageNumber, pageSize: Pagination parameters
- * - Uses AuthContext for user identification and access control
- * - Automatic error handling with state management
- * 
- * USER INTERACTIONS:
- * - Date dropdown for month-based filtering
- * - Action dropdown menus with view and edit options
- * - View modal for detailed KYC form inspection
- * - Manager edit modal for HO assignment modification
- * - Pagination controls for large datasets
- * - Loading states during API operations
+ * - Fetches approved requests via GET /makeForm/manager/approved
+ * - Date filtering with DateDropDown (defaults to current month)
+ * - View action opens ViewModal for form details
+ * - Pagination with RequestTables component
+ * - Manual state management with useEffect
  * 
  * STATE MANAGEMENT:
- * - Make requests state with pageable return structure
- * - Modal states for view and edit operations
- * - Selected modal data for form operations
- * - Page size and number for pagination control
- * - Date state for filtering with default current month
- * - Component state (loading/empty/success/error)
- * - Trigger state for forcing data refresh
+ * - makeRequests: pageableReturn - API data (makes array + total)
+ * - viewModal: boolean - controls ViewModal visibility
+ * - modal: allTableDataType - selected row for ViewModal
+ * - date/pageSize/pageNumber: filter and pagination
+ * - state: "loading"|"empty"|"success"|"error" - UI state
+ * - trigger: number - forces re-fetch when incremented
  * 
- * TABLE FEATURES:
- * - Maker name column display
- * - Status-based action column with conditional rendering
- * - Integrated with RequestTables helper component
- * - Pagination with customizable page sizes
- * - Total count display from API response
- * 
- * ROLE-BASED ACCESS:
- * - Manager role required for access
- * - Provides oversight of approved KYC processing pipeline
- * - Critical for HO assignment and workflow management
- * - Supports quality assurance and process monitoring
- * 
- * USAGE: Manager dashboard page for approved KYC request management and HO assignment
+ * TABLE STRUCTURE:
+ * - Maker column: displays makerName
+ * - Action column: single "View" dropdown for all rows
+ * - Uses RequestTables for pagination and rendering
+ * - ViewModal for read-only form inspection
  */
 
 import { Flex, MenuProps, Spin, Table, TableColumnsType } from "antd";
@@ -62,17 +32,15 @@ import { api } from "../../services/axios";
 import DateDropDown from "../Helper/DateDropdown/DateDropDown";
 import { allTableDataType, pageableReturn } from "../MakeForm/AllMakeFormTable";
 import DropDown from "../Helper/DateDropdown/DropDown";
-import { BookOutlined, EyeOutlined } from "@ant-design/icons";
+import { EyeOutlined } from "@ant-design/icons";
 import ViewModal from "../Helper/RequestModals/ViewModal";
 import { AuthContext } from "../../context/AuthContext";
-import ManagerEdit from "./ManagerEdit";
 
 const KycManagerApprovedTable = () => {
   // const [ /*messageApi*/ contextHolder] = message.useMessage();
   const today = new Date();
   const [trigger, setTrigger] = useState(0);
   const [viewModal, setViewModal] = useState(false);
-  const [editModal, setEditModal] = useState(false);
   const [date, setDate] = useState(
     new Date(today.setMonth(today.getMonth(), 1))
   );
@@ -146,24 +114,6 @@ const KycManagerApprovedTable = () => {
     },
   ];
 
-  const assign: MenuProps["items"] = [
-    {
-      label: "view",
-      key: "1",
-      icon: <EyeOutlined />,
-      onClick: () => {
-        setViewModal(true);
-      },
-    },
-    {
-      label: "Edit HO Assignment",
-      key: "2",
-      icon: <BookOutlined />,
-      onClick: () => {
-        setEditModal(true);
-      },
-    },
-  ];
   const columns: TableColumnsType<allTableDataType> = [
     {
       title: "Maker",
@@ -172,30 +122,17 @@ const KycManagerApprovedTable = () => {
     {
       title: "Action",
       dataIndex: "status",
-      render: (status: number, row: allTableDataType) => {
-        if (status === 3 || status === 2) {
-          return (
-            <Flex justify="center">
-              <DropDown
-                menu={view}
-                onChange={() => {
-                  setModal(row);
-                }}
-              />
-            </Flex>
-          );
-        } else if (status === 1) {
-          return (
-            <Flex justify="center">
-              <DropDown
-                menu={assign}
-                onChange={() => {
-                  setModal(row);
-                }}
-              />
-            </Flex>
-          );
-        }
+      render: (_, row: allTableDataType) => {
+        return (
+          <Flex justify="center">
+            <DropDown
+              menu={view}
+              onChange={() => {
+                setModal(row);
+              }}
+            />
+          </Flex>
+        );
       },
     },
   ];
@@ -245,12 +182,6 @@ const KycManagerApprovedTable = () => {
             total={makeRequests.total} 
             onChange={onchange}        
             />
-          <ManagerEdit
-            modal={modal}
-            open={editModal}
-            onCancel={() => setEditModal(false)}
-            triggerRender={() => setTrigger((prev) => prev + 1)}
-          />
           <ViewModal
             modal={modal}
             isModalOpen={viewModal}
