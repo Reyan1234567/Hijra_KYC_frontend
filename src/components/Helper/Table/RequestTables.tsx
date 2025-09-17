@@ -49,9 +49,7 @@ interface dataSource {
   onChange: (pageNo: number, pageSi: number) => void;
 }
 
-const RequestTables = (dataSource: dataSource) => {
-  const now = ()=> new Date();
-  const columns: TableColumnsType<allTableDataType> = [
+export const columns: TableColumnsType<allTableDataType> = [
     { title: "Cif", dataIndex: "cif" },
     { title: "Customer Account", dataIndex: "customerAccount" },
     { title: "Customer Name", dataIndex: "customerName" },
@@ -69,7 +67,7 @@ const RequestTables = (dataSource: dataSource) => {
       dataIndex: "checkedAt",
       render: (checkedAt) => (
         <Flex justify="center">
-          {new Date(checkedAt) > now() || !checkedAt
+          {new Date(checkedAt) > new Date() || !checkedAt
             ? "---------"
             : ExtractDate(checkedAt)}
         </Flex>
@@ -103,6 +101,8 @@ const RequestTables = (dataSource: dataSource) => {
     },
   ];
 
+const RequestTables = (dataSource: dataSource) => {
+  
   return (
     <Table<allTableDataType>
       columns={

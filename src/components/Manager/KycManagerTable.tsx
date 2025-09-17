@@ -1,9 +1,9 @@
 /**
  * KYC MANAGER TABLE COMPONENT
- * 
+ *
  * TYPE: Page Component (Manager Role)
  * PURPOSE: Main manager dashboard displaying all KYC forms requiring manager oversight and assignment
- * 
+ *
  * FUNCTIONALITY:
  * - Fetches all KYC forms visible to managers with date filtering
  * - Displays forms with status-based action menus
@@ -11,14 +11,14 @@
  * - View-only access for processed forms (status 2, 3)
  * - Manual state management with loading, success, error, and empty states
  * - Pagination support with configurable page size
- * 
+ *
  * DATA FETCHING:
  * - API: GET /makeForm/manager - fetches KYC forms for manager oversight
  * - Parameters: date (filter), pageNumber, pageSize
  * - Returns: pageableReturn with makes array and total count
  * - Manual API calls with axios instead of React Query
  * - Refetches on trigger state changes for real-time updates
- * 
+ *
  * USER INTERACTIONS:
  * - Date selection via DateDropDown component
  * - Status-based dropdown menus:
@@ -28,7 +28,7 @@
  *   - ViewModal: Read-only form details display
  *   - ManagerEdit: HO assignment interface with Assign component
  * - Pagination controls for navigating through results
- * 
+ *
  * STATE MANAGEMENT:
  * - makeRequests: pageableReturn - stores fetched form data
  * - modal: allTableDataType - selected row data for modals
@@ -36,20 +36,28 @@
  * - trigger: number - incremented to force data refetch
  * - state: "loading" | "success" | "error" | "empty" - manual state management
  * - pageSize/pageNumber: pagination state
- * 
+ *
  * LIFECYCLE:
  * - useEffect triggers on trigger, date, userId, pageNumber, pageSize changes
  * - Manual API error handling with try-catch blocks
  * - Console logging for debugging API responses
  * - State-based conditional rendering for different UI states
- * 
+ *
  * ROLE PERMISSIONS: Manager users only
  * ROUTING: Accessed via /kycManagerTable route
  */
 
-import { Flex, MenuProps, Spin, Table, TableColumnsType } from "antd";
+import {
+  Button,
+  Flex,
+  MenuProps,
+  message,
+  Spin,
+  Table,
+  TableColumnsType,
+} from "antd";
 import RequestTables from "../Helper/Table/RequestTables";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { api } from "../../services/axios";
 import DateDropDown from "../Helper/DateDropdown/DateDropDown";
 import { allTableDataType, pageableReturn } from "../MakeForm/AllMakeFormTable";
@@ -58,13 +66,17 @@ import { BookOutlined, EyeOutlined } from "@ant-design/icons";
 import ViewModal from "../Helper/RequestModals/ViewModal";
 import { AuthContext } from "../../context/AuthContext";
 import ManagerEdit from "./ManagerEdit";
+import SearchBox, { SearchBoxHandle } from "../SearchBox";
 
 const KycManagerTable = () => {
-  // const [ /*messageApi*/ contextHolder] = message.useMessage();
+  const [messageApi, contextHolder] = message.useMessage();
   const today = new Date();
+  const [search, setSearch] = useState("");
   const [trigger, setTrigger] = useState(0);
   const [viewModal, setViewModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
+  const ref = useRef<SearchBoxHandle>(null);
+
   const [date, setDate] = useState(
     new Date(today.setMonth(today.getMonth(), 1))
   );
@@ -109,6 +121,7 @@ const KycManagerTable = () => {
             date: date,
             pageNumber: pageNumber,
             pageSize: pageSize,
+            search: search,
           },
         });
         setMakeRequests(makes.data);
@@ -124,7 +137,7 @@ const KycManagerTable = () => {
     };
 
     getRequestsAssignedToMe();
-  }, [trigger, date, USER?.user?.userId, pageNumber, pageSize]);
+  }, [trigger, date, USER?.user?.userId, pageNumber, pageSize, search]);
 
   const view: MenuProps["items"] = [
     {
@@ -193,6 +206,39 @@ const KycManagerTable = () => {
 
   return (
     <>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <h1>Manager's Table</h1>
+        <DateDropDown date={date} setDate={setDate} />
+      </div>
+      <div
+        style={{
+          display: "flex",
+          alignContent: "center",
+          alignItems: "center",
+          gap: "30px",
+        }}
+      >
+        <h2>Search:</h2>
+        <SearchBox setState={setSearch} ref={ref} />
+        <Button
+          danger
+          disabled={search == ""}
+          onClick={() => {
+            if (ref.current) {
+              ref.current.clear();
+            }
+            setSearch("");
+          }}
+        >
+          Cancel{" "}
+        </Button>
+      </div>
       {state === "loading" && (
         <Spin
           style={{ position: "absolute", left: "50%", top: "50%" }}
@@ -201,46 +247,28 @@ const KycManagerTable = () => {
       )}
       {state === "empty" && (
         <>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <h1>Manager's Table</h1>
-            <DateDropDown date={date} setDate={setDate} />
-          </div>
           <Table />
         </>
       )}
       {state === "error" && <p>Something wrong happened</p>}
       {state === "success" && (
         <>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <h1>Manager's Table</h1>
-            <DateDropDown date={date} setDate={setDate} />
-          </div>
           <RequestTables
             data={makeRequests.makes}
-            colums={columns} 
-            pageSize={pageSize} 
-            pageNumber={pageNumber} 
-            total={makeRequests.total} 
-            onChange={onchange}        
-            />
+            colums={columns}
+            pageSize={pageSize}
+            pageNumber={pageNumber}
+            total={makeRequests.total}
+            onChange={onchange}
+          />
           <ManagerEdit
             modal={modal}
             open={editModal}
             onCancel={() => setEditModal(false)}
             triggerRender={() => setTrigger((prev) => prev + 1)}
+            messageApi={messageApi}
           />
+          {contextHolder}
           <ViewModal
             modal={modal}
             isModalOpen={viewModal}

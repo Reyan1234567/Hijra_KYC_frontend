@@ -1,34 +1,34 @@
 /*
  * HIJRA KYC FRONTEND - APPLICATION ROUTES CONFIGURATION
- * 
+ *
  * FILE TYPE: Routing Configuration
  * PURPOSE: Defines all application routes and their corresponding components
- * 
+ *
  * FUNCTIONALITY:
  * - Lazy loads all page components for better performance
  * - Maps URL paths to React components
  * - Supports parameterized routes (e.g., /Edit_Role/:roleId)
  * - Organizes routes by functional areas (make forms, checker tables, etc.)
- * 
+ *
  * ROUTE CATEGORIES:
  * 1. DASHBOARD & MAIN PAGES:
  *    - "/" & "/dashboard": Dashboard (main landing page)
  *    - "/profile" & "/userProfiel": User Profile
  *    - "/search": Search functionality
- * 
+ *
  * 2. MAKE FORM PAGES (Maker Role):
  *    - "/makeForm": All make forms table
  *    - "makeTable/drafts": Draft forms
- *    - "makeTable/pending": Pending forms  
+ *    - "makeTable/pending": Pending forms
  *    - "makeTable/approved": Approved forms
  *    - "makeTable/rejected": Rejected forms
- * 
+ *
  * 3. CHECKER PAGES (Checker Role):
  *    - "/checkerTable": All checker forms
  *    - "checkTable/pending": Pending checker forms
  *    - "checkTable/approved": Approved checker forms
  *    - "checkTable/rejected": Rejected checker forms
- * 
+ *
  * 4. MANAGER PAGES (Manager Role):
  *    - "/manager": Manager table view
  *    - "manager/pending": Pending manager forms
@@ -37,18 +37,18 @@
  *    - "/attendance": Attendance management
  *    - "/distribute": Form distribution
  *    - "View_Login": Login activity view
- * 
+ *
  * 5. ADMIN PAGES:
  *    - "/AddRole", "/Edit_Role/:roleId", "/View_Role": Role management
  *    - "/Add_Branch", "/Edit_branch/:id", "/View_Branch": Branch management
  *    - "/Add_District": District management
  *    - "/Edit_Profile/:id", "/ViewProfile": Profile management
- * 
+ *
  * 6. REPORTS:
  *    - "reports/detail": Detailed reports
  *    - "reports/summary": Summary reports
  *    - "reports/checker": Checker reports
- * 
+ *
  * USED BY: FullLayout.tsx for rendering appropriate components based on current route
  */
 
@@ -57,8 +57,12 @@ import Attendance from "../Manager/Attendance.tsx";
 
 // Lazy load components from the first code
 const MakeFormTable = lazy(() => import("../MakeForm/AllMakeFormTable.tsx"));
+const SearchAccount = lazy(()=>import("../Checker/SearchAccount.tsx"));
 const DraftsMakeFormTable = lazy(
   () => import("../MakeForm/DraftsMakeFormTable.tsx")
+);
+const EditCheckerAssignment = lazy(
+  () => import("../Manager/EditCheckerAssignment.tsx")
 );
 const Distribute = lazy(() => import("../Helper/Distribute.tsx"));
 const Dashboard = lazy(() => import("../Dashboard/Dashboard.tsx"));
@@ -104,10 +108,18 @@ const View_branch = lazy(() => import("../IssueBranch/View_branch"));
 const AddDistrict = lazy(() => import("../IssueBranch/Add_District"));
 const EditProfile = lazy(() => import("../UserProfile/Edit_Profile"));
 const ViewProfile = lazy(() => import("../UserProfile/ViewProfile"));
-const View_Login=lazy(()=> import("../../components/Manager/View_Login.tsx"));
-const CheckerReport=lazy(()=>import("../../components/Report/CheckerReport.tsx"));
-const DetailReport=lazy(()=>import("../../components/Report/DetailReport.tsx"));
-const SummaryReport=lazy(()=>import("../../components/Report/SummaryReport.tsx"));
+const View_Login = lazy(
+  () => import("../../components/Manager/View_Login.tsx")
+);
+const CheckerReport = lazy(
+  () => import("../../components/Report/CheckerReport.tsx")
+);
+const DetailReport = lazy(
+  () => import("../../components/Report/DetailReport.tsx")
+);
+const SummaryReport = lazy(
+  () => import("../../components/Report/SummaryReport.tsx")
+);
 
 interface routes {
   path: string;
@@ -144,10 +156,12 @@ const routes: routes[] = [
   { path: "/Add_District", component: <AddDistrict /> },
   { path: "/Edit_Profile/:id", component: <EditProfile /> },
   { path: "/ViewProfile", component: <ViewProfile /> },
-  {path:"View_Login", component:<View_Login/>},
+  { path: "View_Login", component: <View_Login /> },
   { path: "reports/detail", component: <DetailReport /> },
-    { path: "reports/summary", component: <SummaryReport /> },
-    { path: "reports/checker", component: <CheckerReport /> },
+  { path: "reports/summary", component: <SummaryReport /> },
+  { path: "reports/checker", component: <CheckerReport /> },
+  { path: "manager/editChecker", component: <EditCheckerAssignment /> },
+  { path: "searchAccount", component: <SearchAccount/> },
 ];
 
 export default routes;

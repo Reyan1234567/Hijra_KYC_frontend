@@ -50,7 +50,6 @@ import {
   Typography,
 } from "antd";
 import { useContext, useState } from "react";
-import axios from "axios";
 import AddImageForm from "./MakeForm/AddImageForm";
 import { allTableDataType, egami } from "./MakeForm/AllMakeFormTable";
 import { createImage, createMakeForm } from "../services/MakeForm";
@@ -188,7 +187,7 @@ const Search = () => {
       {contextHolder}
       <Card style={{ marginBottom: "15px" }}>
         <Flex gap={"middle"} vertical>
-          <Title level={2}>Search Account</Title>
+          <Title level={2}>Search Account From IMAL</Title>
           <Form
             name="account"
             form={form}

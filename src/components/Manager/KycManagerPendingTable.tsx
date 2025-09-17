@@ -1,11 +1,11 @@
 /**
  * KYC MANAGER PENDING TABLE COMPONENT
- * 
+ *
  * PURPOSE:
  * Manager interface for viewing and managing pending KYC requests requiring Head Office
  * assignment or review. Provides comprehensive oversight of requests awaiting HO checker
  * assignment with date filtering and pagination capabilities.
- * 
+ *
  * FUNCTIONALITY:
  * - Displays pending KYC requests in paginated table format
  * - Date-based filtering with month selection dropdown
@@ -14,14 +14,14 @@
  * - View-only access for completed requests (status 2/3)
  * - Real-time data refresh with trigger-based re-fetching
  * - Loading, empty, error, and success state management
- * 
+ *
  * API INTERACTIONS:
  * - GET /makeForm/manager/pending: Fetches pending requests with pagination
  *   * date: Selected month filter
  *   * pageNumber, pageSize: Pagination parameters
  * - Uses AuthContext for user identification and access control
  * - Automatic error handling with state management
- * 
+ *
  * USER INTERACTIONS:
  * - Date dropdown for month-based filtering
  * - Action dropdown menus with view and edit options
@@ -29,7 +29,7 @@
  * - Manager edit modal for HO assignment modification
  * - Pagination controls for large datasets
  * - Loading states during API operations
- * 
+ *
  * STATE MANAGEMENT:
  * - Make requests state with pageable return structure
  * - Modal states for view and edit operations
@@ -38,26 +38,34 @@
  * - Date state for filtering with default current month
  * - Component state (loading/empty/success/error)
  * - Trigger state for forcing data refresh
- * 
+ *
  * TABLE FEATURES:
  * - Maker name column display
  * - Status-based action column with conditional rendering
  * - Integrated with RequestTables helper component
  * - Pagination with customizable page sizes
  * - Total count display from API response
- * 
+ *
  * ROLE-BASED ACCESS:
  * - Manager role required for access
  * - Critical for HO assignment workflow management
  * - Provides oversight of pending KYC processing pipeline
  * - Supports workload distribution and quality assurance
- * 
+ *
  * USAGE: Manager dashboard page for pending KYC request management and HO assignment
  */
 
-import { Flex, MenuProps, Spin, Table, TableColumnsType, message } from "antd";
+import {
+  Button,
+  Flex,
+  MenuProps,
+  Spin,
+  Table,
+  TableColumnsType,
+  message,
+} from "antd";
 import RequestTables from "../Helper/Table/RequestTables";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { api } from "../../services/axios";
 import DateDropDown from "../Helper/DateDropdown/DateDropDown";
 import { allTableDataType, pageableReturn } from "../MakeForm/AllMakeFormTable";
@@ -66,6 +74,7 @@ import { BookOutlined, EyeOutlined } from "@ant-design/icons";
 import ViewModal from "../Helper/RequestModals/ViewModal";
 import { AuthContext } from "../../context/AuthContext";
 import ManagerEdit from "./ManagerEdit";
+import SearchBox, { SearchBoxHandle } from "../SearchBox";
 
 const KycManagerPendingTable = () => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -73,10 +82,11 @@ const KycManagerPendingTable = () => {
   const [trigger, setTrigger] = useState(0);
   const [viewModal, setViewModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
+  const [search, setSearch] = useState("");
   const [date, setDate] = useState(
     new Date(today.setMonth(today.getMonth(), 1))
   );
-  date.setHours(0,0,0,0)
+  date.setHours(0, 0, 0, 0);
   const USER = useContext(AuthContext);
   const [modal, setModal] = useState<allTableDataType>({
     id: 0,
@@ -103,6 +113,8 @@ const KycManagerPendingTable = () => {
   });
   const [pageSize, setPageSize] = useState(10);
   const [pageNumber, setPageNumber] = useState(1);
+  const ref = useRef<SearchBoxHandle>(null);
+
   const onchange = (pageNo: number, pageSi: number) => {
     setPageNumber(pageNo);
     setPageSize(pageSi);
@@ -113,13 +125,17 @@ const KycManagerPendingTable = () => {
   useEffect(() => {
     const getRequestsAssignedToMe = async () => {
       try {
-        const makes = await api.get<pageableReturn>("/makeForm/manager/pending", {
-          params: {
-            date: date,
-            pageNumber: pageNumber,
-            pageSize: pageSize,
-          },
-        });
+        const makes = await api.get<pageableReturn>(
+          "/makeForm/manager/pending",
+          {
+            params: {
+              date: date,
+              pageNumber: pageNumber,
+              pageSize: pageSize,
+              search: search,
+            },
+          }
+        );
         setMakeRequests(makes.data);
         if (makes.data.makes.length === 0) {
           setState("empty");
@@ -133,7 +149,7 @@ const KycManagerPendingTable = () => {
     };
 
     getRequestsAssignedToMe();
-  }, [trigger, date, USER?.user?.userId, pageNumber, pageSize]);
+  }, [trigger, date, USER?.user?.userId, pageNumber, pageSize, search]);
 
   const pendingActions: MenuProps["items"] = [
     {
@@ -178,6 +194,39 @@ const KycManagerPendingTable = () => {
 
   return (
     <>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <h1>Pending Requests</h1>
+        <DateDropDown date={date} setDate={setDate} />
+      </div>
+      <div
+        style={{
+          display: "flex",
+          alignContent: "center",
+          alignItems: "center",
+          gap: "30px",
+        }}
+      >
+        <h2>Search:</h2>
+        <SearchBox setState={setSearch} ref={ref} />
+        <Button
+          danger
+          disabled={search == ""}
+          onClick={() => {
+            if (ref.current) {
+              ref.current.clear();
+            }
+            setSearch("");
+          }}
+        >
+          Cancel
+        </Button>
+      </div>
       {state === "loading" && (
         <Spin
           style={{ position: "absolute", left: "50%", top: "50%" }}
@@ -186,16 +235,6 @@ const KycManagerPendingTable = () => {
       )}
       {state === "empty" && (
         <>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <h1>Pending Requests</h1>
-            <DateDropDown date={date} setDate={setDate} />
-          </div>
           <Table />
         </>
       )}
@@ -203,24 +242,14 @@ const KycManagerPendingTable = () => {
       {state === "success" && (
         <>
           {contextHolder}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <h1>Pending Requests</h1>
-            <DateDropDown date={date} setDate={setDate} />
-          </div>
           <RequestTables
             data={makeRequests.makes}
-            colums={columns} 
-            pageSize={pageSize} 
-            pageNumber={pageNumber} 
-            total={makeRequests.total} 
-            onChange={onchange}        
-            />
+            colums={columns}
+            pageSize={pageSize}
+            pageNumber={pageNumber}
+            total={makeRequests.total}
+            onChange={onchange}
+          />
           <ManagerEdit
             modal={modal}
             open={editModal}

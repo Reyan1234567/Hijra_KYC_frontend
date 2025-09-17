@@ -47,9 +47,9 @@
  * ROUTING: Accessed via /checkerApprovedTable route
  */
 
-import { Flex, MenuProps, Spin, Table, TableColumnsType } from "antd";
+import { Button, Flex, MenuProps, Spin, Table, TableColumnsType } from "antd";
 import RequestTables from "../Helper/Table/RequestTables";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { api } from "../../services/axios";
 import DateDropDown from "../Helper/DateDropdown/DateDropDown";
 import { allTableDataType, pageableReturn } from "../MakeForm/AllMakeFormTable";
@@ -57,9 +57,11 @@ import DropDown from "../Helper/DateDropdown/DropDown";
 import { EyeOutlined } from "@ant-design/icons";
 import ViewModal from "../Helper/RequestModals/ViewModal";
 import { AuthContext } from "../../context/AuthContext";
+import SearchBox, { SearchBoxHandle } from "../SearchBox";
 
 const CheckerApprovedTable = () => {
   const today = new Date();
+  const [search, setSearch] = useState("");
   const [viewModal, setViewModal] = useState(false);
   const [date, setDate] = useState(
     new Date(today.setMonth(today.getMonth(), 1))
@@ -92,6 +94,7 @@ const CheckerApprovedTable = () => {
 
   const [pageSize, setPageSize] = useState(10);
   const [pageNumber, setPageNumber] = useState(1);
+  const ref = useRef<SearchBoxHandle>(null);
   const onchange = (pageNo: number, pageSi: number) => {
     setPageNumber(pageNo);
     setPageSize(pageSi);
@@ -110,6 +113,7 @@ const CheckerApprovedTable = () => {
               date: date,
               pageNumber: pageNumber,
               pageSize: pageSize,
+              search: search,
             },
           }
         );
@@ -126,7 +130,7 @@ const CheckerApprovedTable = () => {
     };
 
     getRequestsAssignedToMe();
-  }, [date, USER?.user?.userId, pageNumber, pageSize]);
+  }, [date, USER?.user?.userId, pageNumber, pageSize, search]);
 
   const view: MenuProps["items"] = [
     {
@@ -160,6 +164,39 @@ const CheckerApprovedTable = () => {
 
   return (
     <>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <h1>Approved Requests</h1>
+        <DateDropDown date={date} setDate={setDate} />
+      </div>
+      <div
+        style={{
+          display: "flex",
+          alignContent: "center",
+          alignItems: "center",
+          gap: "30px",
+        }}
+      >
+        <h2>Search:</h2>
+        <SearchBox setState={setSearch} ref={ref} />
+        <Button
+          danger
+          disabled={search == ""}
+          onClick={() => {
+            if (ref.current) {
+              ref.current.clear();
+            }
+            setSearch("");
+          }}
+        >
+          Cancel
+        </Button>
+      </div>
       {state === "loading" && (
         <Spin
           style={{ position: "absolute", left: "50%", top: "50%" }}
@@ -168,32 +205,12 @@ const CheckerApprovedTable = () => {
       )}
       {state === "empty" && (
         <>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <h1>Approved Requests</h1>
-            <DateDropDown date={date} setDate={setDate} />
-          </div>
           <Table />
         </>
       )}
       {state === "error" && <p>Something wrong happened</p>}
       {state === "success" && (
         <>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <h1>Approved Requests</h1>
-            <DateDropDown date={date} setDate={setDate} />
-          </div>
           <RequestTables
             data={makeRequests.makes}
             colums={columns}

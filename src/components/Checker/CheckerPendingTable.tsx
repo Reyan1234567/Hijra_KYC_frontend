@@ -53,24 +53,27 @@
  * ROUTING: Accessed via /checkerPendingTable route
  */
 
-import { Flex, MenuProps, message, Spin, Table, TableColumnsType } from "antd";
+import { Button, Flex, MenuProps, Spin, Table, TableColumnsType, message } from "antd";
 import RequestTables from "../Helper/Table/RequestTables";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { api } from "../../services/axios";
 import DateDropDown from "../Helper/DateDropdown/DateDropDown";
 import { allTableDataType, pageableReturn } from "../MakeForm/AllMakeFormTable";
 import DropDown from "../Helper/DateDropdown/DropDown";
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
-import CheckerEditModal from "./CheckerEditModal";
 import ViewModal from "../Helper/RequestModals/ViewModal";
+import CheckerEditModal from "./CheckerEditModal";
 import { AuthContext } from "../../context/AuthContext";
+import SearchBox, { SearchBoxHandle } from "../SearchBox";
 
 const CheckerPendingTable = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const today = new Date();
+  const [search, setSearch] = useState("");
   const [trigger, setTrigger] = useState(0);
   const [viewModal, setViewModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
+  const ref = useRef<SearchBoxHandle>(null);
   const [date, setDate] = useState(
     new Date(today.setMonth(today.getMonth(), 1))
   );
@@ -117,6 +120,7 @@ const CheckerPendingTable = () => {
             date: date,
             pageNumber: pageNumber,
             pageSize: pageSize,
+            search: search,
           },
         });
         setMakeRequests(makes.data);
@@ -132,7 +136,7 @@ const CheckerPendingTable = () => {
     };
 
     getRequestsAssignedToMe();
-  }, [trigger, date, USER?.user?.userId, pageNumber, pageSize]);
+  }, [trigger, date, USER?.user?.userId, pageNumber, pageSize, search]);
 
 
   const edit: MenuProps["items"] = [
@@ -153,6 +157,7 @@ const CheckerPendingTable = () => {
       },
     },
   ];
+
   const columns: TableColumnsType<allTableDataType> = [
     {
       title: "Action",
@@ -171,8 +176,43 @@ const CheckerPendingTable = () => {
       },
     },
   ];
+  
   return (
     <>
+      {contextHolder}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <h1>Pending Requests</h1>
+        <DateDropDown date={date} setDate={setDate} />
+      </div>
+      <div
+        style={{
+          display: "flex",
+          alignContent: "center",
+          alignItems: "center",
+          gap: "30px",
+        }}
+      >
+        <h2>Search:</h2>
+        <SearchBox setState={setSearch} ref={ref} />
+        <Button
+          danger
+          disabled={search == ""}
+          onClick={() => {
+            if (ref.current) {
+              ref.current.clear();
+            }
+            setSearch("");
+          }}
+        >
+          Cancel
+        </Button>
+      </div>
       {state === "loading" && (
         <Spin
           style={{ position: "absolute", left: "50%", top: "50%" }}
@@ -181,34 +221,12 @@ const CheckerPendingTable = () => {
       )}
       {state === "empty" && (
         <>
-          {contextHolder}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <h1>Pending Requests</h1>
-            <DateDropDown date={date} setDate={setDate} />
-          </div>
           <Table />
         </>
       )}
       {state === "error" && <p>Something wrong happened</p>}
       {state === "success" && (
         <>
-          {contextHolder}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <h1>Pending Requests</h1>
-            <DateDropDown date={date} setDate={setDate} />
-          </div>
           <RequestTables
             data={makeRequests.makes}
             colums={columns}

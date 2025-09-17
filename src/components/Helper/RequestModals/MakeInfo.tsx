@@ -102,8 +102,6 @@ const MakeInfo = (modal: allTableDataType) => {
         <Title level={3}>Checker Info</Title>
         <Flex justify="space-between">
           <p>Assigned At:</p>
-          // if assignedAt returned from the db is null, the backend will calculate new Date() and adds one day
-          // if a future date is returned, it will show "-"
           <p>
             {new Date(modal?.assignedAt) > now || !modal.assignedAt
               ? "-"
@@ -112,8 +110,6 @@ const MakeInfo = (modal: allTableDataType) => {
         </Flex>
         <Flex justify="space-between">
           <p>Validated At:</p>
-          // if validatedAt returned from the db is null, the backend will calculate new Date() and adds one day
-          // if a future date is returned, it will show "Not checked yet"
           <p>
             {new Date(modal?.checkedAt) > now || !modal.checkedAt
               ? "Not checked yet"

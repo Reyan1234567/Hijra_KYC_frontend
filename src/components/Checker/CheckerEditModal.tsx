@@ -46,11 +46,12 @@
 import { Button, Flex, Input, Modal } from "antd";
 import DisplayInfo from "../Helper/RequestModals/DisplayInfo";
 import { api } from "../../services/axios";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { allTableDataType } from "../MakeForm/AllMakeFormTable";
 import BackReason from "../Helper/RequestModals/BackReason";
 import { useQueryClient } from "@tanstack/react-query";
 import { MessageInstance } from "antd/es/message/interface";
+import { AuthContext } from "../../context/AuthContext";
 
 export interface checkerViewModal {
   modal: allTableDataType;
@@ -58,9 +59,11 @@ export interface checkerViewModal {
   onCancel: () => void;
   triggerRender: () => void;
   messageApi: MessageInstance;
+  differentChecker?: number;
 }
 const CheckerEditModal = (checkerEditModal: checkerViewModal) => {
   const [InputBox, setInputBox] = useState(false);
+  const USER = useContext(AuthContext);
   const [InputBoxValue, setInputBoxValue] = useState("");
   const queryClient = useQueryClient();
   return (
@@ -95,10 +98,20 @@ const CheckerEditModal = (checkerEditModal: checkerViewModal) => {
                   disabled={InputBoxValue === ""}
                   onClick={async () => {
                     try {
-                      await api.post(`/makeForm/reject-request`, {
-                        makeFormId: checkerEditModal.modal.id,
-                        comment: InputBoxValue,
-                      });
+                      await api.post(
+                        `/makeForm/reject-request`,
+                        {
+                          makeFormId: checkerEditModal.modal.id,
+                          comment: InputBoxValue,
+                        },
+                        {
+                          params: {
+                            checkerId:
+                              checkerEditModal.differentChecker ??
+                              USER?.user?.userId,
+                          },
+                        }
+                      );
                       await queryClient.invalidateQueries({
                         queryKey: ["notifications"],
                       });
@@ -136,7 +149,14 @@ const CheckerEditModal = (checkerEditModal: checkerViewModal) => {
                   await api.patch(
                     `makeForm/updateStatus/${checkerEditModal.modal.id}`,
                     {},
-                    { params: { status: 2 } }
+                    {
+                      params: {
+                        status: 2,
+                        checkerId:
+                          checkerEditModal.differentChecker ??
+                          USER?.user?.userId,
+                      },
+                    }
                   );
                   queryClient.invalidateQueries({
                     queryKey: ["notifications"],

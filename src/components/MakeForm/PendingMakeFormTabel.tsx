@@ -1,46 +1,43 @@
 /**
  * PendingMakeFormTable - Read-only display of pending KYC forms
- * 
+ *
  * Displays pending KYC forms created by current maker with view-only functionality.
- * 
+ *
  * FUNCTIONALITY:
  * - Fetches pending KYC forms via getPendingMakes API
  * - Date filtering (defaults to current month)
  * - Single action: View form details in modal
  * - Pagination with React Query caching
- * 
+ *
  * DATA FLOW:
  * - API: GET /makeForm/getPending → getPendingMakes(date, userId, pageSize, pageNumber)
  * - Returns: pageableReturn with makes array and total count
  * - Query key: ["makes", date, pageNumber, pageSize]
- * 
+ *
  * STATE:
  * - modal: allTableDataType - selected row data for ViewModal
  * - isModalOpen: boolean - ViewModal visibility
  * - date: Date - filter for pending requests
  * - pageSize/pageNumber: pagination state
- * 
+ *
  * INTERACTIONS:
  * - Date selection via DateDropDown
  * - View action opens ViewModal with form details
  * - Pagination controls for navigation
  */
 
-import { useContext, useState } from "react";
-import { Flex, Spin, Table } from "antd";
+import { useContext, useRef, useState } from "react";
+import { Button, Flex, Spin, Table } from "antd";
 import type { MenuProps, TableColumnsType } from "antd";
 import DateDropDown from "../Helper/DateDropdown/DateDropDown";
-import {
-  EyeOutlined,
-} from "@ant-design/icons";
+import { EyeOutlined } from "@ant-design/icons";
 import ViewModal from "../Helper/RequestModals/ViewModal";
 import DropDown from "../Helper/DateDropdown/DropDown";
 import RequestTables from "../Helper/Table/RequestTables";
-import {
-  getPendingMakes,
-} from "../../services/MakeForm";
+import { getPendingMakes } from "../../services/MakeForm";
 import { useQuery } from "@tanstack/react-query";
 import { AuthContext } from "../../context/AuthContext";
+import SearchBox, { SearchBoxHandle } from "../SearchBox";
 
 export interface imageReturn {
   id: number;
@@ -120,11 +117,11 @@ const PendingMakeFormTable = () => {
       title: "Actions",
       dataIndex: "status",
       render: (_, row: allTableDataType) => {
-          return (
-            <Flex justify="center" align="center">
-              <DropDown menu={view} onChange={() => setModal(row)} />
-            </Flex>
-          );
+        return (
+          <Flex justify="center" align="center">
+            <DropDown menu={view} onChange={() => setModal(row)} />
+          </Flex>
+        );
       },
     },
   ];
@@ -135,6 +132,8 @@ const PendingMakeFormTable = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const USER = useContext(AuthContext);
+  const ref = useRef<SearchBoxHandle>(null);
+  const [search, setSearch] = useState("");
   const [pageSize, setPageSize] = useState(10);
   const [pageNumber, setPageNumber] = useState(1);
   const onchange = (pageNo: number, pageSi: number) => {
@@ -144,43 +143,8 @@ const PendingMakeFormTable = () => {
   const { data, isLoading, isError, isSuccess, error } = useQuery({
     queryKey: ["makes", date, pageNumber, pageSize],
     queryFn: () =>
-      getPendingMakes(date, USER?.user?.userId, pageSize, pageNumber),
+      getPendingMakes(date, USER?.user?.userId, pageSize, pageNumber, search),
   });
-
-  if (isLoading) {
-    return (
-      <Spin
-        style={{ position: "absolute", left: "50%", top: "50%" }}
-        size="large"
-      />
-    );
-  }
-  if (isError || data?.data === undefined) {
-    return (
-      <p style={{ position: "absolute", left: "50%", top: "50%" }}>
-        Something went wrong{error ? error.message : ""}
-      </p>
-    );
-  }
-  if (isSuccess && data.data.makes.length === 0) {
-    return (
-      <>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <h1>Pending Makes</h1>
-          <DateDropDown date={date} setDate={setDate} />
-        </div>
-        <Table<allTableDataType> dataSource={[]} />
-      </>
-    );
-  }
-
-  const res: allTableDataType[] = data.data.makes;
 
   return (
     <>
@@ -194,22 +158,64 @@ const PendingMakeFormTable = () => {
         <h1>Pending Makes</h1>
         <DateDropDown date={date} setDate={setDate} />
       </div>
-      <Flex gap="middle" vertical>
-        <RequestTables
-          data={res}
-          colums={columns}
-          pageSize={pageSize}
-          pageNumber={pageNumber}
-          total={data.data.total}
-          onChange={onchange}
-          // onSizeChange={onchange}
-        />{" "}
-      </Flex>
-      <ViewModal
-        handleCancel={handleCancel}
-        isModalOpen={isModalOpen}
-        modal={modal}
-      />
+      <div
+        style={{
+          display: "flex",
+          alignContent: "center",
+          alignItems: "center",
+          gap: "30px",
+        }}
+      >
+        <h2>Search:</h2>
+        <SearchBox setState={setSearch} ref={ref} />
+        <Button
+          danger
+          disabled={search == ""}
+          onClick={() => {
+            if (ref.current) {
+              ref.current.clear();
+            }
+            setSearch("");
+          }}
+        >
+          Cancel
+        </Button>
+      </div>
+      {isLoading && (
+        <Spin
+          style={{ position: "absolute", left: "50%", top: "50%" }}
+          size="large"
+        />
+      )}
+      {(isError || data?.data === undefined) && (
+        <p style={{ position: "absolute", left: "50%", top: "50%" }}>
+          Something went wrong{error ? error.message : ""}
+        </p>
+      )}
+      {isSuccess && data.data.makes.length === 0 && (
+        <>
+          <Table<allTableDataType> dataSource={[]} />
+        </>
+      )}
+      {isSuccess && data.data.makes.length > 0 && (
+        <>
+          <Flex gap="middle" vertical>
+            <RequestTables
+              data={data.data.makes}
+              colums={columns}
+              pageSize={pageSize}
+              pageNumber={pageNumber}
+              total={data.data.total}
+              onChange={onchange}
+            />
+          </Flex>
+          <ViewModal
+            handleCancel={handleCancel}
+            isModalOpen={isModalOpen}
+            modal={modal}
+          />
+        </>
+      )}
     </>
   );
 };

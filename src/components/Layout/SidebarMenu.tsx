@@ -1,9 +1,9 @@
 /**
  * SIDEBAR MENU COMPONENT
- * 
+ *
  * TYPE: Navigation Component (Layout Module)
  * PURPOSE: Provides role-based sidebar navigation with real-time notification badges
- * 
+ *
  * FUNCTIONALITY:
  * - Role-based menu rendering (Maker, Checker, Manager, District)
  * - Real-time notification badges for pending/rejected counts
@@ -11,25 +11,27 @@
  * - Navigation handling with React Router
  * - Dynamic menu items based on user permissions
  * - Badge counts for rejected forms (makers) and pending forms (checkers)
- * 
+ * - Navigation is done with the items keys, so the path declared in the routes
+ *    and the key declared here for a specific component match
+ *
  * DATA FETCHING:
  * - API: GET /makeForm/getRejected - gets rejected count for badges
- * - API: GET /makeForm/getPending - gets pending count for badges  
+ * - API: GET /makeForm/getPending - gets pending count for badges
  * - API: GET /message/unread - gets unread message count
  * - Updates AuthContext state with notification counts
- * 
+ *
  * USER INTERACTIONS:
  * - Menu item clicks navigate to corresponding routes
  * - Expandable menu groups (Make Form, Check Form, etc.)
  * - Badge indicators show notification counts rejected amount for a maker and pending amount for a checker
  * - Role-specific menu visibility
- * 
+ *
  * ROLE MENUS:
  * - Maker: Dashboard, Make Form (with sub-items), Search
  * - Checker: Dashboard, Check Form (with sub-items), Search
  * - Manager: Dashboard, KYC Manager, Attendance, Distribute, Search, Reports(with sub-items)
  * - District: Dashboard, Reports (Summary only)
- * 
+ *
  * LIFECYCLE:
  * - Mounts with role detection from localStorage
  * - Starts notification polling on mount
@@ -54,6 +56,8 @@ import {
   FundOutlined,
   UnorderedListOutlined,
   FullscreenOutlined,
+  CheckOutlined,
+  FileSearchOutlined,
 } from "@ant-design/icons";
 import { Badge, Menu } from "antd";
 import { useContext } from "react";
@@ -77,9 +81,9 @@ const SidebarMenu = () => {
       //   USER?.setPendingCount(respo?.data);
       // }
       const resp = await api.get("/makeForm/getRejected");
-        USER?.setRejectedCount(resp?.data);
+      USER?.setRejectedCount(resp?.data);
       const respo = await api.get("/makeForm/getPending");
-        USER?.setPendingCount(respo?.data);
+      USER?.setPendingCount(respo?.data);
       const res = await api.get("/message/unread");
       USER?.setMessageCount(res?.data);
     },
@@ -200,6 +204,11 @@ const SidebarMenu = () => {
       ],
     },
     {
+      key: "searchAccount",
+      icon: <FileSearchOutlined />,
+      label: "Search Account",
+    },
+    {
       key: "search",
       icon: <SearchOutlined />,
       label: "Search",
@@ -244,6 +253,11 @@ const SidebarMenu = () => {
       path: "/attendance",
     },
     {
+      key: "manager/editChecker",
+      icon: <CheckOutlined />,
+      label: "Edit Checkers",
+    },
+    {
       key: "distribute",
       icon: <FullscreenOutlined />,
       label: "Distribute",
@@ -279,21 +293,24 @@ const SidebarMenu = () => {
     },
   ];
   const district = [
-    { key: "dashboard", icon: <DashboardOutlined />, label: "Dashboard", path: "/" },
     {
-          key: "reports",
-          icon: <ProjectOutlined />,
-          label: "Reports",
-          children: [
-              {
-                  key: "reports/summary",
-                  icon: <ZoomInOutlined />,
-                  label: "Summary Report",
-              },
-          ],
-      },
-
-    
+      key: "dashboard",
+      icon: <DashboardOutlined />,
+      label: "Dashboard",
+      path: "/",
+    },
+    {
+      key: "reports",
+      icon: <ProjectOutlined />,
+      label: "Reports",
+      children: [
+        {
+          key: "reports/summary",
+          icon: <ZoomInOutlined />,
+          label: "Summary Report",
+        },
+      ],
+    },
   ];
 
   const onclick = (e) => {
@@ -306,7 +323,7 @@ const SidebarMenu = () => {
     if (role === "HO_Manager") return "KYC Manager";
     if (role === "maker") return "Branch Maker";
     if (role === "HO_Checker") return "HO_Checker";
-    if(role==="District") return "Distrcit MAnager";
+    if (role === "District") return "Distrcit MAnager";
     return "";
   };
 
@@ -349,14 +366,14 @@ const SidebarMenu = () => {
           items={manager}
           onClick={onclick}
         />
-      ) : USER?.user?.role==="District"?(
+      ) : USER?.user?.role === "District" ? (
         <Menu
-        mode="inline"
-        style={{borderRight:0}}
-        items={district}
-        onClick={onclick}
+          mode="inline"
+          style={{ borderRight: 0 }}
+          items={district}
+          onClick={onclick}
         />
-      ):null}
+      ) : null}
     </div>
   );
 };

@@ -31,7 +31,7 @@
  * - Console logging for debugging modal state
  */
 
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { Button, Flex, message, Popconfirm, Spin, Table } from "antd";
 import type { MenuProps, TableColumnsType } from "antd";
 import DateDropDown from "../Helper/DateDropdown/DateDropDown";
@@ -44,6 +44,7 @@ import RequestTables from "../Helper/Table/RequestTables";
 import { getRejectedMakes, sendToHo } from "../../services/MakeForm";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AuthContext } from "../../context/AuthContext";
+import SearchBox, { SearchBoxHandle } from "../SearchBox";
 
 export interface imageReturn {
   id: number;
@@ -86,6 +87,7 @@ const RejectedMakeFormTable = () => {
   const queryClient = useQueryClient();
   const today = new Date();
   const [messageApi, contextHolder] = message.useMessage();
+  const [search, setSearch] = useState("");
   const [editModal, setEditModal] = useState(false);
   const [date, setDate] = useState(
     new Date(today.setMonth(today.getMonth(), 1))
@@ -178,14 +180,15 @@ const RejectedMakeFormTable = () => {
   const USER = useContext(AuthContext);
   const [pageSize, setPageSize] = useState(10);
   const [pageNumber, setPageNumber] = useState(1);
+  const ref = useRef<SearchBoxHandle>(null);
   const onchange = (pageNo: number, pageSi: number) => {
     setPageNumber(pageNo);
     setPageSize(pageSi);
   };
   const { data, isLoading, isError, isSuccess, error } = useQuery({
-    queryKey: ["makes", date, pageNumber, pageSize],
+    queryKey: ["makes", date, pageNumber, pageSize, search],
     queryFn: () =>
-      getRejectedMakes(date, USER?.user?.userId, pageSize, pageNumber),
+      getRejectedMakes(date, USER?.user?.userId, pageSize, pageNumber, search),
   });
 
   const sendToHoMutation = useMutation({
@@ -202,50 +205,12 @@ const RejectedMakeFormTable = () => {
         content: "Successfully sent to Ho",
       });
     },
-    onError: (error) => {
-      console.log(error);
-      messageApi.open({
-        type: "error",
-        content: error?.response?.data ?? "Something went wrong",
-      });
+    onError: (error: unknown) => {
+      messageApi.error(
+        error?.response?.message??"Something went wrong!"
+      );
     },
   });
-
-  if (isLoading) {
-    return (
-      <Spin
-        style={{ position: "absolute", left: "50%", top: "50%" }}
-        size="large"
-      />
-    );
-  }
-  if (isError || data?.data === undefined) {
-    return (
-      <p style={{ position: "absolute", left: "50%", top: "50%" }}>
-        Something went wrong{error ? error.message : ""}
-      </p>
-    );
-  }
-  if (isSuccess && data.data.makes.length === 0) {
-    return (
-      <>
-      {contextHolder}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <h1>Rejected Makes</h1>
-          <DateDropDown date={date} setDate={setDate} />
-        </div>
-        <Table<allTableDataType> dataSource={[]} />
-      </>
-    );
-  }
-
-  const res: allTableDataType[] = data.data.makes;
 
   return (
     <>
@@ -260,30 +225,72 @@ const RejectedMakeFormTable = () => {
         <h1>Rejected Makes</h1>
         <DateDropDown date={date} setDate={setDate} />
       </div>
-      <Flex gap="middle" vertical>
-        <RequestTables
-          data={res}
-          colums={columns}
-          pageSize={pageSize}
-          pageNumber={pageNumber}
-          total={data.data.total}
-          onChange={onchange}
-          // onSizeChange={onchange}
-        />{" "}
-      </Flex>
-      <ViewModal
-        handleCancel={handleCancel}
-        isModalOpen={isModalOpen}
-        modal={modal}
-      />
-      <EditModal
-        handleCancel={handleCancel}
-        editModal={editModal}
-        modal={modal}
-        editModalOff={() => {
-          setEditModal(false);
+      <div
+        style={{
+          display: "flex",
+          alignContent: "center",
+          alignItems: "center",
+          gap: "30px",
         }}
-      />
+      >
+        <h2>Search:</h2>
+        <SearchBox setState={setSearch} ref={ref} />
+        <Button
+          danger
+          disabled={search == ""}
+          onClick={() => {
+            if (ref.current) {
+              ref.current.clear();
+            }
+            setSearch("");
+          }}
+        >
+          Cancel
+        </Button>
+      </div>
+      {isLoading && (
+        <Spin
+          style={{ position: "absolute", left: "50%", top: "50%" }}
+          size="large"
+        />
+      )}
+      {(isError || data?.data === undefined) && (
+        <p style={{ position: "absolute", left: "50%", top: "50%" }}>
+          Something went wrong{error ? error.message : ""}
+        </p>
+      )}
+      {isSuccess && data.data.makes.length === 0 && (
+        <>
+          <Table<allTableDataType> dataSource={[]} />
+        </>
+      )}
+      {isSuccess && data.data.makes.length > 0 && (
+        <>
+          <Flex gap="middle" vertical>
+            <RequestTables
+              data={data.data.makes}
+              colums={columns}
+              pageSize={pageSize}
+              pageNumber={pageNumber}
+              total={data.data.total}
+              onChange={onchange}
+            />
+          </Flex>
+          <ViewModal
+            handleCancel={handleCancel}
+            isModalOpen={isModalOpen}
+            modal={modal}
+          />
+          <EditModal
+            handleCancel={handleCancel}
+            editModal={editModal}
+            modal={modal}
+            editModalOff={() => {
+              setEditModal(false);
+            }}
+          />
+        </>
+      )}
     </>
   );
 };
